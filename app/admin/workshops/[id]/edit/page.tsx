@@ -176,15 +176,6 @@ export default function EditWorkshopPage() {
       formData.append('newImages', imageFile);
     }
 
-    // --- INICIO DE DEPURACIÓN ---
-    console.log('Valor de workshopSessions antes de enviar:', workshopSessions); // NUEVO: Log de workshopSessions
-    console.log('Valor de sessionsJson enviado en FormData:', sessionsJson); // NUEVO: Log del JSON de sesiones
-    console.log('Valor de existingImagesJson enviado en FormData:', existingImagesJson); // NUEVO: Log del JSON de imágenes existentes
-
-    console.log('Inspeccionando FormData:');
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
     // --- FIN DE DEPURACIÓN ---
 
     try {
