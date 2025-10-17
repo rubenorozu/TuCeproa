@@ -71,7 +71,7 @@ export default function AdminWorkshopsPage() {
     endDate: '', // NUEVO: Fecha de fin del taller
     inscriptionsStartDate: '', // NUEVO: Fecha de apertura de inscripciones
   });
-  const [modalWorkshopSessions, setModalWorkshopSessions] = useState([{ startTime: '', endTime: '', room: '' }]); // Nuevo estado para sesiones en el modal
+  const [modalWorkshopSessions, setModalWorkshopSessions] = useState<WorkshopSession[]>([{ dayOfWeek: 1, startTime: '09:00', endTime: '10:00', room: '' }]); // Nuevo estado para sesiones en el modal
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [existingImages, setExistingImages] = useState<Image[]>([]);
 
@@ -174,11 +174,12 @@ export default function AdminWorkshopsPage() {
       inscriptionsStartDate: item?.inscriptionsStartDate ? new Date(item.inscriptionsStartDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar inscriptionsStartDate
     });
     setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? item.sessions.map(s => ({
+      id: s.id,
       dayOfWeek: s.dayOfWeek,
       timeStart: s.timeStart,
       timeEnd: s.timeEnd,
       room: s.room || '',
-    })) : [{ dayOfWeek: 1, timeStart: '09:00', timeEnd: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
+    })) : [{ dayOfWeek: 1, timeStart: '09:00', endTime: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
     setExistingImages(item?.images || []);
     setSelectedFiles(null);
     setShowModal(true);
