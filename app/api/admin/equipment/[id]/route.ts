@@ -5,6 +5,8 @@ import { getServerSession } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
+// Temporary comment to force a new commit
+
 // GET: Obtener un equipo por ID
 export async function GET(request: NextRequest, context: { params: { id: string } }) {
   const session = await getServerSession();
