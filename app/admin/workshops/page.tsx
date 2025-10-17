@@ -39,6 +39,7 @@ interface Workshop {
   createdAt: string;
   updatedAt: string;
   endDate: string | null;
+  startDate: string | null;
 }
 
 interface ResponsibleUser {
