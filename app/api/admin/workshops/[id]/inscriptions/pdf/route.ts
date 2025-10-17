@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from '@/lib/auth';
 import { Role } from '@prisma/client';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -58,7 +58,7 @@ export async function GET(request: Request, { params }: Params) {
     const tableBottom = footerStartY + rowHeight;
 
     // --- Helper function to draw page elements ---
-    const drawPageElements = (page: any) => {
+    const drawPageElements = (page: PDFPage) => {
       const { width, height } = page.getSize();
       const tableTop = height - 120;
       // --- Encabezado ---

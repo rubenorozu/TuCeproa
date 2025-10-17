@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from '@/lib/auth';
 
-export async function PUT(req: Request) {
+export async function PUT() {
   try {
     const session = await getServerSession();
     if (!session) {

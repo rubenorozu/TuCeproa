@@ -16,8 +16,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     return NextResponse.json(equipment);
-  } catch (error: any) {
-    console.error('Error al obtener detalles del equipo:', error.message);
+  } catch (error: unknown) {
+    console.error('Error al obtener detalles del equipo:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json({ message: 'Algo salió mal al obtener el equipo.' }, { status: 500 });
   }
 }

@@ -182,7 +182,7 @@ export default function EditWorkshopPage() {
     console.log('Valor de existingImagesJson enviado en FormData:', existingImagesJson); // NUEVO: Log del JSON de imágenes existentes
 
     console.log('Inspeccionando FormData:');
-    for (let [key, value] of formData.entries()) {
+    for (const [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }
     // --- FIN DE DEPURACIÓN ---

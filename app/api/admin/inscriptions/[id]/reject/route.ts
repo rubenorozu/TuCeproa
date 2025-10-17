@@ -48,7 +48,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json(updatedInscription, { status: 200 });
   } catch (error) {
     console.error('Error al rechazar la inscripción:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
       return NextResponse.json({ error: 'Inscripción no encontrada para rechazar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo rechazar la inscripción.' }, { status: 500 });

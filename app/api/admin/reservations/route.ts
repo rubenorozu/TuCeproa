@@ -15,10 +15,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get('status');
 
-    const where: Prisma.ReservationWhereInput = {};
-
-
-
     // Fetch all reservations. Filtering will be done after grouping.
     const reservations = await prisma.reservation.findMany({
       select: { 

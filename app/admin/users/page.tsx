@@ -27,7 +27,7 @@ export default function AdminUsersPage() {
   const { user: currentUser, loading: sessionLoading } = useSession();
   const router = useRouter();
 
-  async function fetchUsers(searchQuery: string = '') {
+  const fetchUsers = useCallback(async (searchQuery: string = '') => {
     setLoading(true);
     setError(null);
     try {

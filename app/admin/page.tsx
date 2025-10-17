@@ -1,20 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Card, Button, Spinner, Alert, Table } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Alert } from 'react-bootstrap';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
 import { Role } from '@prisma/client';
 import { GroupedReservation } from '@/components/admin/reservations/types';
-import ReservationFilter from '@/components/admin/reservations/ReservationFilter';
 import ReservationCard from '@/components/admin/reservations/ReservationCard';
 
 export default function AdminDashboardPage() {
   const { user, loading: sessionLoading } = useSession();
-  const router = useRouter();
-
   console.log('DEBUG AdminDashboardPage: user:', user);
   console.log('DEBUG AdminDashboardPage: user.role:', user?.role);
 

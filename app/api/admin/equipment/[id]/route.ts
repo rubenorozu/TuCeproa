@@ -85,11 +85,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json(updatedEquipment, { status: 200 });
   } catch (error) {
     console.error('Error al actualizar el equipo:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
       return NextResponse.json({ error: 'Equipo no encontrado para actualizar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo actualizar el equipo.' }, { status: 500 });
   }
+}
+
+interface PrismaError extends Error {
+  code?: string;
 }
 
 // DELETE: Eliminar un equipo por ID
@@ -122,7 +126,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ message: 'Equipo eliminado correctamente.' }, { status: 200 });
   } catch (error) {
     console.error('Error al eliminar el equipo:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
       return NextResponse.json({ error: 'Equipo no encontrado para eliminar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo eliminar el equipo. Es posible que tenga reservas asociadas que deben ser eliminadas o reasignadas primero.' }, { status: 500 });

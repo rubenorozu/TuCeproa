@@ -82,11 +82,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json(updatedSpace, { status: 200 });
   } catch (error) {
     console.error('Error al actualizar el espacio:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
       return NextResponse.json({ error: 'Espacio no encontrado para actualizar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo actualizar el espacio.' }, { status: 500 });
   }
+}
+
+interface PrismaError extends Error {
+  code?: string;
 }
 
 // DELETE: Eliminar un espacio por ID
@@ -119,7 +123,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ message: 'Espacio eliminado correctamente.' }, { status: 200 });
   } catch (error) {
     console.error('Error al eliminar el espacio:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
       return NextResponse.json({ error: 'Espacio no encontrado para eliminar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo eliminar el espacio. Es posible que tenga reservas asociadas que deben ser eliminadas o reasignadas primero.' }, { status: 500 });

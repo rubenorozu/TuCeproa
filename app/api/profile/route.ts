@@ -6,7 +6,7 @@ import path from 'path';
 import * as fs from 'fs/promises';
 import { getServerSession } from '@/lib/auth'; // Importar getServerSession
 
-export async function GET(req: Request) {
+export async function GET() {
   const session = await getServerSession(); // Obtener sesión
 
   if (!session) {

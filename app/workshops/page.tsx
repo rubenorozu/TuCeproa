@@ -24,13 +24,18 @@ interface Workshop {
   };
 }
 
+interface Inscription {
+  workshopId: string;
+  status: string; // Adjust this type if a more specific enum is available
+}
+
 export default function WorkshopsPage() {
   const { user, loading: sessionLoading } = useSession();
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [inscriptions, setInscriptions] = useState<any[]>([]);
+  const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
   const [refresh, setRefresh] = useState(false);
 
   const triggerRefresh = () => setRefresh(prev => !prev);

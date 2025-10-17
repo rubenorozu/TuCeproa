@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Spinner, Alert, Container, Row, Col, Badge, Form } from 'react-bootstrap';
+import { Table, Button, Spinner, Alert, Container, Row, Col, Badge } from 'react-bootstrap';
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -17,8 +17,6 @@ interface Inscription {
 
 export default function AdminInscriptionsPage() {
   const { user, loading: sessionLoading } = useSession();
-  const router = useRouter();
-
   const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +25,7 @@ export default function AdminInscriptionsPage() {
 
 
 
-  const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
+  const [filter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
 
   const fetchInscriptions = useCallback(async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all') => {
     setLoading(true);

@@ -62,7 +62,8 @@ export async function POST(req: Request) {
 -----------------------
 `);
 
-    const { password: _, ...userWithoutPassword } = user;
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password;
 
     return NextResponse.json(userWithoutPassword, { status: 201 });
   } catch (error) {

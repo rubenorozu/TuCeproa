@@ -13,7 +13,6 @@ export async function GET(req: Request) {
 
     const token = authHeader.split(' ')[1];
     const { payload } = await jwtVerify(token, secret);
-    const userId = payload.userId as string;
     const userRole = payload.role as string;
 
     if (userRole !== 'SUPERUSER') {

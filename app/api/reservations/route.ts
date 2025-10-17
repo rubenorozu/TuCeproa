@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { writeFile } from 'fs/promises';
 import path from 'path';
 import * as fs from 'fs/promises';
 import { getServerSession } from '@/lib/auth';
@@ -94,7 +93,7 @@ export async function POST(req: Request) {
           const lastNamePart = user?.lastName.split(' ')[0].toUpperCase() || 'USER';
 
           const todayString = now.toISOString().split('T')[0]; // YYYY-MM-DD
-          let counter = await tx.reservationCounter.findUnique({
+          const counter = await tx.reservationCounter.findUnique({
             where: { date: todayString },
           });
 
@@ -127,7 +126,7 @@ export async function POST(req: Request) {
         const lastNamePart = user?.lastName.split(' ')[0].toUpperCase() || 'USER';
 
         const todayString = now.toISOString().split('T')[0]; // YYYY-MM-DD
-        let counter = await tx.reservationCounter.findUnique({
+        const counter = await tx.reservationCounter.findUnique({
           where: { date: todayString },
         });
 

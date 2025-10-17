@@ -11,7 +11,6 @@ export default function NewEquipmentPage() {
   const [fixedAssetId, setFixedAssetId] = useState('');
   const [users, setUsers] = useState<{ id: string; name: string; email: string; role: string }[]>([]);
   const [responsibleUserId, setResponsibleUserId] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
@@ -83,7 +82,6 @@ export default function NewEquipmentPage() {
       setDescription('');
       setSerialNumber('');
       setFixedAssetId('');
-      setImageUrl('');
       router.push('/admin/equipment'); // Redirect to equipment list
     } catch (err: unknown) {
         if (err instanceof Error) {

@@ -86,7 +86,7 @@ export default function NewWorkshopPage() {
       return;
     }
 
-    let imageUrls: { url: string }[] = [];
+    const imageUrls: { url: string }[] = [];
     if (imageFile) {
       // Subir la imagen primero
       const imageFormData = new FormData();

@@ -27,8 +27,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     return NextResponse.json(space);
-  } catch (error: any) {
-    console.error('Error fetching space details:', error.message);
+  } catch (error: unknown) {
+    console.error('Error fetching space details:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json({ message: 'Something went wrong' }, { status: 500 });
   }
 }

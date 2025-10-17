@@ -5,7 +5,7 @@ import { getServerSession } from '@/lib/auth';
 const prisma = new PrismaClient();
 
 // Helper function to convert JSON to CSV
-function jsonToCsv(jsonData: any[]): string {
+function jsonToCsv(jsonData: Record<string, any>[]): string {
   if (!jsonData || jsonData.length === 0) {
     return '';
   }
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const model = searchParams.get('model');
 
-  let data: any[] = [];
+  let data: unknown[] = [];
   let fileName = 'export.csv';
 
   try {

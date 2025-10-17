@@ -14,11 +14,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get('status');
 
-    let whereClause: Prisma.InscriptionWhereInput = {};
+    const whereClause: Prisma.InscriptionWhereInput = {};
 
     if (session.user.role !== Role.SUPERUSER) {
       if (statusFilter && statusFilter !== 'all') {
-        whereClause.status = statusFilter.toUpperCase() as any;
+        whereClause.status = statusFilter.toUpperCase() as InscriptionStatus;
       }
     }
 

@@ -6,6 +6,11 @@ import Image from 'next/image'; // Assuming Image is used for resource.images
 import { useCart } from '@/context/CartContext';
 import { useSession } from '@/context/SessionContext';
 
+interface Inscription {
+  workshopId: string;
+  status: string;
+}
+
 interface Image {
   id: string;
   url: string;
@@ -57,7 +62,7 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
         if (res.ok) {
           const inscriptions = await res.json();
           console.log(`ResourceCard fetchInscriptionStatus for ${resource.name} - Fetched inscriptions:`, inscriptions);
-          const currentInscription = inscriptions.find((i: any) => i.workshopId === resource.id);
+          const currentInscription = inscriptions.find((i: Inscription) => i.workshopId === resource.id);
           console.log(`ResourceCard fetchInscriptionStatus for ${resource.name} - Current inscription:`, currentInscription);
           if (currentInscription) {
             setInscriptionStatus(currentInscription.status);
