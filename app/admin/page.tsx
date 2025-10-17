@@ -108,7 +108,7 @@ export default function AdminDashboardPage() {
       <Row className="mb-4">
         <Col>
           <h2>Dashboard de Administración</h2>
-          <p>Bienvenido, {user.name || user.email}. Aquí puedes gestionar la plataforma.</p>
+          <p>Bienvenido, {user.email}. Aquí puedes gestionar la plataforma.</p>
         </Col>
       </Row>
 
