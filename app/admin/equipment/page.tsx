@@ -439,31 +439,34 @@ export default function AdminEquipmentPage() {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>ID de Usuario Responsable</Form.Label>
-              {user.role === 'ADMIN_RESOURCE' ? (
+              {user?.role === 'ADMIN_RESOURCE' ? (
                 <Form.Control
                   type="text"
                   value={currentEquipment ? `${currentEquipment.responsibleUser?.firstName || ''} ${currentEquipment.responsibleUser?.lastName || ''}`.trim() : (`${user.firstName || ''} ${user.lastName || ''}`).trim()}
                   readOnly
                   disabled
                 />
-              ) : responsibleUsersLoading ? (
-                <Spinner animation="border" size="sm" />
-              ) : responsibleUsersError ? (
-                <Alert variant="danger">Error al cargar responsables</Alert>
               ) : (
-                <Form.Select
-                  name="responsibleUserId"
-                  value={form.responsibleUserId || ''}
-                  onChange={handleChange}
-                  disabled={user?.role === 'ADMIN_RESOURCE'} // Always disabled for ADMIN_RESOURCE
-                >
-                  <option value="">-- Ninguno --</option>
-                  {responsibleUsers.map(rUser => (
-                    <option key={rUser.id} value={rUser.id}>
-                      {rUser.firstName} {rUser.lastName} ({rUser.email})
-                    </option>
-                  ))}
-                </Form.Select>
+                <>
+                  {responsibleUsersLoading ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : responsibleUsersError ? (
+                    <Alert variant="danger">Error al cargar responsables</Alert>
+                  ) : (
+                    <Form.Select
+                      name="responsibleUserId"
+                      value={form.responsibleUserId || ''}
+                      onChange={handleChange}
+                    >
+                      <option value="">-- Ninguno --</option>
+                      {responsibleUsers.map(rUser => (
+                        <option key={rUser.id} value={rUser.id}>
+                          {rUser.firstName} {rUser.lastName} ({rUser.email})
+                        </option>
+                      ))}
+                    </Form.Select>
+                  )}
+                </>
               )}
             </Form.Group>
             {error && <Alert variant="danger">{error}</Alert>}
