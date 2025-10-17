@@ -6,7 +6,15 @@ import { getServerSession } from '@/lib/auth';
 const prisma = new PrismaClient();
 
 // GET: Obtener un equipo por ID
-  const equipmentId = (params as any).id;
+// GET: Obtener un equipo por ID
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const session = await getServerSession();
+
+  if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
+    return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
+  }
+
+  const equipmentId = params.id;
 
   try {
     const equipment = await prisma.equipment.findUnique({
@@ -37,7 +45,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = (params as any).id;
+  const equipmentId = params.id;
 
   try {
     const existingEquipment = await prisma.equipment.findUnique({
@@ -97,7 +105,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = (params as any).id;
+  const equipmentId = params.id;
 
   try {
     const existingEquipment = await prisma.equipment.findUnique({
