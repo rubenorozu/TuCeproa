@@ -13,7 +13,8 @@ interface Image {
 }
 
 interface WorkshopSession { // Nueva interfaz para las sesiones
-  id: string;
+  id?: string; // Make id optional as it might not exist for new sessions
+  dayOfWeek: number;
   startTime: string;
   endTime: string;
   room: string | null;
