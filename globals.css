@@ -1,0 +1,77 @@
+body {
+  /* Intentionally left empty for now, can be customized later */
+}
+
+.carousel-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.carousel-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.carousel-item-container {
+  width: 252px;
+  flex-shrink: 0;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+}
+
+.carousel-control-prev {
+  left: -20px;
+}
+
+.carousel-control-next {
+  right: -20px;
+}
+
+.text-truncate-multiline {
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.col-5-per-row {
+  flex: 0 0 auto;
+  width: 20%;
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
+}
+
+.col-4-per-row {
+  flex: 0 0 auto;
+  width: 25%;
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
+}
+
+@media (max-width: 1199.98px) { /* Bootstrap's large breakpoint */
+  .col-5-per-row {
+    width: 25%; /* 4 items per row */
+  }
+}
+
+@media (max-width: 991.98px) { /* Bootstrap's medium breakpoint */
+  .col-5-per-row {
+    width: 33.333333%; /* 3 items per row */
+  }
+}
+
+.date-picker-wrapper .react-datepicker-wrapper {
+  display: block;
+}

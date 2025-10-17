@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  displayId          String?   @unique
+  email              String    @unique
+  firstName          String
+  lastName           String
+  password           String
+  identifier         String    @unique
+  phoneNumber        String?
+  alternativeEmail   String?   @unique
+  profileImageUrl    String?
+  role               Role      @default(USER)
+  isVerified         Boolean   @default(false)
+  verificationToken  String?   @unique
+  reservations       Reservation[]
+  inscriptions       Inscription[]
+  notifications      Notification[]
+  managedSpaces      Space[]
+  managedEquipment   Equipment[]
+  managedWorkshops   Workshop[]
+  approvedReservations Reservation[] @relation("ApprovedReservations")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN_RESOURCE
+  ADMIN_RESERVATION
+  SUPERUSER
+}
+
+model Space {
+  id           String        @id @default(cuid())
+  displayId    String?       @unique
+  name         String
+  description  String?
+  // imageUrl     String? // REMOVED
+  images       Image[] // NEW: One-to-many relationship with Image model
+  responsibleUserId String?
+  responsibleUser   User?         @relation(fields: [responsibleUserId], references: [id])
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+// NEW MODEL FOR MULTIPLE IMAGES
+model Image {
+  id          String    @id @default(cuid())
+  url         String
+  space       Space?    @relation(fields: [spaceId], references: [id])
+  spaceId     String?
+  equipment   Equipment? @relation(fields: [equipmentId], references: [id]) // NEW
+  equipmentId String? // NEW
+  workshop    Workshop? @relation(fields: [workshopId], references: [id]) // NEW
+  workshopId  String? // NEW
+}
+
+model Equipment {
+  id           String        @id @default(cuid())
+  displayId    String?       @unique
+  name         String
+  description  String?
+  serialNumber String?
+  fixedAssetId String?
+  // imageUrl     String? // REMOVED
+  images       Image[] // NEW: One-to-many relationship with Image model
+  responsibleUserId String?
+  responsibleUser   User?         @relation(fields: [responsibleUserId], references: [id])
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Workshop {
+  id                String        @id @default(cuid())
+  displayId         String?       @unique
+  name              String
+  description       String?
+  capacity          Int           @default(0)
+  availableFrom     DateTime?
+  inscriptionsOpen  Boolean       @default(true)
+  inscriptionsStartDate DateTime? // NUEVO: Fecha de inicio de inscripciones
+  teacher           String?
+  schedule          String? // Mantener por ahora, pero se puede eliminar después de migrar a sesiones
+  room              String?
+  startDate         DateTime? // NUEVO: Fecha de inicio de las sesiones recurrentes
+  endDate           DateTime? // NUEVO: Fecha de fin del taller
+  // imageUrl          String? // REMOVED
+  images            Image[] // NEW: One-to-many relationship with Image model
+  responsibleUserId String?
+  responsibleUser   User?         @relation(fields: [responsibleUserId], references: [id])
+  inscriptions      Inscription[]
+  sessions          WorkshopSession[] // NUEVO: Relación con WorkshopSession
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model WorkshopSession {
+  id          String    @id @default(cuid())
+  workshop    Workshop  @relation(fields: [workshopId], references: [id])
+  workshopId  String
+  dayOfWeek   Int       // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+  timeStart   String    // Ej: "09:00"
+  timeEnd     String    // Ej: "11:00"
+  room        String?   // Opcional: si la sala puede variar por sesión
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Reservation {
+  id            String    @id @default(cuid())
+  displayId     String?
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+  space         Space?    @relation(fields: [spaceId], references: [id])
+  spaceId       String?
+  equipment     Equipment? @relation(fields: [equipmentId], references: [id])
+  equipmentId   String?
+  cartSubmissionId String? // New field
+  startTime     DateTime
+  endTime       DateTime
+  justification String
+  subject       String?
+  coordinator   String?
+  teacher       String?
+  status        ReservationStatus @default(PENDING)
+  approvedByUserId String?
+  approvedByUser   User?             @relation("ApprovedReservations", fields: [approvedByUserId], references: [id])
+  documents     Document[]
+  notifications Notification[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum ReservationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PARTIALLY_APPROVED
+}
+
+enum InscriptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Document {
+  id            String      @id @default(cuid())
+  fileName      String
+  filePath      String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId String
+  createdAt     DateTime    @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  recipient User     @relation(fields: [recipientId], references: [id])
+  recipientId String
+  message   String
+  read      Boolean  @default(false)
+  reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  reservationId String?
+  createdAt DateTime @default(now())
+}
+
+model Inscription {
+  id          String    @id @default(cuid())
+  workshop    Workshop  @relation(fields: [workshopId], references: [id])
+  workshopId  String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  status      InscriptionStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+
+  @@unique([workshopId, userId])
+}
+
+model ReservationCounter {
+  date        String @id // Format: "YYYY-MM-DD"
+  lastNumber  Int
+}

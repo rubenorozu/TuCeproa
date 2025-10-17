@@ -1,0 +1,1836 @@
+
+> reservas-app-v2@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use by process 17307, using available port 3004 instead.
+   ▲ Next.js 15.5.4
+   - Local:        http://localhost:3004
+   - Network:      http://192.168.100.44:3004
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1051ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.2s (716 modules)
+ GET / 200 in 2368ms
+[Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/server-development/3.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/server-development/3.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/server-development/3.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/server-development/3.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/server-development/3.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/server-development/3.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/server-development/3.pack.gz'
+ ✓ Compiled /api/equipment in 393ms (886 modules)
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTQzNzczMSwiZXhwIjoxNzU5NDQxMzMxfQ.L_nxvGt_ggYd8L0fUlfz7zclMMar1yZtbrNIeOo8eIo
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/equipment 200 in 1124ms
+ GET /api/spaces 200 in 1125ms
+Middleware: Invalid token. JWTExpired: "exp" claim timestamp check failed
+    at async middleware (src/middleware.ts:20:25)
+  18 |
+  19 |   try {
+> 20 |     const { payload } = await jwtVerify(token, JWT_SECRET);
+     |                         ^
+  21 |     const { role, userId } = payload as any;
+  22 |     console.log('Middleware: Token verified successfully. Payload:', payload);
+  23 | {
+  code: 'ERR_JWT_EXPIRED',
+  claim: 'exp',
+  reason: 'check_failed',
+  payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759437731,
+  exp: 1759441331
+}
+}
+[Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/4.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/4.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/4.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/4.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/4.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/4.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/2.pack.gz'
+ ✓ Compiled /cart in 166ms (711 modules)
+ GET /cart 200 in 238ms
+ ✓ Compiled /admin in 155ms (720 modules)
+ GET /admin 200 in 205ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTQzNzczMSwiZXhwIjoxNzU5NDQxMzMxfQ.L_nxvGt_ggYd8L0fUlfz7zclMMar1yZtbrNIeOo8eIo
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTQzNzczMSwiZXhwIjoxNzU5NDQxMzMxfQ.L_nxvGt_ggYd8L0fUlfz7zclMMar1yZtbrNIeOo8eIo
+Middleware: Invalid token. JWTExpired: "exp" claim timestamp check failed
+    at async middleware (src/middleware.ts:20:25)
+  18 |
+  19 |   try {
+> 20 |     const { payload } = await jwtVerify(token, JWT_SECRET);
+     |                         ^
+  21 |     const { role, userId } = payload as any;
+  22 |     console.log('Middleware: Token verified successfully. Payload:', payload);
+  23 | {
+  code: 'ERR_JWT_EXPIRED',
+  claim: 'exp',
+  reason: 'check_failed',
+  payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759437731,
+  exp: 1759441331
+}
+}
+Middleware: Invalid token. JWTExpired: "exp" claim timestamp check failed
+    at async middleware (src/middleware.ts:20:25)
+  18 |
+  19 |   try {
+> 20 |     const { payload } = await jwtVerify(token, JWT_SECRET);
+     |                         ^
+  21 |     const { role, userId } = payload as any;
+  22 |     console.log('Middleware: Token verified successfully. Payload:', payload);
+  23 | {
+  code: 'ERR_JWT_EXPIRED',
+  claim: 'exp',
+  reason: 'check_failed',
+  payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759437731,
+  exp: 1759441331
+}
+}
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTQzNzczMSwiZXhwIjoxNzU5NDQxMzMxfQ.L_nxvGt_ggYd8L0fUlfz7zclMMar1yZtbrNIeOo8eIo
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTQzNzczMSwiZXhwIjoxNzU5NDQxMzMxfQ.L_nxvGt_ggYd8L0fUlfz7zclMMar1yZtbrNIeOo8eIo
+Middleware: Invalid token. JWTExpired: "exp" claim timestamp check failed
+    at async middleware (src/middleware.ts:20:25)
+  18 |
+  19 |   try {
+> 20 |     const { payload } = await jwtVerify(token, JWT_SECRET);
+     |                         ^
+  21 |     const { role, userId } = payload as any;
+  22 |     console.log('Middleware: Token verified successfully. Payload:', payload);
+  23 | {
+  code: 'ERR_JWT_EXPIRED',
+  claim: 'exp',
+  reason: 'check_failed',
+  payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759437731,
+  exp: 1759441331
+}
+}
+Middleware: Invalid token. JWTExpired: "exp" claim timestamp check failed
+    at async middleware (src/middleware.ts:20:25)
+  18 |
+  19 |   try {
+> 20 |     const { payload } = await jwtVerify(token, JWT_SECRET);
+     |                         ^
+  21 |     const { role, userId } = payload as any;
+  22 |     console.log('Middleware: Token verified successfully. Payload:', payload);
+  23 | {
+  code: 'ERR_JWT_EXPIRED',
+  claim: 'exp',
+  reason: 'check_failed',
+  payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759437731,
+  exp: 1759441331
+}
+}
+ ✓ Compiled /recursos in 333ms (727 modules)
+ GET /recursos 200 in 372ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 26ms
+ GET /api/equipment 200 in 32ms
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 23ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/equipment 200 in 19ms
+ GET / 200 in 24ms
+ GET /api/spaces 200 in 17ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/equipment 200 in 22ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 28ms
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/equipment 200 in 25ms
+ ✓ Compiled /profile in 176ms (734 modules)
+ GET /profile 200 in 227ms
+
+--- Middleware ---
+Path: /api/profile
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTQzNzczMSwiZXhwIjoxNzU5NDQxMzMxfQ.L_nxvGt_ggYd8L0fUlfz7zclMMar1yZtbrNIeOo8eIo
+Middleware: Invalid token. JWTExpired: "exp" claim timestamp check failed
+    at async middleware (src/middleware.ts:20:25)
+  18 |
+  19 |   try {
+> 20 |     const { payload } = await jwtVerify(token, JWT_SECRET);
+     |                         ^
+  21 |     const { role, userId } = payload as any;
+  22 |     console.log('Middleware: Token verified successfully. Payload:', payload);
+  23 | {
+  code: 'ERR_JWT_EXPIRED',
+  claim: 'exp',
+  reason: 'check_failed',
+  payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759437731,
+  exp: 1759441331
+}
+}
+
+--- Middleware ---
+Path: /api/profile
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTQzNzczMSwiZXhwIjoxNzU5NDQxMzMxfQ.L_nxvGt_ggYd8L0fUlfz7zclMMar1yZtbrNIeOo8eIo
+Middleware: Invalid token. JWTExpired: "exp" claim timestamp check failed
+    at async middleware (src/middleware.ts:20:25)
+  18 |
+  19 |   try {
+> 20 |     const { payload } = await jwtVerify(token, JWT_SECRET);
+     |                         ^
+  21 |     const { role, userId } = payload as any;
+  22 |     console.log('Middleware: Token verified successfully. Payload:', payload);
+  23 | {
+  code: 'ERR_JWT_EXPIRED',
+  claim: 'exp',
+  reason: 'check_failed',
+  payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759437731,
+  exp: 1759441331
+}
+}
+ GET / 200 in 125ms
+prisma:query SELECT 1
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 21ms
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/equipment 200 in 26ms
+ ✓ Compiled /login in 143ms (741 modules)
+ GET /login 200 in 177ms
+ ✓ Compiled /api/auth/login in 289ms (813 modules)
+prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`password`, `main`.`User`.`phoneNumber`, `m ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+ GET / 500 in 844ms
+ GET / 500 in 280ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+ GET / 500 in 835ms
+ GET / 500 in 281ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/macbookangular/reservas-app-v2/.next/routes-manifest.json'
+}
+ GET / 500 in 765ms
+ GET / 500 in 258ms
+ GET / 404 in 223ms
+ GET / 404 in 230ms
+ GET / 404 in 233ms
+ GET / 404 in 234ms
+ GET / 404 in 236ms
+ GET / 404 in 224ms
+ GET / 404 in 232ms
+ GET / 200 in 70ms
+ ✓ Compiled /api/equipment in 157ms (646 modules)
+ ✓ Compiled (648 modules)
+ GET /api/equipment 200 in 291ms
+prisma:query SELECT 1
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 292ms
+ GET /login 200 in 64ms
+ ✓ Compiled /api/auth/login in 201ms (720 modules)
+prisma:query SELECT 1
+prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`password`, `main`.`User`.`phoneNumber`, `main`.`User`.`alternativeEmail`, `main`.`User`.`profileImageUrl`, `main`.`User`.`role`, `main`.`User`.`isVerified`, `main`.`User`.`verificationToken`, `main`.`User`.`createdAt`, `main`.`User`.`updatedAt` FROM `main`.`User` WHERE (`main`.`User`.`email` = ? AND 1=1) LIMIT ? OFFSET ?
+ POST /api/auth/login 200 in 301ms
+ GET / 200 in 103ms
+ GET /api/spaces 200 in 22ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+ GET /api/equipment 200 in 33ms
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ ✓ Compiled /api/notifications in 96ms (722 modules)
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 120ms
+ ✓ Compiled /admin in 228ms (1141 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /admin 200 in 289ms
+ GET / 200 in 76ms
+ GET /api/spaces 200 in 23ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+ GET /api/equipment 200 in 31ms
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 15ms
+ GET /admin 200 in 31ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 15ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+ ✓ Compiled /api/admin/reservations in 222ms (1143 modules)
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 325ms
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 275ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 59ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 93ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 82ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientVal ✓ Compiled in 357ms (1131 modules)
+ ✓ Compiled in 281ms (1131 modules)
+ ✓ Compiled in 208ms (1131 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/0.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/0.pack.gz'
+ ✓ Compiled in 261ms (949 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/0.pack.gz'
+ ✓ Compiled in 265ms (1131 modules)
+ ✓ Compiled in 60ms (416 modules)
+   Reload env: .env.local
+   Reload env: .env.local
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/0.pack.gz'
+   Reload env: .env
+   Reload env: .env
+   Reload env: .env
+: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 83ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 84ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 76ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 90ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 70ms
+ ✓ Compiled /notifications in 184ms (1150 modules)
+ GET /notifications 200 in 221ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 15ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 10ms
+ ✓ Compiled /reservations in 224ms (1157 modules)
+ GET /reservations 200 in 264ms
+
+--- Middleware ---
+Path: /api/user-reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+ ✓ Compiled /api/user-reservations in 189ms (1159 modules)
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  where: {
+    userId: "cmg8jo5ep00000ankkv4iq1jw"
+  },
+  include: {
+    space: {
+      select: {
+        name: true
+      }
+    },
+    equipment: {
+      select: {
+        name: true
+      }
+    },
+    workshop: {
+      select: {
+        name: true
+      }
+    },
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   ✓ Compiled in 577ms (1235 modules)
+ ✓ Compiled in 128ms (1053 modules)
+ ✓ Compiled in 234ms (1053 modules)
+ ✓ Compiled in 211ms (1235 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/0.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/0.pack.gz'
+ ✓ Compiled in 304ms (1235 modules)
+ ✓ Compiled in 184ms (1053 modules)
+ ✓ Compiled in 227ms (1053 modules)
+ ✓ Compiled in 276ms (1053 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/1.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development-fallback/1.pack.gz'
+ ✓ Compiled in 288ms (1235 modules)
+ ✓ Compiled in 165ms (1053 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/1.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/1.pack.gz'
+   Reload env: .env.local
+ ✓ Compiled in 223ms (1235 modules)
+   Reload env: .env.local
+ ✓ Compiled in 131ms (1235 modules)
+ ✓ Compiled in 277ms (1053 modules)
+ ✓ Compiled in 322ms (1053 modules)
+ ✓ Compiled in 150ms (1053 modules)
+   Reload env: .env
+   Reload env: .env
+   Reload env: .env
+r include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/user-reservations/route.ts:12:26)
+  10 |     }
+  11 |
+> 12 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+  13 |       where: { userId },
+  14 |       include: {
+  15 |         space: { {
+  clientVersion: '6.16.3'
+}
+ GET /api/user-reservations 500 in 55ms
+ GET /admin 200 in 43ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 18ms
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 95ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 13ms
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:6:26)
+  4 | export async function GET() {
+  5 |   try {
+> 6 |     const reservations = await prisma.reservation.findMany({
+    |                          ^
+  7 |       include: {
+  8 |         user: {
+  9 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 67ms
+ ✓ Compiled in 101ms (636 modules)
+ GET /admin 200 in 201ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+ ✓ Compiled /api/admin/reservations in 142ms (657 modules)
+ ✓ Compiled (659 modules)
+Fetching reservations for admin
+prisma:query SELECT 1
+Error fetching reservations: Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:7:26)
+   5 |   try {
+   6 |     console.log('Fetching reservations for admin');
+>  7 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+   8 |       include: {
+   9 |         user: {
+  10 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 341ms
+ GET /api/notifications 200 in 341ms
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NjQyOSwiZXhwIjoxNzU5NzkwMDI5fQ.vZX04j_hCWUwvcI8uMGwYAD4a31YjTzlXs96Qi6zl44
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759786429,
+  exp: 1759790029
+}
+ GET /admin 200 in 157ms
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 41ms
+ ✓ Compiled /favicon.ico in 98ms (661 modules)
+ GET /favicon.ico 200 in 127ms
+ GET / 200 in 148ms
+ ✓ Compiled /api/equipment in 83ms (663 modules)
+ ✓ Compiled (665 modules)
+ GET /api/equipment 200 in 187ms
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 190ms
+ ✓ Compiled /login in 162ms (670 modules)
+ GET /login 200 in 207ms
+ ✓ Compiled /api/auth/login in 130ms (742 modules)
+prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`password`, `main`.`User`.`phoneNumber`, `main`.`User`.`alternativeEmail`, `main`.`User`.`profileImageUrl`, `main`.`User`.`role`, `main`.`User`.`isVerified`, `main`.`User`.`verificationToken`, `main`.`User`.`createdAt`, `main`.`User`.`updatedAt` FROM `main`.`User` WHERE (`main`.`User`.`email` = ? AND 1=1) LIMIT ? OFFSET ?
+ POST /api/auth/login 200 in 228ms
+ GET / 200 in 79ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 17ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/equipment 200 in 26ms
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 8ms
+ GET /admin 200 in 30ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+prisma:query SELECT 1
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 15ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+Fetching reservations for admin
+Error fetching reservations: Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:7:26)
+   5 |   try {
+   6 |     console.log('Fetching reservations for admin');
+>  7 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+   8 |       include: {
+   9 |         user: {
+  10 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 94ms
+
+--- Middleware ---
+Path: /api/notifications
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+prisma:query SELECT `main`.`Notification`.`id`, `main`.`Notification`.`recipientId`, `main`.`Notification`.`message`, `main`.`Notification`.`read`, `main`.`Notification`.`reservationId`, `main`.`Notification`.`createdAt` FROM `main`.`Notification` WHERE `main`.`Notification`.`recipientId` = ? ORDER BY `main`.`Notification`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Reservation`.`id`, `main`.`Reservation`.`startTime`, `main`.`Reservation`.`endTime`, `main`.`Reservation`.`spaceId`, `main`.`Reservation`.`equipmentId`, `main`.`Reservation`.`workshopId` FROM `main`.`Reservation` WHERE `main`.`Reservation`.`id` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name` FROM `main`.`Space` WHERE `main`.`Space`.`id` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name` FROM `main`.`Equipment` WHERE `main`.`Equipment`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+ GET /api/notifications 200 in 16ms
+Fetching reservations for admin
+Error fetching reservations: Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:7:26)
+   5 |   try {
+   6 |     console.log('Fetching reservations for admin');
+>  7 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+   8 |       include: {
+   9 |         user: {
+  10 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 73ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+Fetching reservations for admin
+Error fetching reservations: Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:7:26)
+   5 |   try {
+   6 |     console.log('Fetching reservations for admin');
+>  7 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+   8 |       include: {
+   9 |         user: {
+  10 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 91ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+Fetching reservations for admin
+Error fetching reservations: Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:7:26)
+   5 |   try {
+   6 |     console.log('Fetching reservations for admin');
+>  7 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+   8 |       include: {
+   9 |         user: {
+  10 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 73ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+Fetching reservations for admin
+Error fetching reservations: Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:7:26)
+   5 |   try {
+   6 |     console.log('Fetching reservations for admin');
+>  7 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+   8 |       include: {
+   9 |         user: {
+  10 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 82ms
+
+--- Middleware ---
+Path: /api/admin/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+Fetching reservations for admin
+Error fetching reservations: Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.findMany()` invocation:
+
+{
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    space: true,
+    equipment: true,
+    workshop: true,
+    approvedByUser: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    documents: true,
+    cartSubmissionId: true,
+    ~~~~~~~~~~~~~~~~
+?   notifications?: true
+  },
+  orderBy: {
+    createdAt: "desc"
+  }
+}
+
+Unknown field `cartSubmissionId` for include statement on model `Reservation`. Available options are marked with ?.
+    at async GET (src/app/api/admin/reservations/route.ts:7:26)
+   5 |   try {
+   6 |     console.log('Fetching reservations for admin');
+>  7 |     const reservations = await prisma.reservation.findMany({
+     |                          ^
+   8 |       include: {
+   9 |         user: {
+  10 |           select: { name: true, email: true }, {
+  clientVersion: '6.16.3'
+}
+ GET /api/admin/reservations 500 in 77ms
+ GET / 200 in 31ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 22ms
+ GET /api/equipment 200 in 28ms
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/spaces 200 in 29ms
+prisma:query SELECT `main`.`Space`.`id`, `main`.`Space`.`name`, `main`.`Space`.`description`, `main`.`Space`.`imageUrl`, `main`.`Space`.`responsibleUserId`, `main`.`Space`.`createdAt`, `main`.`Space`.`updatedAt` FROM `main`.`Space` WHERE 1=1 LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE 1=1 LIMIT ? OFFSET ?
+ GET /api/equipment 200 in 24ms
+ GET /cart 200 in 50ms
+
+--- Middleware ---
+Path: /api/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+ ✓ Compiled /api/reservations in 177ms (745 modules)
+prisma:query SELECT 1
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE (`main`.`Equipment`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`password`, `main`.`User`.`phoneNumber`, `main`.`User`.`alternativeEmail`, `main`.`User`.`profileImageUrl`, `main`.`User`.`role`, `main`.`User`.`isVerified`, `main`.`User`.`verificationToken`, `main`.`User`.`createdAt`, `main`.`User`.`updatedAt` FROM `main`.`User` WHERE `main`.`User`.`id` IN (?) LIMIT ? OFFSET ?
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.create()` invocation:
+
+{
+  data: {
+    userId: "cmg8jo5ep00000ankkv4iq1jw",
+    spaceId: null,
+    equipmentId: "cmg9u6a0p00010aptvofv86a8",
+    workshopId: null,
+    cartSubmissionId: "c15526ba-cc9d-461e-a8a9-e0b1b8572a33",
+    ~~~~~~~~~~~~~~~~
+    startTime: new Date("2025-10-06T21:44:00.000Z"),
+    endTime: new Date("2025-10-06T23:44:00.000Z"),
+    justification: "fdgfhgjhk",
+    subject: "montaje",
+    coordinator: "claudia",
+    teacher: "ruben",
+    documents: {
+      createMany: {
+        data: [
+          {
+            fileName: "5.png",
+            filePath: "/uploads/1759787103245-5.png"
+          }
+        ]
+      }
+    },
+?   id?: String,
+?   status?: ReservationStatus,
+?   approvedByUserId?: String | Null,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime,
+?   notifications?: NotificationUncheckedCreateNestedManyWithoutReservationInput
+  }
+}
+
+Unknown argument `cartSubmissionId`. Available options are marked with ?.
+    at async POST (src/app/api/reservations/route.ts:82:25)
+  80 |     }
+  81 |
+> 82 |     const reservation = await prisma.reservation.create({
+     |                         ^
+  83 |       data: {
+  84 |         userId,
+  85 |         spaceId: spaceId, {
+  clientVersion: '6.16.3'
+}
+ POST /api/reservations 500 in 286ms
+ GET /cart 200 in 115ms
+
+--- Middleware ---
+Path: /api/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE (`main`.`Equipment`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`password`, `main`.`User`.`phoneNumber`, `main`.`User`.`alternativeEmail`, `main`.`User`.`profileImageUrl`, `main`.`User`.`role`, `main`.`User`.`isVerified`, `main`.`User`.`verificationToken`, `main`.`User`.`createdAt`, `main`.`User`.`updatedAt` FROM `main`.`User` WHERE `main`.`User`.`id` IN (?) LIMIT ? OFFSET ?
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.create()` invocation:
+
+{
+  data: {
+    userId: "cmg8jo5ep00000ankkv4iq1jw",
+    spaceId: null,
+    equipmentId: "cmg9u6a0p00010aptvofv86a8",
+    workshopId: null,
+    cartSubmissionId: "199c4ab0-8e6f-4b30-9b52-1bf8efd85e3e",
+    ~~~~~~~~~~~~~~~~
+    startTime: new Date("2025-10-06T21:44:00.000Z"),
+    endTime: new Date("2025-10-07T23:44:00.000Z"),
+    justification: "fdgfhgjhk",
+    subject: "montaje",
+    coordinator: "claudia",
+    teacher: "ruben",
+    documents: {
+      createMany: {
+        data: [
+          {
+            fileName: "5.png",
+            filePath: "/uploads/1759787114005-5.png"
+          }
+        ]
+      }
+    },
+?   id?: String,
+?   status?: ReservationStatus,
+?   approvedByUserId?: String | Null,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime,
+?   notifications?: NotificationUncheckedCreateNestedManyWithoutReservationInput
+  }
+}
+
+Unknown argument `cartSubmissionId`. Available options are marked with ?.
+    at async POST (src/app/api/reservations/route.ts:82:25)
+  80 |     }
+  81 |
+> 82 |     const reservation = await prisma.reservation.create({
+     |                         ^
+  83 |       data: {
+  84 |         userId,
+  85 |         spaceId: spaceId, {
+  clientVersion: '6.16.3'
+}
+ POST /api/reservations 500 in 101ms
+
+--- Middleware ---
+Path: /api/reservations
+Token received: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWc4am81ZXAwMDAwMGFua2t2NGlxMWp3Iiwicm9sZSI6IlNVUEVSVVNFUiIsImlhdCI6MTc1OTc4NzA2MywiZXhwIjoxNzU5NzkwNjYzfQ.nZf-JlZGaAhkX8j0bWDXyuIfNWJBtdh2afp9057qbBc
+Middleware: Token verified successfully. Payload: {
+  userId: 'cmg8jo5ep00000ankkv4iq1jw',
+  role: 'SUPERUSER',
+  iat: 1759787063,
+  exp: 1759790663
+}
+prisma:query SELECT 1
+prisma:query SELECT `main`.`Equipment`.`id`, `main`.`Equipment`.`name`, `main`.`Equipment`.`description`, `main`.`Equipment`.`serialNumber`, `main`.`Equipment`.`fixedAssetId`, `main`.`Equipment`.`imageUrl`, `main`.`Equipment`.`responsibleUserId`, `main`.`Equipment`.`createdAt`, `main`.`Equipment`.`updatedAt` FROM `main`.`Equipment` WHERE (`main`.`Equipment`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`password`, `main`.`User`.`phoneNumber`, `main`.`User`.`alternativeEmail`, `main`.`User`.`profileImageUrl`, `main`.`User`.`role`, `main`.`User`.`isVerified`, `main`.`User`.`verificationToken`, `main`.`User`.`createdAt`, `main`.`User`.`updatedAt` FROM `main`.`User` WHERE `main`.`User`.`id` IN (?) LIMIT ? OFFSET ?
+Error [PrismaClientValidationError]: 
+Invalid `prisma.reservation.create()` invocation:
+
+{
+  data: {
+    userId: "cmg8jo5ep00000ankkv4iq1jw",
+    spaceId: null,
+    equipmentId: "cmg9u6a0p00010aptvofv86a8",
+    workshopId: null,
+    cartSubmissionId: "a338b427-5838-4259-8225-a1c4c8ae1111",
+    ~~~~~~~~~~~~~~~~
+    startTime: new Date("2025-10-06T21:44:00.000Z"),
+    endTime: new Date("2025-10-07T23:44:00.000Z"),
+    justification: "fdgfhgjhk",
+    subject: "montaje",
+    coordinator: "claudia",
+    teacher: "ruben",
+    documents: {
+      createMany: {
+        data: [
+          {
+            fileName: "5.png",
+            filePath: "/uploads/1759787188375-5.png"
+          }
+        ]
+      }
+    },
+?   id?: String,
+?   status?: ReservationStatus,
+?   approvedByUserId?: String | Null,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime,
+?   notifications?: NotificationUncheckedCreateNestedManyWithoutReservationInput
+  }
+}
+
+Unknown argument `cartSubmissionId`. Available options are marked with ?.
+    at async POST (src/app/api/reservations/route.ts:82:25)
+  80 |     }
+  81 |
+> 82 |     const reservation = await prisma.reservation.create({
+     |                         ^
+  83 |       data: {
+  84 |         userId,
+  85 |         spaceId: spaceId, {
+  clientVersion: '6.16.3'
+}
+ POST /api/reservations 500 in 98ms
+ ✓ Compiled in 124ms (635 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/0.pack.gz_' -> '/Users/macbookangular/reservas-app-v2/.next/cache/webpack/client-development/0.pack.gz'
+   Reload env: .env.local
+   Reload env: .env.local
+   Reload env: .env
+   Reload env: .env
+   Reload env: .env

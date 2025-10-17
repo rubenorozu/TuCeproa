@@ -1,0 +1,78 @@
+.infografia {
+  background: #fff;
+  min-height: 100vh;
+  padding: 40px;
+  font-family: 'Poppins', sans-serif; /* Changed to Poppins as per original HTML */
+  color: #1f2a44;
+}
+
+.titulo {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #0076A8; /* azul fuerte */
+  margin-bottom: 40px;
+}
+
+.lista {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.paso {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.paso:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 14px rgba(0,0,0,0.12);
+}
+
+.numero {
+  min-width: 45px;
+  height: 45px;
+  background: #0076A8;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contenido {
+  flex: 1;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icono {
+  color: #0076A8;
+}
+
+.subtitulo {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.texto {
+  margin: 4px 0 0;
+  color: #374151;
+  font-size: 0.95rem;
+}
