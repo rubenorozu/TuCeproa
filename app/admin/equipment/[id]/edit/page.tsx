@@ -11,6 +11,7 @@ interface Equipment {
   serialNumber: string | null;
   fixedAssetId: string | null;
   imageUrl: string | null;
+  responsibleUserId: string | null;
 }
 
 export default function EditEquipmentPage() {
