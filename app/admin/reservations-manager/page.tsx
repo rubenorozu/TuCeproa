@@ -91,7 +91,7 @@ export default function ReservationsManagerPage() {
       <Row className="mb-4">
         <Col>
           <h2>Gestión de Reservaciones</h2>
-          <p>Bienvenido, {user.name || user.email}. Aquí puedes gestionar las reservaciones.</p>
+          <p>Bienvenido, {user.email}. Aquí puedes gestionar las reservaciones.</p>
         </Col>
       </Row>
 
