@@ -71,7 +71,7 @@ export default function AdminWorkshopsPage() {
     endDate: '', // NUEVO: Fecha de fin del taller
     inscriptionsStartDate: '', // NUEVO: Fecha de apertura de inscripciones
   });
-  const [modalWorkshopSessions, setModalWorkshopSessions] = useState<WorkshopSession[]>([{ dayOfWeek: 1, startTime: '09:00', endTime: '10:00', room: '' }]); // Nuevo estado para sesiones en el modal
+  const [modalWorkshopSessions, setModalWorkshopSessions] = useState<WorkshopSession[]>([{ dayOfWeek: 1, startTime: '09:00', endTime: '10:00', room: '' } as WorkshopSession]); // Nuevo estado para sesiones en el modal
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [existingImages, setExistingImages] = useState<Image[]>([]);
 
