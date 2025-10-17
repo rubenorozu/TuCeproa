@@ -5,7 +5,7 @@ import { getServerSession } from '@/lib/auth';
 const prisma = new PrismaClient();
 
 // Helper function to convert JSON to CSV
-function jsonToCsv(jsonData: Record<string, any>[]): string {
+function jsonToCsv(jsonData: Record<string, unknown>[]): string {
   if (!jsonData || jsonData.length === 0) {
     return '';
   }

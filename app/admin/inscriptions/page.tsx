@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Table, Button, Spinner, Alert, Container, Row, Col, Badge } from 'react-bootstrap';
 import { useSession } from '@/context/SessionContext';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { InscriptionStatus } from '@prisma/client';
 

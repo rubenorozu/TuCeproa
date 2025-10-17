@@ -5,7 +5,6 @@ import { Container, Row, Col, Card, Button, Spinner, Alert } from 'react-bootstr
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from '@/context/SessionContext';
-import { useRouter } from 'next/navigation';
 import { Role } from '@prisma/client';
 import { GroupedReservation } from '@/components/admin/reservations/types';
 import ReservationCard from '@/components/admin/reservations/ReservationCard';

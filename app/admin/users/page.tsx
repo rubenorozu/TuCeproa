@@ -69,7 +69,7 @@ export default function AdminUsersPage() {
         clearTimeout(handler);
       };
     }
-  }, [sessionLoading, currentUser, searchTerm]);
+  }, [sessionLoading, currentUser, searchTerm, fetchUsers]);
 
   const handleRoleChange = async (userId: string, newRole: Role) => {
     try {
