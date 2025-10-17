@@ -6,7 +6,7 @@ import { getServerSession } from '@/lib/auth';
 const prisma = new PrismaClient();
 
 // GET: Obtener un equipo por ID
-export async function GET(request: NextRequest, context: RouteContext) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 }
 
 // PUT: Actualizar un equipo por ID
-export async function PUT(request: NextRequest, context: RouteContext) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
@@ -96,12 +96,8 @@ interface PrismaError extends Error {
   code?: string;
 }
 
-interface RouteContext {
-  params: { id: string };
-}
-
 // DELETE: Eliminar un equipo por ID
-export async function DELETE(request: NextRequest, context: RouteContext) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
