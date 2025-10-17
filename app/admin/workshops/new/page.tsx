@@ -31,7 +31,7 @@ export default function NewWorkshopPage() {
     setWorkshopSessions(newSessions);
   };
 
-  const handleSessionChange = (index: number, field: string, value: string) => {
+  const handleSessionChange = (index: number, field: string, value: string | number) => {
     const newSessions = [...workshopSessions];
     newSessions[index] = { ...newSessions[index], [field]: value };
     setWorkshopSessions(newSessions);
