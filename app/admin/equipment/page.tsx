@@ -455,7 +455,7 @@ export default function AdminEquipmentPage() {
                   name="responsibleUserId"
                   value={form.responsibleUserId || ''}
                   onChange={handleChange}
-                  disabled={user.role === 'ADMIN_RESOURCE'} // Always disabled for ADMIN_RESOURCE
+                  disabled={user?.role === 'ADMIN_RESOURCE'} // Always disabled for ADMIN_RESOURCE
                 >
                   <option value="">-- Ninguno --</option>
                   {responsibleUsers.map(rUser => (
