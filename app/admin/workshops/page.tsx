@@ -176,10 +176,10 @@ export default function AdminWorkshopsPage() {
     setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? item.sessions.map(s => ({
       id: s.id,
       dayOfWeek: s.dayOfWeek,
-      timeStart: s.timeStart,
-      timeEnd: s.timeEnd,
+      timeStart: s.timeStart as string,
+      timeEnd: s.timeEnd as string,
       room: s.room || '',
-    })) : [{ dayOfWeek: 1, timeStart: '09:00', endTime: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
+    })) as WorkshopSession[] : [{ dayOfWeek: 1, timeStart: '09:00', endTime: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
     setExistingImages(item?.images || []);
     setSelectedFiles(null);
     setShowModal(true);
