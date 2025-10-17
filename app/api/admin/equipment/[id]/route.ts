@@ -1,11 +1,9 @@
-
 import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient, Role } from '@prisma/client';
 import { getServerSession } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
-// GET: Obtener un equipo por ID
 // GET: Obtener un equipo por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession();
