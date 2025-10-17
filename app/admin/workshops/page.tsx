@@ -173,7 +173,7 @@ export default function AdminWorkshopsPage() {
       endDate: item?.endDate ? new Date(item.endDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar endDate
       inscriptionsStartDate: item?.inscriptionsStartDate ? new Date(item.inscriptionsStartDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar inscriptionsStartDate
     });
-    setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? item.sessions.map(s => ({
+    setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? (item.sessions as WorkshopSession[]).map(s => ({
       id: s.id,
       dayOfWeek: s.dayOfWeek,
       timeStart: s.timeStart as string,
