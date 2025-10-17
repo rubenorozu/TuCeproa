@@ -5,17 +5,15 @@ import { getServerSession } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
-// Temporary comment to force a new commit
-
 // GET: Obtener un equipo por ID
-export async function GET(request: NextRequest, context: any) {
+export async function GET(request: NextRequest, context: RouteContext) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = context.params.id;
+  const equipmentId = params.id;
 
   try {
     const equipment = await prisma.equipment.findUnique({
@@ -39,14 +37,14 @@ export async function GET(request: NextRequest, context: any) {
 }
 
 // PUT: Actualizar un equipo por ID
-export async function PUT(request: NextRequest, context: any) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = context.params.id;
+  const equipmentId = params.id;
 
   try {
     const existingEquipment = await prisma.equipment.findUnique({
@@ -98,15 +96,19 @@ interface PrismaError extends Error {
   code?: string;
 }
 
+interface RouteContext {
+  params: { id: string };
+}
+
 // DELETE: Eliminar un equipo por ID
-export async function DELETE(request: NextRequest, context: any) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = context.params.id;
+  const equipmentId = params.id;
 
   try {
     const existingEquipment = await prisma.equipment.findUnique({
