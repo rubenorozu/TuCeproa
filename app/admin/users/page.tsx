@@ -51,7 +51,7 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [currentUser]);
 
   useEffect(() => {
     if (!sessionLoading && (!currentUser || currentUser.role !== 'SUPERUSER')) {
