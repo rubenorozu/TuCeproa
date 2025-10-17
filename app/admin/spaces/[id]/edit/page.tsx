@@ -9,6 +9,7 @@ interface Space {
   name: string;
   description: string | null;
   imageUrl: string | null;
+  responsibleUserId: string | null;
 }
 
 export default function EditSpacePage() {
