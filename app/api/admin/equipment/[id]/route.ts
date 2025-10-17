@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, context: { params: { id: string 
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = params.id;
+  const equipmentId = context.params.id;
 
   try {
     const equipment = await prisma.equipment.findUnique({
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = params.id;
+  const equipmentId = context.params.id;
 
   try {
     const existingEquipment = await prisma.equipment.findUnique({
@@ -104,7 +104,7 @@ export async function DELETE(request: NextRequest, context: { params: { id: stri
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  const equipmentId = params.id;
+  const equipmentId = context.params.id;
 
   try {
     const existingEquipment = await prisma.equipment.findUnique({
