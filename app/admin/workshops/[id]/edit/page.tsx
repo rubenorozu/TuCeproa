@@ -388,7 +388,7 @@ export default function EditWorkshopPage() {
             accept="image/*"
             onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
           />
-          {currentImageUrls.length > 0 && <small className="text-muted">Imagen actual: <a href={currentImageUrls[0]} target="_blank" rel="noopener noreferrer">Ver</a></small>}}
+          {currentImageUrls.length > 0 && <small className="text-muted">Imagen actual: <a href={currentImageUrls[0]} target="_blank" rel="noopener noreferrer">Ver</a></small>}
         </div>
         <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#0076A8', borderColor: '#0076A8' }}>
           Actualizar Taller
