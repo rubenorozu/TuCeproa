@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 // Temporary comment to force a new commit
 
 // GET: Obtener un equipo por ID
-export async function GET(request: NextRequest, context: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: any) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, context: { params: { id: string 
 }
 
 // PUT: Actualizar un equipo por ID
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: any) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
@@ -99,7 +99,7 @@ interface PrismaError extends Error {
 }
 
 // DELETE: Eliminar un equipo por ID
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: any) {
   const session = await getServerSession();
 
   if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
