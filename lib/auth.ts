@@ -14,6 +14,7 @@ const key = new TextEncoder().encode(secretKey);
 interface SessionPayload {
   userId: string;
   role: Role;
+  [propName: string]: any; // Agrega un index signature
 }
 
 // --- Funciones de Sesión --- //
