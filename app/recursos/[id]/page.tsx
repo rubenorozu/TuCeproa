@@ -256,11 +256,11 @@ export default function ResourceDetailPage() {
             {isSubscribing ? 'Inscribiendo...' : isFull ? 'Taller Lleno' : !areInscriptionsOpen ? 'Cerrado' : inscriptionsNotStarted ? 'Próximamente' : 'Inscribirme'}
           </Button>
         ) : (
-          {(resource.type === 'space' || resource.type === 'equipment') && (
+          (resource.type === 'space' || resource.type === 'equipment') ? (
             <Button variant="primary" onClick={() => addToCart({ id: resource.id, name: resource.name, type: resource.type, images: resource.images })} className="me-2">
               Añadir al Carrito
             </Button>
-          )}
+          ) : null
         )}
 
       </div>
