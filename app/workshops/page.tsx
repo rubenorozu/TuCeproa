@@ -127,7 +127,7 @@ export default function WorkshopsPage() {
             return (
               <div key={workshop.id} className="col-4-per-row mb-4">
                 <ResourceCard
-                  resource={{ ...workshop, inscriptionStatus: inscription?.status }}
+                  resource={{ ...workshop, inscriptionStatus: inscription?.status as 'PENDING' | 'APPROVED' | 'REJECTED' | undefined }}
                   type="workshop"
                   onInscriptionSuccess={triggerRefresh}
                 />
