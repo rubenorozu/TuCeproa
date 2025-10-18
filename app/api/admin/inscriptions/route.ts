@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from '@/lib/auth';
-import { Role, Prisma } from '@prisma/client';
+import { Role, Prisma, InscriptionStatus } from '@prisma/client';
 
 export async function GET(request: Request) {
   const session = await getServerSession();
