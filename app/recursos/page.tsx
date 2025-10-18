@@ -4,11 +4,16 @@ import { useState, useEffect } from 'react';
 import ResourceCard from '@/components/ResourceCard';
 import { Spinner, Form } from 'react-bootstrap'; // Importar Spinner y Form
 
+interface Image {
+  id: string;
+  url: string;
+}
+
 interface Resource {
   id: string;
   name: string;
   description?: string | null;
-  imageUrl?: string | null;
+  images: Image[];
   type: 'space' | 'equipment';
 }
 
@@ -31,13 +36,13 @@ export default function ReservationsPage() {
         let resources: Resource[] = [];
         if (spacesRes.ok) {
           const spaces = await spacesRes.json();
-          resources = [...resources, ...spaces.map((s: Resource) => ({...s, type: 'space'}))];
+          resources = [...resources, ...spaces.map((s: any) => ({...s, type: 'space', images: s.images || []}))];
         } else {
           setError('No se pudieron cargar los espacios.');
         }
         if (equipmentRes.ok) {
           const equipment = await equipmentRes.json();
-          resources = [...resources, ...equipment.map((e: Resource) => ({...e, type: 'equipment'}))];
+          resources = [...resources, ...equipment.map((e: any) => ({...e, type: 'equipment', images: e.images || []}))];
         } else {
           setError(prev => prev + ' No se pudieron cargar los equipos.');
         }
