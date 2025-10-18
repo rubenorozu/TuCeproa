@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
