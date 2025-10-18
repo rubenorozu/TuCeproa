@@ -104,9 +104,7 @@ export default function WorkshopDetailPage() {
       <p><strong>Descripción:</strong> {workshop.description || 'Sin descripción.'}</p>
       <p><strong>Responsable:</strong> {workshop.responsibleUser?.name || workshop.responsibleUser?.email || 'N/A'}</p>
       <p><strong>Creado:</strong> {new Date(workshop.createdAt).toLocaleDateString()}</p>
-      <Button variant="primary" onClick={() => addToCart({ id: workshop.id, name: workshop.name, type: 'workshop', images: workshop.images })} className="w-100 mt-3">
-        Añadir al Carrito
-      </Button>
+
       <Link href="/workshops" passHref legacyBehavior>
         <Button variant="secondary" className="w-100 mt-2">Volver a Talleres</Button>
       </Link>
