@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from '@/lib/auth';
 import { Role, InscriptionStatus } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession();
@@ -48,7 +49,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json(updatedInscription, { status: 200 });
   } catch (error) {
     console.error('Error al aprobar la inscripción:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaClientKnownRequestError).code === 'P2025') {
       return NextResponse.json({ error: 'Inscripción no encontrada para aprobar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo aprobar la inscripción.' }, { status: 500 });
