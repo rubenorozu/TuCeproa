@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const model = searchParams.get('model');
 
-  let data: unknown[] = [];
+  let data: Record<string, unknown>[] = [];
   let fileName = 'export.csv';
 
   try {
