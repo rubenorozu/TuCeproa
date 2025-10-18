@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient, Role, ReservationStatus } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { getServerSession } from '@/lib/auth';
 
 const prisma = new PrismaClient();
@@ -64,7 +65,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json(updatedReservation, { status: 200 });
   } catch (error) {
     console.error('Error al aprobar la reservación:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaClientKnownRequestError).code === 'P2025') {
       return NextResponse.json({ error: 'Reservación no encontrada para aprobar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo aprobar la reservación.' }, { status: 500 });
