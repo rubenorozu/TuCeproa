@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from '@/context/SessionContext';
 import { Spinner, Alert, Container, Form, Row, Col } from 'react-bootstrap';
 import DatePicker, { registerLocale } from 'react-datepicker';
-import es from 'date-fns/locale/es';
+import { es } from 'date-fns/locale/es';
 
 registerLocale('es', es);
 
