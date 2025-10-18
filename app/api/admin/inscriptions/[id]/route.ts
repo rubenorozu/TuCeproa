@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from '@/lib/auth';
 import { Role } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession();
@@ -32,7 +33,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ message: 'Inscripción eliminada correctamente.' }, { status: 200 });
   } catch (error) {
     console.error('Error al eliminar la inscripción:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaClientKnownRequestError).code === 'P2025') {
       return NextResponse.json({ error: 'Inscripción no encontrada para eliminar.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo eliminar la inscripción.' }, { status: 500 });
