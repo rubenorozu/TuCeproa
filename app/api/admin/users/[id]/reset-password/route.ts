@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { getServerSession } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
 
@@ -32,7 +33,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ message: `Contraseña del usuario ${updatedUser.email} restablecida correctamente.` }, { status: 200 });
   } catch (error) {
     console.error('Error al restablecer la contraseña:', error);
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaError).code === 'P2025') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as PrismaClientKnownRequestError).code === 'P2025') {
       return NextResponse.json({ error: 'Usuario no encontrado para restablecer la contraseña.' }, { status: 404 });
     }
     return NextResponse.json({ error: 'No se pudo restablecer la contraseña.' }, { status: 500 });
