@@ -538,7 +538,7 @@ export default function AdminWorkshopsPage() {
               ) : responsibleUsersLoading ? (
                 <Spinner animation="border" size="sm" />
               ) : responsibleUsersError ? (
-                <Alert variant="danger" size="sm">Error al cargar responsables</Alert>
+                <Alert variant="danger">Error al cargar responsables</Alert>
               ) : (
                 <Form.Select
                   name="responsibleUserId"
