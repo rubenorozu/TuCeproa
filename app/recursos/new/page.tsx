@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 
+export const dynamic = 'force-dynamic';
+
 export default function NewReservationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
