@@ -16,15 +16,20 @@ export default function NewReservationPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const spaceId = searchParams.get('spaceId');
-  const equipmentId = searchParams.get('equipmentId');
+  const [spaceId, setSpaceId] = useState<string | null>(null);
+  const [equipmentId, setEquipmentId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
     }
-  }, [router]);
+
+    // Mover la obtención de searchParams a useEffect
+    setSpaceId(searchParams.get('spaceId'));
+    setEquipmentId(searchParams.get('equipmentId'));
+
+  }, [router, searchParams]); // Añadir searchParams como dependencia
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
