@@ -7,13 +7,18 @@ import { useSession } from '@/context/SessionContext';
 import { Spinner, Alert, Container } from 'react-bootstrap';
 import ResourceCard from '@/components/ResourceCard';
 
+interface Image {
+  id: string;
+  url: string;
+}
+
 interface Inscription {
   id: string;
   workshop: {
     id: string;
     name: string;
     description: string | null;
-    images: { url: string }[];
+    images: Image[];
     type: 'workshop';
   };
   createdAt: string;
