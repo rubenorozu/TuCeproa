@@ -257,7 +257,7 @@ export default function ResourceDetailPage() {
           </Button>
         ) : (
           (resource.type === 'space' || resource.type === 'equipment') ? (
-            <Button variant="primary" onClick={() => addToCart({ id: resource.id, name: resource.name, type: resource.type, images: resource.images })} className="me-2">
+            <Button variant="primary" onClick={() => addToCart({ id: resource.id, name: resource.name, type: resource.type as 'space' | 'equipment', images: resource.images })} className="me-2">
               Añadir al Carrito
             </Button>
           ) : null
