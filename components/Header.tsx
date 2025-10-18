@@ -82,7 +82,7 @@ const Header = () => {
                   </li>
                   <li className="nav-item dropdown">
                     <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      {user.name || user.email}
+                      {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
                     </a>
                     <ul className="dropdown-menu dropdown-menu-end">
                       <li><Link href="/profile" className="dropdown-item">Mi espacio</Link></li>
