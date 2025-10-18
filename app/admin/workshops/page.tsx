@@ -173,13 +173,12 @@ export default function AdminWorkshopsPage() {
       endDate: item?.endDate ? new Date(item.endDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar endDate
       inscriptionsStartDate: item?.inscriptionsStartDate ? new Date(item.inscriptionsStartDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar inscriptionsStartDate
     });
-    setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? (item.sessions as WorkshopSession[]).map(s => ({
+    setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? item.sessions.map(s => ({
       id: s.id,
-      dayOfWeek: s.dayOfWeek,
-      timeStart: s.timeStart as string,
-      timeEnd: s.timeEnd as string,
+      startTime: s.timeStart,
+      endTime: s.timeEnd,
       room: s.room || '',
-    })) as WorkshopSession[] : [{ dayOfWeek: 1, timeStart: '09:00', endTime: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
+    })) : [{ id: '', startTime: '09:00', endTime: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
     setExistingImages(item?.images || []);
     setSelectedFiles(null);
     setShowModal(true);
