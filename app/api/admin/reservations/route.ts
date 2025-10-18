@@ -54,6 +54,8 @@ export async function GET(request: Request) {
 
       grouped[groupId].items.push({
         ...r,
+        startTime: r.startTime.toISOString(), // Convertir a string
+        endTime: r.endTime.toISOString(),     // Convertir a string
         user: {
           id: r.user.id,
           email: r.user.email,
