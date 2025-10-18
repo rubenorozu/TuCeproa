@@ -15,8 +15,8 @@ interface Image {
 interface WorkshopSession { // Nueva interfaz para las sesiones
   id?: string; // Make id optional as it might not exist for new sessions
   dayOfWeek: number;
-  startTime: string;
-  endTime: string;
+  timeStart: string;
+  timeEnd: string;
   room: string | null;
 }
 
@@ -175,10 +175,11 @@ export default function AdminWorkshopsPage() {
     });
     setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? item.sessions.map(s => ({
       id: s.id,
-      startTime: s.timeStart,
-      endTime: s.timeEnd,
+      dayOfWeek: s.dayOfWeek,
+      timeStart: s.timeStart,
+      timeEnd: s.timeEnd,
       room: s.room || '',
-    })) : [{ id: '', startTime: '09:00', endTime: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
+    })) : [{ id: '', dayOfWeek: 1, timeStart: '09:00', timeEnd: '10:00', room: '' }]); // NUEVO: Inicializar sesiones recurrentes
     setExistingImages(item?.images || []);
     setSelectedFiles(null);
     setShowModal(true);
