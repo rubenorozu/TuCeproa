@@ -122,7 +122,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return NextResponse.json({ error: 'Acceso denegado. No eres responsable de este taller.' }, { status: 403 });
     }
 
-    // Eliminar imágenes asociadas primero
+    // Eliminar sesiones asociadas primero
+    await prisma.workshopSession.deleteMany({ where: { workshopId: id } });
+
+    // Eliminar imágenes asociadas
     await prisma.image.deleteMany({ where: { workshopId: id } });
     
     // Eliminar el taller
