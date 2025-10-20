@@ -91,7 +91,12 @@ export default function AdminSpacesPage() {
     setResponsibleUsersLoading(true);
     setResponsibleUsersError(null);
     try {
-      const response = await fetch('/api/admin/responsible-users');
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/responsible-users', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar usuarios responsables.');
