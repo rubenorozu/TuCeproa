@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Table, Button, Spinner, Alert, Container, Row, Col, Modal, Form } from 'react-bootstrap';
-import Image from 'next/image';
+// import Image from 'next/image'; // Reemplazado por <img>
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -242,25 +242,29 @@ export default function AdminWorkshopsPage() {
     e.preventDefault();
     setError(null);
 
-    const formData = new FormData();
-    formData.append('name', form.name);
-    formData.append('description', form.description || '');
-    formData.append('capacity', form.capacity.toString());
-    formData.append('availableFrom', form.availableFrom ? new Date(form.availableFrom).toISOString() : '');
-    formData.append('teacher', form.teacher || '');
-    formData.append('startDate', form.startDate ? new Date(form.startDate).toISOString() : '');
-    formData.append('endDate', form.endDate ? new Date(form.endDate).toISOString() : '');
-    formData.append('inscriptionsStartDate', form.inscriptionsStartDate ? new Date(form.inscriptionsStartDate).toISOString() : '');
-    formData.append('responsibleUserId', form.responsibleUserId || '');
-    formData.append('sessions', JSON.stringify(modalWorkshopSessions));
+    let uploadedImageUrls: { url: string }[] = existingImages.map(img => ({ url: img.url }));
 
-    existingImages.forEach(image => {
-      formData.append('existingImages[]', image.url);
-    });
-
-    if (selectedFiles) {
+    if (selectedFiles && selectedFiles.length > 0) {
+      const imageFormData = new FormData();
       for (let i = 0; i < selectedFiles.length; i++) {
-        formData.append('newImages', selectedFiles[i]);
+        imageFormData.append('files', selectedFiles[i]);
+      }
+
+      try {
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: imageFormData,
+        });
+
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.error || 'Error al subir las imágenes.');
+        }
+        const uploadData = await uploadResponse.json();
+        uploadedImageUrls = [...uploadedImageUrls, ...uploadData.urls.map((url: string) => ({ url }))];
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred during upload');
+        return;
       }
     }
 
@@ -270,7 +274,12 @@ export default function AdminWorkshopsPage() {
     try {
       const response = await fetch(url, {
         method,
-        body: formData, // No headers needed, browser sets Content-Type for FormData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          images: uploadedImageUrls,
+          sessions: modalWorkshopSessions,
+        }),
       });
 
       if (!response.ok) {
@@ -280,13 +289,9 @@ export default function AdminWorkshopsPage() {
 
       alert(`Taller ${currentWorkshop ? 'actualizado' : 'creado'} correctamente.`);
       handleCloseModal();
-      fetchWorkshops(); // Recargar la lista de talleres
+      fetchWorkshops();
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     }
   };
 
@@ -417,7 +422,7 @@ export default function AdminWorkshopsPage() {
                   {item.images && item.images.length > 0 ? (
                     <div className="d-flex flex-wrap">
                       {item.images.map(img => (
-                        <Image key={img.id} src={img.url} alt="Workshop Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} />
+                        <img key={img.id} src={img.url} alt="Workshop Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} />
                       ))}
                     </div>
                   ) : (
@@ -502,7 +507,7 @@ export default function AdminWorkshopsPage() {
                 <div className="mb-2 d-flex flex-wrap">
                   {existingImages.map(img => (
                     <div key={img.id} className="position-relative me-2 mb-2">
-                      <Image src={img.url} alt="Existing Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" />
+                      <img src={img.url} alt="Existing Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" />
                       <Button
                         variant="danger"
                         size="sm"

@@ -73,9 +73,6 @@ export async function GET(request: Request) {
   }
 }
 
-import * as fs from 'fs/promises';
-import path from 'path';
-
 // POST: Crear un nuevo taller
 export async function POST(request: Request) {
   const session = await getServerSession();
@@ -85,28 +82,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    const formData = await request.formData();
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const capacity = parseInt(formData.get('capacity') as string || '0', 10);
-    const availableFrom = formData.get('availableFrom') as string;
-    const teacher = formData.get('teacher') as string;
-    const startDate = formData.get('startDate') as string;
-    const endDate = formData.get('endDate') as string;
-    const inscriptionsStartDate = formData.get('inscriptionsStartDate') as string;
-    const parsedInscriptionsStartDate = inscriptionsStartDate ? new Date(inscriptionsStartDate) : null;
-    const now = new Date();
-    const calculatedInscriptionsOpen = parsedInscriptionsStartDate ? parsedInscriptionsStartDate <= now : true;
-    let responsibleUserId = formData.get('responsibleUserId') as string;
-    const sessionsData = JSON.parse(formData.get('sessions') as string || '[]');
-    const newImageFiles = formData.getAll('newImages') as File[];
-
-    if (session.user.role === Role.ADMIN_RESOURCE) {
-      responsibleUserId = session.user.id;
-    }
+    const { name, description, capacity, teacher, startDate, endDate, inscriptionsStartDate, responsibleUserId, sessions, images } = await request.json();
 
     if (!name) {
       return NextResponse.json({ error: 'El nombre del taller es obligatorio.' }, { status: 400 });
+    }
+
+    let finalResponsibleUserId = responsibleUserId;
+    if (session.user.role === Role.ADMIN_RESOURCE) {
+      finalResponsibleUserId = session.user.id;
     }
 
     let displayId: string;
@@ -122,20 +106,9 @@ export async function POST(request: Request) {
       }
     } while (!isUnique);
 
-    const uploadedImageUrls: { url: string }[] = [];
-    if (newImageFiles && newImageFiles.length > 0) {
-      for (const file of newImageFiles) {
-        if (file.size === 0) continue;
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const filename = `${Date.now()}-${file.name}`;
-        const uploadDir = path.join(process.cwd(), 'public/uploads/workshops');
-        await fs.mkdir(uploadDir, { recursive: true });
-        const filePath = path.join(uploadDir, filename);
-        await fs.writeFile(filePath, buffer);
-        uploadedImageUrls.push({ url: `/uploads/workshops/${filename}` });
-      }
-    }
+    const parsedInscriptionsStartDate = inscriptionsStartDate ? new Date(inscriptionsStartDate) : null;
+    const now = new Date();
+    const calculatedInscriptionsOpen = parsedInscriptionsStartDate ? parsedInscriptionsStartDate <= now : true;
 
     const newWorkshop = await prisma.workshop.create({
       data: {
@@ -143,24 +116,23 @@ export async function POST(request: Request) {
         name,
         description,
         capacity: capacity || 0,
-        availableFrom: availableFrom ? new Date(availableFrom) : null,
         teacher,
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         inscriptionsStartDate: parsedInscriptionsStartDate,
         inscriptionsOpen: calculatedInscriptionsOpen,
         images: {
-          create: uploadedImageUrls,
+          create: images, // Asume que images es un array de { url: string }
         },
         sessions: {
-          create: sessionsData.map((session: { dayOfWeek: number; timeStart: string; timeEnd: string; room?: string }) => ({
+          create: sessions.map((session: { dayOfWeek: number; timeStart: string; timeEnd: string; room?: string }) => ({
             dayOfWeek: session.dayOfWeek,
             timeStart: session.timeStart,
             timeEnd: session.timeEnd,
             room: session.room,
           })),
         },
-        responsibleUser: responsibleUserId ? { connect: { id: responsibleUserId } } : undefined,
+        responsibleUser: finalResponsibleUserId ? { connect: { id: finalResponsibleUserId } } : undefined,
       },
       include: { images: true, sessions: true },
     });

@@ -20,7 +20,8 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const blobs = await Promise.all(
       files.map(async (file) => {
-        const blob = await put(file.name, file, {
+        const uniqueFilename = `${Date.now()}-${file.name}`;
+        const blob = await put(uniqueFilename, file, {
           access: 'public',
         });
         return blob;
