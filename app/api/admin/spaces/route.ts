@@ -82,7 +82,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { name, description, images, responsibleUserId } = await request.json(); // Añadir 'images'
+    const formData = await request.formData();
+    const name = formData.get('name') as string;
+    const description = formData.get('description') as string;
+    const responsibleUserId = formData.get('responsibleUserId') as string;
+    // const imageFile = formData.get('imageFile') as File | null; // Image handling temporarily disabled
 
     if (!name) {
       return NextResponse.json({ error: 'El nombre del espacio es obligatorio.' }, { status: 400 });
@@ -112,11 +116,8 @@ export async function POST(request: Request) {
         name,
         description,
         responsibleUserId: finalResponsibleUserId || null,
-        images: {
-          create: images.map((img: { url: string }) => ({ url: img.url })),
-        },
+        // images: { create: [] }, // Image handling temporarily disabled
       },
-      include: { images: true }, // Incluir las imágenes en la respuesta
     });
 
     return NextResponse.json(newSpace, { status: 201 });
