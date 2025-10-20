@@ -39,19 +39,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 // PUT: Actualizar un taller existente
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  try { // Wrap the entire function logic in a try-catch
-    const session = await getServerSession();
+  const session = await getServerSession();
 
-    if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
-      return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
-    }
+  if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
+    return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
+  }
 
-    const { id } = params;
+  const { id } = params;
 
-    const existingWorkshop = await prisma.workshop.findUnique({
-      where: { id },
-    });
+  try {
+    const { name, description, capacity, teacher, startDate, endDate, inscriptionsStartDate, responsibleUserId, sessions, images } = await request.json();
 
+    const existingWorkshop = await prisma.workshop.findUnique({ where: { id } });
     if (!existingWorkshop) {
       return NextResponse.json({ message: 'Taller no encontrado.' }, { status: 404 });
     }
@@ -60,93 +59,29 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Acceso denegado. No eres responsable de este taller.' }, { status: 403 });
     }
 
-    const contentType = request.headers.get('content-type');
-
-    if (!contentType || !contentType.includes('multipart/form-data')) {
-      return NextResponse.json({ error: `Invalid Content-Type: ${contentType}. Expected multipart/form-data.` }, { status: 400 });
-    }
-
-    const formData = await request.formData();
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const availableFrom = formData.get('availableFrom') as string;
-    const startDate = formData.get('startDate') as string;
-    const endDate = formData.get('endDate') as string;
-    const teacher = formData.get('teacher') as string;
-    const responsibleUserId = formData.get('responsibleUserId') as string;
-    const existingImageUrls = formData.getAll('existingImages[]') as string[];
-    const newImageFiles = formData.getAll('newImages') as File[];
-    const sessionsData = JSON.parse(formData.get('sessions') as string || '[]') as { dayOfWeek: number; timeStart: string; timeEnd: string; room?: string }[];
-    const inscriptionsStartDate = formData.get('inscriptionsStartDate') as string;
     const parsedInscriptionsStartDate = inscriptionsStartDate ? new Date(inscriptionsStartDate) : null;
     const now = new Date();
     const calculatedInscriptionsOpen = parsedInscriptionsStartDate ? parsedInscriptionsStartDate <= now : true;
 
-    if (!name) {
-      return NextResponse.json({ error: 'El nombre es obligatorio.' }, { status: 400 });
-    }
-
-    // Lógica para subir nuevas imágenes (RESTAURADA)
-    const uploadedNewImageUrls: { url: string }[] = [];
-    if (newImageFiles && newImageFiles.length > 0) {
-      for (const file of newImageFiles) {
-        if (file.size === 0) continue;
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const filename = `${Date.now()}-${file.name}`;
-        const uploadDir = path.join(process.cwd(), 'public/uploads/workshops');
-        await fs.mkdir(uploadDir, { recursive: true });
-        const filePath = path.join(uploadDir, filename);
-        await fs.writeFile(filePath, buffer);
-        uploadedNewImageUrls.push({ url: `/uploads/workshops/${filename}` });
-      }
-    }
-
-    // Combinar URLs existentes con las nuevas subidas (RESTAURADA)
-    const finalImageUrls = [...existingImageUrls.map(url => ({ url })), ...uploadedNewImageUrls];
-
-    // Obtener el taller actual para comparar imágenes y sesiones
-    const currentWorkshop = await prisma.workshop.findUnique({
-      where: { id },
-      include: { images: true, sessions: true },
-    });
-
-    if (!currentWorkshop) {
-      return NextResponse.json({ message: 'Taller no encontrado.' }, { status: 404 });
-    }
-
-    // Eliminar imágenes que ya no están en existingImageUrls (RESTAURADA)
-    const imagesToDelete = currentWorkshop.images.filter(img => !existingImageUrls.includes(img.url));
-    for (const img of imagesToDelete) {
-      const imagePath = path.join(process.cwd(), 'public', img.url);
-      try {
-        await fs.unlink(imagePath);
-      } catch (unlinkError) {
-        console.warn(`No se pudo eliminar el archivo de imagen: ${imagePath}`, unlinkError);
-      }
-      await prisma.image.delete({ where: { id: img.id } });
-    }
-
-    // Actualizar el taller y sus sesiones
     const updatedWorkshop = await prisma.workshop.update({
       where: { id },
       data: {
         name,
         description,
-        availableFrom: availableFrom ? new Date(availableFrom) : null,
+        capacity: capacity || 0,
+        teacher,
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         inscriptionsStartDate: parsedInscriptionsStartDate,
         inscriptionsOpen: calculatedInscriptionsOpen,
-        teacher,
-        responsibleUser: responsibleUserId ? { connect: { id: responsibleUserId } } : undefined,
+        responsibleUser: responsibleUserId ? { connect: { id: responsibleUserId } } : { disconnect: true },
         images: {
           deleteMany: {},
-          create: finalImageUrls,
+          create: images.map((img: { url: string }) => ({ url: img.url })),
         },
         sessions: {
           deleteMany: {},
-          create: sessionsData.map(session => ({
+          create: sessions.map((session: { dayOfWeek: number; timeStart: string; timeEnd: string; room?: string }) => ({
             dayOfWeek: session.dayOfWeek,
             timeStart: session.timeStart,
             timeEnd: session.timeEnd,

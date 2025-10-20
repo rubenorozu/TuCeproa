@@ -306,8 +306,12 @@ export default function AdminWorkshopsPage() {
     }
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`/api/admin/workshops/${workshopId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
