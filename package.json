@@ -2,16 +2,14 @@
   "name": "reservas-app-v2",
   "version": "0.3.0-beta",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma db push && next build && prisma db seed",
+    "build": "prisma db push && next build && node --loader ts-node/esm prisma/seed.ts",
     "start": "next start",
     "lint": "eslint",
-    "seed": "ts-node prisma/seed.ts",
+    "seed": "node --loader ts-node/esm prisma/seed.ts",
     "postinstall": "prisma generate"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
