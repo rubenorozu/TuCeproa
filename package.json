@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma db push && next build && node --loader ts-node/esm prisma/seed.ts",
+    "build": "DATABASE_URL=$DATABASE_POSTGRES_URL_NON_POOLING prisma db push && next build && node --loader ts-node/esm prisma/seed.ts",
     "start": "next start",
     "lint": "eslint",
     "seed": "node --loader ts-node/esm prisma/seed.ts",
