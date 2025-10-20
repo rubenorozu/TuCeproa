@@ -89,8 +89,13 @@ export default function AdminWorkshopsPage() {
     setLoading(true);
     setError(null);
     try {
+      const token = localStorage.getItem('token');
       const url = `/api/admin/workshops?search=${searchQuery}${responsibleUserId ? `&responsibleUserId=${responsibleUserId}` : ''}`;
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar los talleres.');
