@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Table, Button, Spinner, Alert, Container, Row, Col, Modal, Form } from 'react-bootstrap';
-import Image from 'next/image';
+// import Image from 'next/image'; // Reemplazado por <img>
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -328,7 +328,7 @@ export default function AdminSpacesPage() {
                   {space.images && space.images.length > 0 ? (
                     <div className="d-flex flex-wrap">
                       {space.images.map(img => (
-                        <Image key={img.id} src={img.url} alt="Space Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" />
+                        <img key={img.id} src={img.url} alt="Space Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" />
                       ))}
                     </div>
                   ) : (
@@ -385,7 +385,7 @@ export default function AdminSpacesPage() {
                 <div className="mb-2 d-flex flex-wrap">
                   {existingImages.map(img => (
                     <div key={img.id} className="position-relative me-2 mb-2">
-                      <Image src={img.url} alt="Existing Image" width={50} height={50} style={{ objectFit: 'cover' }} className="img-thumbnail" />
+                      <img src={img.url} alt="Existing Image" width={50} height={50} style={{ objectFit: 'cover' }} className="img-thumbnail" />
                       <Button
                         variant="danger"
                         size="sm"
