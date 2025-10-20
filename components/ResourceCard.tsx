@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // Assuming Image is used for resource.images
+// import Image from 'next/image'; // Reemplazado por <img> estándar
 import { useCart } from '@/context/CartContext';
 import { useSession } from '@/context/SessionContext';
 
@@ -135,13 +135,12 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
 
   return (
     <div className="card h-100 shadow-sm">
-            <div style={{ position: 'relative', width: '100%', height: '150px' }}>
-        <Image
+      <div style={{ position: 'relative', width: '100%', height: '150px' }}>
+        <img
           src={imageUrlToDisplay}
           alt={resource.name}
           className="card-img-top"
-          fill
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
         />
       </div>
       <div className="card-body d-flex flex-column">
