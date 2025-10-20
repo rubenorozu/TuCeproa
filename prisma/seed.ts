@@ -25,6 +25,7 @@ async function main() {
         lastName: defaultAdminLastName,
         role: Role.SUPERUSER,
         isVerified: true, // Asumimos que el admin por defecto está verificado
+        identifier: defaultAdminEmail,
       },
     });
     console.log(`Superusuario creado: ${defaultAdminEmail}`);
