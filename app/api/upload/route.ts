@@ -1,15 +1,11 @@
 
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { put } from '@vercel/blob';
 import { getServerSession } from '@/lib/auth';
-import { Role } from '@prisma/client';
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   const session = await getServerSession();
 
-  // Proteger esta ruta para que solo usuarios logueados puedan subir imágenes
-  // Opcional: Podríamos restringirlo a roles específicos si solo admins suben imágenes
   if (!session) {
     return NextResponse.json({ error: 'Acceso denegado. Se requiere autenticación.' }, { status: 401 });
   }
@@ -22,25 +18,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No se han subido archivos.' }, { status: 400 });
     }
 
-    const uploadedImageUrls: string[] = [];
+    const blobs = await Promise.all(
+      files.map(async (file) => {
+        const blob = await put(file.name, file, {
+          access: 'public',
+        });
+        return blob;
+      })
+    );
 
-    for (const file of files) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      const filePath = path.join(uploadDir, filename);
+    return NextResponse.json({ urls: blobs.map(b => b.url) }, { status: 200 });
 
-      // Asegurarse de que el directorio de subida exista (opcional, pero buena práctica)
-      // import { mkdir } from 'fs/promises';
-      // await mkdir(uploadDir, { recursive: true });
-
-      await writeFile(filePath, buffer);
-      uploadedImageUrls.push(`/uploads/${filename}`);
-    }
-
-    return NextResponse.json({ urls: uploadedImageUrls }, { status: 200 });
   } catch (error) {
-    console.error('Error al subir archivos:', error);
+    console.error('Error al subir archivos a Vercel Blob:', error);
     return NextResponse.json({ error: 'Error al procesar la subida de archivos.' }, { status: 500 });
   }
 }

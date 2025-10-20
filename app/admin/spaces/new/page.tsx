@@ -51,21 +51,50 @@ export default function NewSpacePage() {
     }
 
     const token = localStorage.getItem('token');
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('description', description);
-    formData.append('responsibleUserId', responsibleUserId);
+    let imageUrls: string[] = [];
+
+    // 1. Subir la imagen si existe
     if (imageFile) {
-      formData.append('imageFile', imageFile);
+      try {
+        const imageFormData = new FormData();
+        imageFormData.append('files', imageFile);
+
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: imageFormData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error('Error al subir la imagen.');
+        }
+
+        const uploadData = await uploadRes.json();
+        imageUrls = uploadData.urls;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error desconocido al subir la imagen.');
+        return;
+      }
     }
 
+    // 2. Crear el espacio con los datos y la URL de la imagen
     try {
+      const spaceData = {
+        name,
+        description,
+        responsibleUserId,
+        images: imageUrls.map(url => ({ url })), // Estructura para Prisma
+      };
+
       const res = await fetch('/api/admin/spaces', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify(spaceData),
       });
 
       if (!res.ok) {
@@ -74,17 +103,14 @@ export default function NewSpacePage() {
       }
 
       setSuccess('Espacio creado con éxito!');
+      // Reset form
       setName('');
       setDescription('');
       setResponsibleUserId('');
       setImageFile(null);
       router.push('/admin/spaces'); // Redirect to spaces list
-    } catch (err: unknown) {
-        if (err instanceof Error) {
-            setError(err.message);
-        } else {
-            setError('An unknown error occurred');
-        }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido al crear el espacio.');
     }
   };
 

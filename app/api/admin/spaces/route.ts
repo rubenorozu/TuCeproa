@@ -81,14 +81,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario o Administrador de Recursos.' }, { status: 403 });
   }
 
-  console.log('DEBUG API: Iniciando creación de espacio...');
   try {
-    const formData = await request.formData();
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const responsibleUserId = formData.get('responsibleUserId') as string;
-
-    console.log('DEBUG API: Datos recibidos del formulario:', { name, description, responsibleUserId });
+    const { name, description, responsibleUserId, images } = await request.json();
 
     if (!name) {
       return NextResponse.json({ error: 'El nombre del espacio es obligatorio.' }, { status: 400 });
@@ -112,28 +106,22 @@ export async function POST(request: Request) {
       }
     } while (!isUnique);
 
-    const spaceData = {
-      displayId,
-      name,
-      description,
-      responsibleUserId: finalResponsibleUserId || null,
-    };
-
-    console.log('DEBUG API: Datos a enviar a Prisma:', spaceData);
-
     const newSpace = await prisma.space.create({
-      data: spaceData,
+      data: {
+        displayId,
+        name,
+        description,
+        responsibleUserId: finalResponsibleUserId || null,
+        images: {
+          create: images, // Prisma creará las imágenes y las conectará
+        },
+      },
+      include: { images: true },
     });
 
     return NextResponse.json(newSpace, { status: 201 });
   } catch (error) {
-    console.error('Error detallado al crear el espacio:', JSON.stringify(error, null, 2));
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        return NextResponse.json({ error: `Error de Prisma: ${error.code}`, details: error.message }, { status: 500 });
-    }
-    if (error instanceof Error) {
-        return NextResponse.json({ error: 'Error general', details: error.message }, { status: 500 });
-    }
+    console.error('Error al crear el espacio:', error);
     return NextResponse.json({ error: 'No se pudo crear el espacio.' }, { status: 500 });
   }
 }
