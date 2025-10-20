@@ -8,7 +8,20 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   try {
     const equipment = await prisma.equipment.findUnique({
       where: { id },
-      include: { images: true }, // CORREGIDO: Incluir imágenes en lugar de imageUrl
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        displayId: true,
+        images: true,
+        responsibleUser: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
     });
 
     if (!equipment) {

@@ -154,11 +154,10 @@ export default function ResourceDetailPage() {
           {resource.images.map((img, idx) => (
             <Carousel.Item key={img.id || idx}>
               <div style={{ position: 'relative', width: '100%', height: '500px' }}>
-                <Image
+                <img
                   src={img.url}
                   alt={`Imagen de ${resource.name} ${idx + 1}`}
-                  fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                 />
               </div>
             </Carousel.Item>
@@ -166,17 +165,16 @@ export default function ResourceDetailPage() {
         </Carousel>
       ) : (
         <div style={{ position: 'relative', width: '100%', height: '500px' }} className="mb-4">
-          <Image
+          <img
             src="/placeholder.svg"
             alt="No Image"
-            fill
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
           />
         </div>
       )}
 
       <h2>{resource.name}</h2>
-      <p><strong>Descripción:</strong> {resource.description || 'Sin descripción.'}</p>
+      <p style={{ whiteSpace: 'pre-wrap' }}><strong>Descripción:</strong> {resource.description || 'Sin descripción.'}</p>
       {(resource.type === 'space' || resource.type === 'equipment') && resource.responsibleUser && (
         <p>
           <strong>Responsable:</strong>{' '}

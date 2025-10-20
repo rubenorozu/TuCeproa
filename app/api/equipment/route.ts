@@ -23,7 +23,13 @@ export async function GET(request: Request) {
 
     const equipment = await prisma.equipment.findMany({
       where: whereClause,
-      include: { images: true }, // Incluir las imágenes relacionadas
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        displayId: true,
+        images: true,
+      },
     });
     console.log('DEBUG API: Datos de equipos devueltos:', equipment);
     return NextResponse.json(equipment);
