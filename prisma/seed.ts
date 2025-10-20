@@ -8,6 +8,8 @@ async function main() {
   const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'password123';
   const defaultAdminFirstName = process.env.DEFAULT_ADMIN_FIRST_NAME || 'Super';
   const defaultAdminLastName = process.env.DEFAULT_ADMIN_LAST_NAME || 'Admin';
+  const defaultAdminIdentifier = process.env.DEFAULT_ADMIN_IDENTIFIER;
+  const defaultAdminPhoneNumber = process.env.DEFAULT_ADMIN_PHONE_NUMBER;
 
   // Verificar si ya existe un superusuario con el email predeterminado
   const existingAdmin = await prisma.user.findUnique({
@@ -25,7 +27,8 @@ async function main() {
         lastName: defaultAdminLastName,
         role: Role.SUPERUSER,
         isVerified: true, // Asumimos que el admin por defecto está verificado
-        identifier: defaultAdminEmail,
+        identifier: defaultAdminIdentifier || defaultAdminEmail,
+        phoneNumber: defaultAdminPhoneNumber,
       },
     });
     console.log(`Superusuario creado: ${defaultAdminEmail}`);
