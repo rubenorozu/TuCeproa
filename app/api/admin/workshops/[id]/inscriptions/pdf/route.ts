@@ -207,10 +207,11 @@ export async function GET(request: Request, { params }: Params) {
 
     const pdfBytes = await pdfDoc.save();
 
+    const asciiName = workshop.name.replace(/\s/g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     return new Response(Buffer.from(pdfBytes), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="Inscritos_${workshop.name.replace(/\s/g, '_')}.pdf"`,
+        'Content-Disposition': `attachment; filename="Inscritos_${asciiName}.pdf"`,
       },
     });
 
