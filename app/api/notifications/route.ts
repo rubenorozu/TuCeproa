@@ -5,7 +5,7 @@ import { getSupabaseSession } from '@/lib/supabase/utils';
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
-  const { user } = await getSupabaseSession(request);
+  const { user } = await getSupabaseSession();
 
   if (!user) {
     return NextResponse.json({ error: 'No autenticado.' }, { status: 401 });

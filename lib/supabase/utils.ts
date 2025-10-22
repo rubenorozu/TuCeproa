@@ -1,9 +1,8 @@
 
 import { createClient } from './server';
-import { NextRequest } from 'next/server';
 
-export async function getSupabaseSession(request: NextRequest) {
-  const supabase = createClient(request.cookies);
+export async function getSupabaseSession() {
+  const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   return { user };
 }

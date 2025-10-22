@@ -4,7 +4,7 @@ import { getSupabaseSession } from '@/lib/supabase/utils';
 
 export async function PUT() {
   try {
-    const { user } = await getSupabaseSession(request);
+    const { user } = await getSupabaseSession();
     if (!user) {
       return NextResponse.json({ message: 'No autenticado.' }, { status: 401 });
     }
