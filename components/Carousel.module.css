@@ -3,12 +3,14 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; /* for smooth scrolling on iOS */
+  scroll-snap-type: x mandatory; /* Snap to items on the x-axis */
 }
 
 .carouselItemContainer {
   flex: 0 0 auto;
   width: 300px; /* Adjust as needed */
   margin-right: 1rem;
+  scroll-snap-align: start; /* Snap to the start of the item */
 }
 
 .carouselControlPrev,
@@ -29,15 +31,8 @@
 
 /* Mobile styles */
 @media (max-width: 768px) {
-  .carouselContainer {
-    flex-direction: column;
-    overflow-x: visible;
-  }
-
   .carouselItemContainer {
-    width: 100%;
-    margin-right: 0;
-    margin-bottom: 1rem;
+    width: 80%; /* Make cards a bit smaller on mobile */
   }
 
   .carouselControlPrev,
