@@ -11,7 +11,7 @@ async function main() {
   const defaultAdminIdentifier = process.env.DEFAULT_ADMIN_IDENTIFIER;
   const defaultAdminPhoneNumber = process.env.DEFAULT_ADMIN_PHONE_NUMBER;
 
-  // Verificar si ya existe un superusuario con el email predeterminado
+  // Verificar si ya existe un superusuario con el email proporcionado en las variables de entorno
   const existingAdmin = await prisma.user.findUnique({
     where: { email: defaultAdminEmail },
   });
