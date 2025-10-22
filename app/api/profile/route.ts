@@ -1,19 +1,34 @@
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import * as fs from 'fs/promises';
-import { getSupabaseSession } from '@/lib/supabase/utils';
+import { jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+
+interface UserPayload {
+  userId: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
 
 export async function GET() {
-  const session = await getServerSession(); // Obtener sesión
+  const cookieStore = cookies();
+  const tokenCookie = cookieStore.get('session');
 
-  if (!session) {
+  if (!tokenCookie) {
     return NextResponse.json({ message: 'No autenticado.' }, { status: 401 });
   }
 
-  const userId = session.user.id; // Usar ID de la sesión
+  let userId: string;
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify<UserPayload>(tokenCookie.value, secret);
+    userId = payload.userId;
+  } catch (err) {
+    return NextResponse.json({ message: 'La sesión no es válida.' }, { status: 401 });
+  }
 
   try {
     const user = await prisma.user.findUnique({
@@ -46,13 +61,21 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
-  const session = await getServerSession(); // Obtener sesión
+  const cookieStore = cookies();
+  const tokenCookie = cookieStore.get('session');
 
-  if (!session) {
+  if (!tokenCookie) {
     return NextResponse.json({ message: 'No autenticado.' }, { status: 401 });
   }
 
-  const userId = session.user.id; // Usar ID de la sesión
+  let userId: string;
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify<UserPayload>(tokenCookie.value, secret);
+    userId = payload.userId;
+  } catch (err) {
+    return NextResponse.json({ message: 'La sesión no es válida.' }, { status: 401 });
+  }
 
   try {
     const formData = await req.formData();

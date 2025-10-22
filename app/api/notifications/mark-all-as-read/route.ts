@@ -1,15 +1,33 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSupabaseSession } from '@/lib/supabase/utils';
+import { jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+
+interface UserPayload {
+  userId: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
 
 export async function PUT() {
-  try {
-    const { user } = await getSupabaseSession();
-    if (!user) {
-      return NextResponse.json({ message: 'No autenticado.' }, { status: 401 });
-    }
-    const userId = user.id;
+  const cookieStore = cookies();
+  const tokenCookie = cookieStore.get('session');
 
+  if (!tokenCookie) {
+    return NextResponse.json({ message: 'No autenticado.' }, { status: 401 });
+  }
+
+  let userId: string;
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify<UserPayload>(tokenCookie.value, secret);
+    userId = payload.userId;
+  } catch (err) {
+    return NextResponse.json({ message: 'La sesión no es válida.' }, { status: 401 });
+  }
+
+  try {
     await prisma.notification.updateMany({
       where: {
         recipientId: userId,
