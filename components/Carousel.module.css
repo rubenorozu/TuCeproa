@@ -1,0 +1,47 @@
+.carouselContainer {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* for smooth scrolling on iOS */
+}
+
+.carouselItemContainer {
+  flex: 0 0 auto;
+  width: 300px; /* Adjust as needed */
+  margin-right: 1rem;
+}
+
+.carouselControlPrev,
+.carouselControlNext {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.carouselControlPrev {
+  left: -1rem;
+}
+
+.carouselControlNext {
+  right: -1rem;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .carouselContainer {
+    flex-direction: column;
+    overflow-x: visible;
+  }
+
+  .carouselItemContainer {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+
+  .carouselControlPrev,
+  .carouselControlNext {
+    display: none;
+  }
+}

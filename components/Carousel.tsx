@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import ResourceCard from './ResourceCard';
+import styles from './Carousel.module.css'; // Import CSS module
 
 interface Image {
   id: string;
@@ -32,15 +33,15 @@ const Carousel = ({ resources }: Props) => {
 
   return (
     <div className="position-relative">
-      <div className="d-flex overflow-auto carousel-container py-3" ref={scrollContainer}>
+      <div className={`${styles.carouselContainer} py-3`} ref={scrollContainer}>
         {resources.map(resource => (
-          <div key={resource.id} className="carousel-item-container me-3">
+          <div key={resource.id} className={styles.carouselItemContainer}>
             <ResourceCard resource={resource} type={resource.type} />
           </div>
         ))}
       </div>
-      <button className="btn btn-light rounded-circle carousel-control-prev shadow" onClick={() => scroll('left')}>&#8249;</button>
-      <button className="btn btn-light rounded-circle carousel-control-next shadow" onClick={() => scroll('right')}>&#8250;</button>
+      <button className={`btn btn-light rounded-circle shadow ${styles.carouselControlPrev}`} onClick={() => scroll('left')}>&#8249;</button>
+      <button className={`btn btn-light rounded-circle shadow ${styles.carouselControlNext}`} onClick={() => scroll('right')}>&#8250;</button>
     </div>
   );
 };
