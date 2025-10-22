@@ -1,19 +1,41 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient, Role } from '@prisma/client';
-import { getSupabaseSession } from '@/lib/supabase/utils';
+import { jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  const { user } = await getSupabaseSession(request); // CAMBIO AQUÍ
+interface UserPayload {
+  userId: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
 
-  if (!user || user.role !== Role.SUPERUSER) {
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const cookieStore = cookies();
+  const tokenCookie = cookieStore.get('session');
+
+  if (!tokenCookie) {
+    return NextResponse.json({ error: 'Acceso denegado. Se requiere autenticación.' }, { status: 401 });
+  }
+
+  let userPayload: UserPayload;
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify<UserPayload>(tokenCookie.value, secret);
+    userPayload = payload;
+  } catch (err) {
+    return NextResponse.json({ error: 'La sesión no es válida.' }, { status: 401 });
+  }
+
+  if (userPayload.role !== Role.SUPERUSER) {
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario.' }, { status: 403 });
   }
 
   const userIdToDelete = params.id;
 
-  if (user.id === userIdToDelete) {
+  if (userPayload.userId === userIdToDelete) {
     return NextResponse.json({ error: 'Un superusuario no puede eliminarse a sí mismo.' }, { status: 400 });
   }
 

@@ -1,13 +1,28 @@
-
 import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
-import { getSupabaseSession } from '@/lib/supabase/utils';
+import { jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+
+interface UserPayload {
+  userId: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const { user } = await getSupabaseSession(request);
+  const cookieStore = cookies();
+  const tokenCookie = cookieStore.get('session');
 
-  if (!user) {
+  if (!tokenCookie) {
     return NextResponse.json({ error: 'Acceso denegado. Se requiere autenticación.' }, { status: 401 });
+  }
+
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    await jwtVerify<UserPayload>(tokenCookie.value, secret);
+  } catch (err) {
+    return NextResponse.json({ error: 'La sesión no es válida.' }, { status: 401 });
   }
 
   try {
