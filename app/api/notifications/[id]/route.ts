@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from '@/lib/auth';
+import { getSupabaseSession } from '@/lib/supabase/utils';
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
-    const session = await getServerSession();
-    if (!session) {
+    const { user } = await getSupabaseSession(request);
+    if (!user) {
       return NextResponse.json({ message: 'No autenticado.' }, { status: 401 });
     }
-    const userId = session.user.id;
+    const userId = user.id;
     const { id } = params;
 
     const notification = await prisma.notification.findUnique({

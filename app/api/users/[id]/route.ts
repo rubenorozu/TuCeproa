@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient, Role } from '@prisma/client';
-import { getServerSession } from '@/lib/auth'; // CAMBIO AQUÍ
+import { getSupabaseSession } from '@/lib/supabase/utils';
 
 const prisma = new PrismaClient();
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession(); // CAMBIO AQUÍ
+  const { user } = await getSupabaseSession(request); // CAMBIO AQUÍ
 
-  if (!session || session.user.role !== Role.SUPERUSER) {
+  if (!user || user.role !== Role.SUPERUSER) {
     return NextResponse.json({ error: 'Acceso denegado. Se requieren privilegios de Superusuario.' }, { status: 403 });
   }
 
   const userIdToDelete = params.id;
 
-  if (session.user.id === userIdToDelete) {
+  if (user.id === userIdToDelete) {
     return NextResponse.json({ error: 'Un superusuario no puede eliminarse a sí mismo.' }, { status: 400 });
   }
 

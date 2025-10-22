@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient, Role } from '@prisma/client';
-import { getServerSession } from '@/lib/auth'; // CAMBIO AQUÍ
+import { getSupabaseSession } from '@/lib/supabase/utils';
 
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
-  const session = await getServerSession(); // CAMBIO AQUÍ
+  const { user } = await getSupabaseSession(request); // CAMBIO AQUÍ
 
-  if (!session || session.user.role !== Role.SUPERUSER) {
+  if (!user || user.role !== Role.SUPERUSER) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
 

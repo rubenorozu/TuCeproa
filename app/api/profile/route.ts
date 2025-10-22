@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import * as fs from 'fs/promises';
-import { getServerSession } from '@/lib/auth'; // Importar getServerSession
+import { getSupabaseSession } from '@/lib/supabase/utils';
 
 export async function GET() {
   const session = await getServerSession(); // Obtener sesión

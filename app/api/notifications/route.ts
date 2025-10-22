@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from '@/lib/auth';
+import { getSupabaseSession } from '@/lib/supabase/utils';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
-  const session = await getServerSession();
+export async function GET(request: Request) {
+  const { user } = await getSupabaseSession(request);
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: 'No autenticado.' }, { status: 401 });
   }
 
   try {
     const notifications = await prisma.notification.findMany({
-      where: { recipientId: session.user.id },
+      where: { recipientId: user.id },
       orderBy: { createdAt: 'desc' },
     });
     return NextResponse.json(notifications, { status: 200 });

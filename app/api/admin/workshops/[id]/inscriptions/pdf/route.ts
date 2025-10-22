@@ -1,19 +1,39 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from '@/lib/auth';
-import { Role } from '@prisma/client';
 import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib';
 import fs from 'fs/promises';
 import path from 'path';
+import { jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+
+interface UserPayload {
+  userId: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
 
 interface Params {
   params: { id: string };
 }
 
 export async function GET(request: Request, { params }: Params) {
-  const session = await getServerSession();
-  if (!session || session.user.role !== Role.SUPERUSER) {
-    return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
+  const cookieStore = cookies();
+  const tokenCookie = cookieStore.get('session');
+
+  if (!tokenCookie) {
+    return NextResponse.json({ error: 'Acceso denegado. No se encontró la sesión.' }, { status: 401 });
+  }
+
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify<UserPayload>(tokenCookie.value, secret);
+
+    if (payload.role !== 'SUPERUSER') {
+      return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
+    }
+  } catch (err) {
+    return NextResponse.json({ error: 'Acceso denegado. La sesión no es válida.' }, { status: 401 });
   }
 
   try {

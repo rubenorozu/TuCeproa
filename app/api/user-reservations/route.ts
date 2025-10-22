@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from '@/lib/auth';
+import { getSupabaseSession } from '@/lib/supabase/utils';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession();
-    if (!session) {
+    const { user } = await getSupabaseSession(req);
+    if (!user) {
       return NextResponse.json({ message: 'No autenticado.' }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
 
     const reservations = await prisma.reservation.findMany({
       where: { userId },

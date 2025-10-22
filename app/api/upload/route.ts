@@ -1,12 +1,12 @@
 
 import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
-import { getServerSession } from '@/lib/auth';
+import { getSupabaseSession } from '@/lib/supabase/utils';
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const session = await getServerSession();
+  const { user } = await getSupabaseSession(request);
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: 'Acceso denegado. Se requiere autenticación.' }, { status: 401 });
   }
 
