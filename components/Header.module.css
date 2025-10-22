@@ -1,3 +1,6 @@
-.brandLink {
-  margin-left: -25px;
+/* Mobile styles */
+@media (max-width: 768px) {
+  .brandLink {
+    margin-left: -25px;
+  }
 }
