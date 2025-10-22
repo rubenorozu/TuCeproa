@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Spinner } from 'react-bootstrap';
 import { useCart } from '@/context/CartContext';
 import { useSession } from '@/context/SessionContext';
+import styles from './Header.module.css';
 
 interface Notification {
   id: string;
@@ -60,7 +61,7 @@ const Header = () => {
     <header className="fixed-top bg-white shadow-sm">
       <nav className="navbar navbar-expand-lg navbar-light py-0">
         <div className="container-fluid">
-          <Link href="/" className="navbar-brand">
+          <Link href="/" className={`navbar-brand ${styles.brandLink}`}>
             <Image src="/assets/Ceproa.svg" alt="Ceproa" width={200} height={63} style={{ objectFit: 'contain' }} />
           </Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav">
