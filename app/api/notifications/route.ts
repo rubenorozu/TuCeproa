@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getServerSession } from '@/lib/auth';
+import { jwtVerify } from 'jose';
 import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
 
