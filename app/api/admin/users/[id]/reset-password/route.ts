@@ -2,6 +2,7 @@
 import { Role } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { NextResponse } from 'next/server';
+import bcrypt from 'bcrypt';
 import { getServerSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
