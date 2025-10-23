@@ -1,6 +1,7 @@
 import { Role } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { getServerSession } from '@/lib/auth';
+import { cookies } from 'next/headers'; // Add missing import
+import { getServerSession } from '@/lib/auth'; // Fix syntax error
 import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
 interface UserPayload {

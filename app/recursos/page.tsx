@@ -87,22 +87,23 @@ export default function ReservationsPage() {
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
       <hr />
-      <div className="row justify-content-center">
-        {loading ? (
-          <div className="text-center">
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Cargando...</span>
-            </Spinner>
-          </div>
-        ) : filteredResources.length > 0 ? (
-          filteredResources.map(resource => (
-            <div className="col-5-per-row mb-2" key={resource.id}>
-              <ResourceCard resource={resource} type={resource.type} />
+            <div className="d-flex"> {/* Wrapper for the row */}         <div className="row mx-auto justify-content-center">
+          {loading ? (
+            <div className="text-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Cargando...</span>
+              </Spinner>
             </div>
-          ))
-        ) : (
-          <p>No hay recursos que coincidan con el filtro.</p>
-        )}
+          ) : filteredResources.length > 0 ? (
+            filteredResources.map(resource => (
+              <div className="col-5-per-row mb-2" key={resource.id}>
+                <ResourceCard resource={resource} type={resource.type} />
+              </div>
+            ))
+          ) : (
+            <p>No hay recursos que coincidan con el filtro.</p>
+          )}
+        </div>
       </div>
     </div>
   );
