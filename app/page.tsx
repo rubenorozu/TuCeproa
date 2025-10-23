@@ -62,12 +62,12 @@ export default function Home() {
         <Hero />
 
         <div className="mt-4">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <h2 style={{ color: '#0076A8' }}>Recursos disponibles</h2>
+          <div className="d-flex flex-column flex-md-row justify-content-center justify-content-md-between align-items-center mb-3">
+            <h2 style={{ color: '#0076A8' }} className="mb-2 mb-md-0">Recursos disponibles</h2>
             <div className="btn-group">
-              <button className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('all')} style={filter === 'all' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Todos</button>
-              <button className={`btn ${filter === 'space' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('space')} style={filter === 'space' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Espacios</button>
-              <button className={`btn ${filter === 'equipment' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('equipment')} style={filter === 'equipment' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Equipos</button>
+                <button className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('all')} style={filter === 'all' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Todos</button>
+                <button className={`btn ${filter === 'space' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('space')} style={filter === 'space' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Espacios</button>
+                <button className={`btn ${filter === 'equipment' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('equipment')} style={filter === 'equipment' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Equipos</button>
             </div>
           </div>
           

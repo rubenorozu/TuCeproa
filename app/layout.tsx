@@ -28,7 +28,7 @@ export default function RootLayout({
       <body className={`${inter.className} d-flex flex-column h-100`}>
         <ClientWrapper>
           <Header />
-          <main className="flex-shrink-0">
+          <main className="flex-shrink-0 mb-0 mb-md-auto">
             {children}
           </main>
           <Footer />

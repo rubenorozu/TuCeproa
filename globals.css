@@ -75,3 +75,9 @@ body {
 .date-picker-wrapper .react-datepicker-wrapper {
   display: block;
 }
+
+@media (min-width: 768px) { /* Bootstrap's md breakpoint */
+  .bg-light h3.fw-medium { /* Target the h3 within the gray footer section */
+    font-size: 1.5rem !important;
+  }
+}
