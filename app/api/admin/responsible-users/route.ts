@@ -1,9 +1,8 @@
 
+import { Role } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { PrismaClient, Role } from '@prisma/client';
 import { getServerSession } from '@/lib/auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
 export async function GET() {
   const session = await getServerSession();

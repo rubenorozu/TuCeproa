@@ -69,7 +69,7 @@ export default function ReservationsPage() {
   });
 
   return (
-    <div className="container" style={{ paddingTop: '100px' }}>
+    <div className="container" style={{ paddingTop: '80px' }}>
                   <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center mb-4">              <h2 style={{ color: '#0076A8' }} className="mb-3 mb-md-0 text-center text-md-start w-100 w-md-auto">Recursos Disponibles</h2>
                       <div className="d-flex flex-column flex-md-row align-items-center w-100 w-md-auto">                <Form.Control
                   type="text"
@@ -87,7 +87,7 @@ export default function ReservationsPage() {
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
       <hr />
-      <div className="row">
+      <div className="row justify-content-center">
         {loading ? (
           <div className="text-center">
             <Spinner animation="border" role="status">
@@ -96,7 +96,7 @@ export default function ReservationsPage() {
           </div>
         ) : filteredResources.length > 0 ? (
           filteredResources.map(resource => (
-            <div className="col-5-per-row mb-4" key={resource.id}>
+            <div className="col-5-per-row mb-2" key={resource.id}>
               <ResourceCard resource={resource} type={resource.type} />
             </div>
           ))

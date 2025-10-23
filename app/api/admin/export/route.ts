@@ -1,8 +1,7 @@
+import { Role } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { PrismaClient, Role } from '@prisma/client';
 import { getServerSession } from '@/lib/auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
 // Helper function to convert JSON to CSV
 function jsonToCsv(jsonData: Record<string, unknown>[]): string {

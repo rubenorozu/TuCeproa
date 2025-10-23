@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { jwtVerify } from 'jose';
-import { cookies } from 'next/headers';
+import { getServerSession } from '@/lib/auth';
+import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
-const prisma = new PrismaClient();
 
 interface UserPayload {
   userId: string;

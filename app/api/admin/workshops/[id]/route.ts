@@ -1,10 +1,7 @@
+import { Role } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { PrismaClient, Role } from '@prisma/client';
 import { getServerSession } from '@/lib/auth';
-import * as fs from 'fs/promises';
-import path from 'path';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
 // GET: Obtener un taller por ID
 export async function GET(request: Request, { params }: { params: { id: string } }) {

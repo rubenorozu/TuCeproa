@@ -1,11 +1,9 @@
 
-import { NextResponse } from 'next/server';
-import { PrismaClient, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth';
-import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession();

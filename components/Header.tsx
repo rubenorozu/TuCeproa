@@ -59,16 +59,16 @@ const Header = () => {
 
   return (
     <header className="fixed-top bg-white shadow-sm">
-      <nav className="navbar navbar-expand-lg navbar-light py-0">
-        <div className="container-fluid">
-          <Link href="/" className={`navbar-brand ${styles.brandLink}`}>
+      <nav className="navbar navbar-expand-lg navbar-light py-0 px-0">
+        <div className="container-fluid px-0 px-md-3">
+          <Link href="/" style={{ marginLeft: '-20px !important' }}> 
             <Image src="/assets/Ceproa.svg" alt="Ceproa" width={200} height={63} style={{ objectFit: 'contain' }} />
           </Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="main-nav">
-            <ul className="navbar-nav ms-auto align-items-center">
+          <div className="collapse navbar-collapse w-100 w-md-auto" id="main-nav"> {/* Added w-100 w-md-auto for stability */} 
+            <ul className="navbar-nav ms-auto align-items-center" style={{ minWidth: '150px' }}> {/* Added minWidth for stability */} 
               <li className="nav-item"><Link href="/" className="nav-link">Inicio</Link></li>
               <li className="nav-item"><Link href="/recursos" className="nav-link">Recursos</Link></li>
 

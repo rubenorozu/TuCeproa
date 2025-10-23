@@ -1,8 +1,7 @@
-import { NextResponse, NextRequest } from 'next/server';
-import { PrismaClient, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
+import { NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
 // GET: Obtener un equipo por ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {

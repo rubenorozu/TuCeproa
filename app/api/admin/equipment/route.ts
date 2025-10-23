@@ -1,9 +1,9 @@
 
+import { Role, Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { PrismaClient, Role, Prisma } from '@prisma/client';
 import { getServerSession } from '@/lib/auth';
+import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
-const prisma = new PrismaClient();
 
 // Helper function to generate a random alphanumeric string
 function generateRandomString(length: number): string {

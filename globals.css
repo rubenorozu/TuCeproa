@@ -72,6 +72,14 @@ body {
   }
 }
 
+@media (max-width: 767.98px) { /* Bootstrap's small breakpoint */
+  .col-5-per-row {
+    width: calc(50% - var(--bs-gutter-x) * .25); /* Make cards wider, reduce gutter */
+    padding-right: calc(var(--bs-gutter-x) * .125); /* Reduce padding */
+    padding-left: calc(var(--bs-gutter-x) * .125); /* Reduce padding */
+  }
+}
+
 .date-picker-wrapper .react-datepicker-wrapper {
   display: block;
 }

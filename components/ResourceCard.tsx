@@ -160,7 +160,7 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
               </Link>
             )}
             {displayMode === 'full' && (
-              <div className="btn-group w-100">
+              <div className="d-grid gap-2 d-md-flex w-100">
                 <Link
                   href={`/recursos/${resource.id}?type=${type}`}
                   className="btn btn-outline-primary"
