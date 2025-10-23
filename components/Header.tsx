@@ -60,7 +60,7 @@ const Header = () => {
   return (
     <header className="fixed-top bg-white shadow-sm">
       <nav className="navbar navbar-expand-lg navbar-light py-0 px-0">
-        <div className="container-fluid px-0 px-md-3">
+        <div className="container-fluid px-0 pe-3 px-md-3">
           <Link href="/" style={{ marginLeft: '-20px !important' }}> 
             <Image src="/assets/Ceproa.svg" alt="Ceproa" width={200} height={63} style={{ objectFit: 'contain' }} />
           </Link>
