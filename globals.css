@@ -79,6 +79,12 @@ body {
     padding-left: calc(var(--bs-gutter-x) * .125); /* Reduce padding */
   }
 
+  .col-4-per-row {
+    width: calc(50% - var(--bs-gutter-x) * .25); /* 2 items per row on mobile */
+    padding-right: calc(var(--bs-gutter-x) * .125); /* Reduce padding */
+    padding-left: calc(var(--bs-gutter-x) * .125); /* Reduce padding */
+  }
+
   .row.mx-auto {
     margin-left: 10px !important; /* Shift the entire row 5px to the right on mobile */
   }

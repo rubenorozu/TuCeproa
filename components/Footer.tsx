@@ -11,7 +11,7 @@ const Footer = () => {
               <h3 className="fw-medium fs-6 mb-3 mb-md-0 text-center text-md-start">¿Necesitas Ayuda con tu proyecto?</h3>
               <div className="d-flex justify-content-center">
                 <Link href="/contact" className="btn btn-primary me-2" style={{ backgroundColor: '#0076A8', borderColor: '#0076A8' }}>Contáctanos</Link>
-                <Link href="/workshops" className="btn btn-outline-secondary" style={{ color: '#0076A8', borderColor: '#0076A8' }}>Talleres</Link>
+                <Link href="/workshops" className="btn" style={{ backgroundColor: 'var(--bs-bg-light)', borderColor: '#0076A8', color: '#0076A8' }}>Talleres</Link>
               </div>
             </div>
           </div>

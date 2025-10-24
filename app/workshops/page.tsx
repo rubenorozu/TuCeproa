@@ -108,20 +108,19 @@ export default function WorkshopsPage() {
 
   return (
     <Container style={{ paddingTop: '100px' }}>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 style={{ color: '#0076A8' }}>Talleres Disponibles</h2>
-        <Form.Control
-          type="text"
-          placeholder="Buscar talleres..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          style={{ width: '250px' }}
-        />
-      </div>
+      <h2 style={{ color: '#0076A8' }} className="mb-3">Talleres Disponibles</h2>
+      <Form.Control
+        type="text"
+        placeholder="Buscar talleres..."
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+        style={{ width: '100%' }}
+        className="mb-4"
+      />
       {workshops.length === 0 ? (
         <Alert variant="info">No hay talleres disponibles en este momento.</Alert>
       ) : (
-        <div className="row">
+        <div className="row mx-auto">
           {workshops.map(workshop => {
             const inscription = inscriptions.find(i => i.workshopId === workshop.id);
             return (
