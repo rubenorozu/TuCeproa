@@ -45,6 +45,29 @@ const Header = () => {
       setNotifications([]);
       setUnreadCount(0);
     }
+
+    // Logic to close Bootstrap navbar on link click
+    const navbarCollapse = document.getElementById('main-nav');
+    if (navbarCollapse) {
+          const navbarCollapse = document.getElementById('main-nav');
+          if (navbarCollapse) {
+            navbarCollapse.addEventListener('click', (event) => {
+              const target = event.target as HTMLElement;
+              // Check if the clicked element or its parent is a nav-link or dropdown-item
+              if (
+          (target.matches('.nav-link') && !target.hasAttribute('data-bs-toggle')) || // Regular nav-links (not dropdown toggles)
+          target.matches('.dropdown-item') || // Dropdown items
+          (target.closest('.nav-link') && !target.closest('.nav-link')?.hasAttribute('data-bs-toggle')) || // Child of regular nav-link
+          target.closest('.dropdown-item') // Child of dropdown item
+        ) {
+                const navbarToggler = document.querySelector('.navbar-toggler');
+                if (navbarToggler) {
+                  (navbarToggler as HTMLElement).click(); // Simulate a click on the toggler button
+                }
+              }
+            });
+          }    }
+
   }, [user, fetchNotifications]);
 
   const handleMarkAsRead = async (id: string) => {
