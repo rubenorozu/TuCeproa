@@ -134,21 +134,25 @@ export default function AdminInscriptionsPage() {
 
   return (
     <Container fluid style={{ paddingTop: '100px' }}>
-      <Row className="mb-3 align-items-center">
-        <Col>
+      <Row className="mb-3">
+        <Col xs={12} className="text-center">
           <h2>Gestión de Inscripciones a Talleres</h2>
         </Col>
-
+        <Col xs={12} className="text-center mt-3">
+          <Row className="g-2">
+            <Col xs={6}>
+              <Button variant="info" onClick={() => fetchInscriptions(filter)} className="w-100">
+                Refrescar
+              </Button>
+            </Col>
+            <Col xs={6}>
+              <Link href="/admin" passHref>
+                <Button variant="outline-secondary" className="w-100">Regresar</Button>
+              </Link>
+            </Col>
+          </Row>
+        </Col>
       </Row>
-
-      <div className="d-flex justify-content-end align-items-center mb-3">
-        <Link href="/admin" passHref>
-          <Button variant="outline-secondary" className="me-2">Regresar</Button>
-        </Link>
-        <Button variant="info" onClick={() => fetchInscriptions(filter)}>
-          Refrescar
-        </Button>
-      </div>
 
       {loading && (
         <div className="text-center">

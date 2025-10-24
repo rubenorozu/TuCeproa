@@ -379,18 +379,26 @@ export default function AdminWorkshopsPage() {
 
   return (
     <Container fluid style={{ paddingTop: '100px' }}>
-      <Row className="mb-3 align-items-center">
-        <Col>
+      <Row className="mb-3">
+        <Col xs={12} className="text-center">
           <h2>Gestión de Talleres</h2>
         </Col>
-        <Col className="text-end">
-          <Link href="/admin" passHref>
-            <Button variant="outline-secondary" className="me-2">Regresar</Button>
-          </Link>
-          <Button variant="primary" onClick={() => handleShowModal()} className="me-2">Añadir Nuevo Taller</Button>
-          <Button variant="secondary" onClick={() => window.location.href = '/api/admin/export?model=workshops'}>
-            Descargar CSV
-          </Button>
+        <Col xs={12} className="text-center mt-3">
+          <Row className="g-2 mb-2">
+            <Col xs={6}>
+              <Button variant="primary" onClick={() => handleShowModal()} className="w-100">Añadir Nuevo Taller</Button>
+            </Col>
+            <Col xs={6}>
+              <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'} className="w-100">
+                Descargar CSV
+              </Button>
+            </Col>
+          </Row>
+          <div className="d-flex justify-content-end">
+            <Link href="/admin" passHref>
+              <Button variant="outline-secondary">Regresar</Button>
+            </Link>
+          </div>
         </Col>
       </Row>
 

@@ -179,14 +179,18 @@ export default function AdminUsersPage() {
           <h2>Gestión de Usuarios</h2>
         </Col>
         <Col xs={12} className="text-center mt-3">
-          <div className="d-grid gap-2 d-md-flex justify-content-md-center">
-            <Link href="/admin" passHref>
-              <Button variant="outline-secondary" className="w-100 w-md-auto">Regresar</Button>
-            </Link>
-            <Button variant="primary" onClick={() => window.location.href = '/api/admin/export?model=users'} className="w-100 w-md-auto">
-              Descargar CSV
-            </Button>
-          </div>
+          <Row className="g-2">
+            <Col xs={6}>
+              <Button variant="primary" onClick={() => window.location.href = '/api/admin/export?model=users'} className="w-100">
+                Descargar CSV
+              </Button>
+            </Col>
+            <Col xs={6}>
+              <Link href="/admin" passHref>
+                <Button variant="outline-secondary" className="w-100">Regresar</Button>
+              </Link>
+            </Col>
+          </Row>
         </Col>
       </Row>
 
