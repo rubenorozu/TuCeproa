@@ -174,17 +174,19 @@ export default function AdminUsersPage() {
 
   return (
     <Container fluid style={{ paddingTop: '100px' }}>
-      <Row className="mb-3 align-items-center">
-        <Col>
+      <Row className="mb-3">
+        <Col xs={12} className="text-center">
           <h2>Gestión de Usuarios</h2>
         </Col>
-        <Col className="text-end">
-          <Link href="/admin" passHref>
-            <Button variant="outline-secondary" className="me-2">Regresar</Button>
-          </Link>
-          <Button variant="primary" onClick={() => window.location.href = '/api/admin/export?model=users'}>
-            Descargar CSV
-          </Button>
+        <Col xs={12} className="text-center mt-3">
+          <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+            <Link href="/admin" passHref>
+              <Button variant="outline-secondary" className="w-100 w-md-auto">Regresar</Button>
+            </Link>
+            <Button variant="primary" onClick={() => window.location.href = '/api/admin/export?model=users'} className="w-100 w-md-auto">
+              Descargar CSV
+            </Button>
+          </div>
         </Col>
       </Row>
 
