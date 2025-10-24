@@ -134,23 +134,43 @@ export default function AdminInscriptionsPage() {
 
   return (
     <Container fluid style={{ paddingTop: '100px' }}>
-      <Row className="mb-3">
-        <Col xs={12} className="text-center">
+      {/* Mobile Layout */}
+      <div className="d-block d-md-none">
+        <Row className="mb-3">
+          <Col xs={12} className="text-center">
+            <h2>Gestión de Inscripciones a Talleres</h2>
+          </Col>
+          <Col xs={12} className="text-center mt-3">
+            <Row className="g-2">
+              <Col xs={6}>
+                <Button variant="info" onClick={() => fetchInscriptions(filter)} className="w-100">
+                  Refrescar
+                </Button>
+              </Col>
+              <Col xs={6}>
+                <Link href="/admin" passHref>
+                  <Button variant="outline-secondary" className="w-100">Regresar</Button>
+                </Link>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </div>
+
+      {/* Desktop Layout */}
+      <Row className="d-none d-md-flex align-items-center mb-3">
+        <Col md={6} className="text-start">
           <h2>Gestión de Inscripciones a Talleres</h2>
         </Col>
-        <Col xs={12} className="text-center mt-3">
-          <Row className="g-2">
-            <Col xs={6}>
-              <Button variant="info" onClick={() => fetchInscriptions(filter)} className="w-100">
-                Refrescar
-              </Button>
-            </Col>
-            <Col xs={6}>
-              <Link href="/admin" passHref>
-                <Button variant="outline-secondary" className="w-100">Regresar</Button>
-              </Link>
-            </Col>
-          </Row>
+        <Col md={6} className="text-end">
+          <div className="d-flex justify-content-end gap-2">
+            <Button variant="info" onClick={() => fetchInscriptions(filter)}>
+              Refrescar
+            </Button>
+            <Link href="/admin" passHref>
+              <Button variant="outline-secondary">Regresar</Button>
+            </Link>
+          </div>
         </Col>
       </Row>
 

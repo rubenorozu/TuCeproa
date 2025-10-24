@@ -379,37 +379,66 @@ export default function AdminWorkshopsPage() {
 
   return (
     <Container fluid style={{ paddingTop: '100px' }}>
-      <Row className="mb-3">
-        <Col xs={12} className="text-center">
+      {/* Mobile Layout */}
+      <div className="d-block d-md-none">
+        <Row className="mb-3">
+          <Col xs={12} className="text-center">
+            <h2>Gestión de Talleres</h2>
+          </Col>
+          <Col xs={12} className="text-center mt-3">
+            <Row className="g-2 mb-2">
+              <Col xs={6}>
+                <Button variant="primary" onClick={() => handleShowModal()} className="w-100">Añadir Nuevo Taller</Button>
+              </Col>
+              <Col xs={6}>
+                <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'} className="w-100">
+                  Descargar CSV
+                </Button>
+              </Col>
+            </Row>
+            <div className="d-flex justify-content-end">
+              <Link href="/admin" passHref>
+                <Button variant="outline-secondary">Regresar</Button>
+              </Link>
+            </div>
+          </Col>
+        </Row>
+
+        <Row className="mb-3">
+          <Col>
+            <Form.Control
+              type="text"
+              placeholder="Buscar talleres por nombre, descripción, maestro o ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </Col>
+        </Row>
+      </div>
+
+      {/* Desktop Layout */}
+      <Row className="d-none d-md-flex align-items-center mb-3">
+        <Col md={3} className="text-start">
           <h2>Gestión de Talleres</h2>
         </Col>
-        <Col xs={12} className="text-center mt-3">
-          <Row className="g-2 mb-2">
-            <Col xs={6}>
-              <Button variant="primary" onClick={() => handleShowModal()} className="w-100">Añadir Nuevo Taller</Button>
-            </Col>
-            <Col xs={6}>
-              <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'} className="w-100">
-                Descargar CSV
-              </Button>
-            </Col>
-          </Row>
-          <div className="d-flex justify-content-end">
+        <Col md={9} className="text-end">
+          <div className="d-flex justify-content-end gap-2">
+            <Form.Control
+              type="text"
+              placeholder="Buscar talleres por nombre, descripción, maestro o ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: 'auto' }} // Allow natural width
+              className="me-2" // Add margin to the right of the search field
+            />
+            <Button variant="primary" onClick={() => handleShowModal()}>Añadir Nuevo Taller</Button>
+            <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'}>
+              Descargar CSV
+            </Button>
             <Link href="/admin" passHref>
               <Button variant="outline-secondary">Regresar</Button>
             </Link>
           </div>
-        </Col>
-      </Row>
-
-      <Row className="mb-3">
-        <Col>
-          <Form.Control
-            type="text"
-            placeholder="Buscar talleres por nombre, descripción, maestro o ID..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
         </Col>
       </Row>
 
