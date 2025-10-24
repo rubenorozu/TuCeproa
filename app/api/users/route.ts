@@ -1,3 +1,4 @@
+import { jwtVerify } from 'jose';
 import { Role } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers'; // Add missing import
