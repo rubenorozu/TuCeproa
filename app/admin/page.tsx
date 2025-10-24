@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
                       <Card.Body className="d-flex flex-column text-center">
                         <Card.Title>Usuarios</Card.Title>
                         <Card.Text className="flex-grow-1">Gestionar cuentas de usuario.</Card.Text>
-                        <Link href="/admin/users" className="btn btn-primary mt-auto">
+                        <Link href="/admin/users" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
                           Ir a Usuarios
                         </Link>
                       </Card.Body>
@@ -138,7 +138,7 @@ export default function AdminDashboardPage() {
                       <Card.Body className="d-flex flex-column text-center">
                         <Card.Title>Espacios</Card.Title>
                         <Card.Text className="flex-grow-1">Gestionar espacios físicos.</Card.Text>
-                        <Link href="/admin/spaces" className="btn btn-primary mt-auto">
+                        <Link href="/admin/spaces" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
                           Ir a Espacios
                         </Link>
                       </Card.Body>
@@ -152,7 +152,7 @@ export default function AdminDashboardPage() {
                       <Card.Body className="d-flex flex-column text-center">
                         <Card.Title>Equipos</Card.Title>
                         <Card.Text className="flex-grow-1">Gestionar equipos disponibles.</Card.Text>
-                        <Link href="/admin/equipment" className="btn btn-primary mt-auto">
+                        <Link href="/admin/equipment" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
                           Ir a Equipos
                         </Link>
                       </Card.Body>
@@ -166,7 +166,7 @@ export default function AdminDashboardPage() {
                       <Card.Body className="d-flex flex-column text-center">
                         <Card.Title>Talleres</Card.Title>
                         <Card.Text className="flex-grow-1">Gestionar talleres y eventos.</Card.Text>
-                        <Link href="/admin/workshops" className="btn btn-primary mt-auto">
+                        <Link href="/admin/workshops" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
                           Ir a Talleres
                         </Link>
                       </Card.Body>
@@ -180,7 +180,7 @@ export default function AdminDashboardPage() {
                       <Card.Body className="d-flex flex-column text-center">
                         <Card.Title>Inscripciones</Card.Title>
                         <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
-                        <Link href="/admin/inscriptions" className="btn btn-primary mt-auto">
+                        <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
                           Ir a Inscripciones
                         </Link>
                       </Card.Body>
