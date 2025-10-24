@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Card, Button, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Alert, ButtonGroup } from 'react-bootstrap';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from '@/context/SessionContext';
@@ -108,13 +108,14 @@ export default function AdminDashboardPage() {
       <Row className="mb-4">
         <Col>
           <h2>Dashboard de Administración</h2>
-          <p>Bienvenido, {user.email}. Aquí puedes gestionar la plataforma.</p>
+          <br />
+          <p className="mb-4">Bienvenido, {user.email}. Aquí puedes gestionar la plataforma.</p>
         </Col>
       </Row>
 
             {user.role === Role.SUPERUSER ? (
               <>
-                <Row className="mb-4">
+                <Row className="mb-4 admin-card-row">
                   <Col>
                     <Card className="h-100">
                       <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
@@ -190,46 +191,61 @@ export default function AdminDashboardPage() {
                 <Row className="mb-4">
                   <Col>
                     <h3>Reservaciones</h3>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <div>
-                        <Button
-                          variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                          onClick={() => setFilter('pending')}
-                          className="me-2"
-                        >
-                          Pendientes
-                        </Button>
-                        <Button
-                          variant={filter === 'approved' ? 'success' : 'outline-success'}
-                          onClick={() => setFilter('approved')}
-                          className="me-2"
-                        >
-                          Aprobadas
-                        </Button>
-                        <Button
-                          variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
-                          onClick={() => setFilter('rejected')}
-                          className="me-2"
-                        >
-                          Rechazadas
-                        </Button>
-                        <Button
-                          variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
-                          onClick={() => setFilter('partially_approved')}
-                          className="me-2"
-                        >
-                          Parciales
-                        </Button>
-                        <Button
-                          variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
-                          onClick={() => setFilter('all')}
-                        >
-                          Todas
-                        </Button>
-                      </div>
-                      <Button variant="info" onClick={() => fetchReservations(filter)}>
-                        Refrescar
-                      </Button>
+                    <div className="mb-3">
+                      <Row className="g-2 mb-2">
+                        <Col xs={4}>
+                          <Button
+                            variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+                            onClick={() => setFilter('pending')}
+                            className="w-100"
+                          >
+                            Pendientes
+                          </Button>
+                        </Col>
+                        <Col xs={4}>
+                          <Button
+                            variant={filter === 'approved' ? 'success' : 'outline-success'}
+                            onClick={() => setFilter('approved')}
+                            className="w-100"
+                          >
+                            Aprobadas
+                          </Button>
+                        </Col>
+                        <Col xs={4}>
+                          <Button
+                            variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                            onClick={() => setFilter('rejected')}
+                            className="w-100"
+                          >
+                            Rechazadas
+                          </Button>
+                        </Col>
+                      </Row>
+                      <Row className="g-2">
+                        <Col xs={4}>
+                          <Button
+                            variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                            onClick={() => setFilter('partially_approved')}
+                            className="w-100"
+                          >
+                            Parciales
+                          </Button>
+                        </Col>
+                        <Col xs={4}>
+                          <Button
+                            variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                            onClick={() => setFilter('all')}
+                            className="w-100"
+                          >
+                            Todas
+                          </Button>
+                        </Col>
+                        <Col xs={4}>
+                          <Button variant="info" onClick={() => fetchReservations(filter)} className="w-100">
+                            Refrescar
+                          </Button>
+                        </Col>
+                      </Row>
                     </div>
       
                     {loadingReservations && (
@@ -276,7 +292,7 @@ export default function AdminDashboardPage() {
               </>
             ) : user.role === Role.ADMIN_RESOURCE ? (
                       <>
-                        <Row className="mb-4">
+                        <Row className="mb-4 admin-card-row">
                           <Col>
                             <Card className="h-100">
                               <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
@@ -337,46 +353,61 @@ export default function AdminDashboardPage() {
                         <Row className="mb-4">
                           <Col>
                             <h3>Reservaciones</h3>
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                              <div>
-                                <Button
-                                  variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                                  onClick={() => setFilter('pending')}
-                                  className="me-2"
-                                >
-                                  Pendientes
-                                </Button>
-                                <Button
-                                  variant={filter === 'approved' ? 'success' : 'outline-success'}
-                                  onClick={() => setFilter('approved')}
-                                  className="me-2"
-                                >
-                                  Aprobadas
-                                </Button>
-                                <Button
-                                  variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
-                                  onClick={() => setFilter('rejected')}
-                                  className="me-2"
-                                >
-                                  Rechazadas
-                                </Button>
-                                <Button
-                                  variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
-                                  onClick={() => setFilter('partially_approved')}
-                                  className="me-2"
-                                >
-                                  Parciales
-                                </Button>
-                                <Button
-                                  variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
-                                  onClick={() => setFilter('all')}
-                                >
-                                  Todas
-                                </Button>
-                              </div>
-                              <Button variant="info" onClick={() => fetchReservations(filter)}>
-                                Refrescar
-                              </Button>
+                            <div className="mb-3">
+                              <Row className="g-2 mb-2">
+                                <Col xs={4}>
+                                  <Button
+                                    variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+                                    onClick={() => setFilter('pending')}
+                                    className="w-100"
+                                  >
+                                    Pendientes
+                                  </Button>
+                                </Col>
+                                <Col xs={4}>
+                                  <Button
+                                    variant={filter === 'approved' ? 'success' : 'outline-success'}
+                                    onClick={() => setFilter('approved')}
+                                    className="w-100"
+                                  >
+                                    Aprobadas
+                                  </Button>
+                                </Col>
+                                <Col xs={4}>
+                                  <Button
+                                    variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                                    onClick={() => setFilter('rejected')}
+                                    className="w-100"
+                                  >
+                                    Rechazadas
+                                  </Button>
+                                </Col>
+                              </Row>
+                              <Row className="g-2">
+                                <Col xs={4}>
+                                  <Button
+                                    variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                                    onClick={() => setFilter('partially_approved')}
+                                    className="w-100"
+                                  >
+                                    Parciales
+                                  </Button>
+                                </Col>
+                                <Col xs={4}>
+                                  <Button
+                                    variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                                    onClick={() => setFilter('all')}
+                                    className="w-100"
+                                  >
+                                    Todas
+                                  </Button>
+                                </Col>
+                                <Col xs={4}>
+                                  <Button variant="info" onClick={() => fetchReservations(filter)} className="w-100">
+                                    Refrescar
+                                  </Button>
+                                </Col>
+                              </Row>
                             </div>
               
                             {loadingReservations && (
@@ -437,47 +468,61 @@ export default function AdminDashboardPage() {
                 </Col>
                 <Col md={10}>
                   <h3>Reservaciones</h3>
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <Button
-                        variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('pending')}
-                        className="me-2"
-                      >
-                        Pendientes
-                      </Button>
-                      <Button
-                        variant={filter === 'approved' ? 'success' : 'outline-success'}
-                        onClick={() => setFilter('approved')}
-                        className="me-2"
-                      >
-                        Aprobadas
-                      </Button>
-                      <Button
-                        variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
-                        onClick={() => setFilter('rejected')}
-                        className="me-2"
-                      >
-                        Rechazadas
-                      </Button>
-                      <Button
-                        variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
-                        onClick={() => setFilter('partially_approved')}
-                        className="me-2"
-                      >
-                        Parciales
-                      </Button>
-                      <Button
-                        variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
-                        onClick={() => setFilter('all')}
-                      >
-                        Todas
-                      </Button>
-                    </div>
-                    <Button variant="info" onClick={() => fetchReservations(filter)}
-                    >
-                      Refrescar
-                    </Button>
+                  <div className="mb-3">
+                    <Row className="g-2 mb-2">
+                      <Col xs={4}>
+                        <Button
+                          variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+                          onClick={() => setFilter('pending')}
+                          className="w-100"
+                        >
+                          Pendientes
+                        </Button>
+                      </Col>
+                      <Col xs={4}>
+                        <Button
+                          variant={filter === 'approved' ? 'success' : 'outline-success'}
+                          onClick={() => setFilter('approved')}
+                          className="w-100"
+                        >
+                          Aprobadas
+                        </Button>
+                      </Col>
+                      <Col xs={4}>
+                        <Button
+                          variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                          onClick={() => setFilter('rejected')}
+                          className="w-100"
+                        >
+                          Rechazadas
+                        </Button>
+                      </Col>
+                    </Row>
+                    <Row className="g-2">
+                      <Col xs={4}>
+                        <Button
+                          variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                          onClick={() => setFilter('partially')}
+                          className="w-100"
+                        >
+                          Parciales
+                        </Button>
+                      </Col>
+                      <Col xs={4}>
+                        <Button
+                          variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                          onClick={() => setFilter('all')}
+                          className="w-100"
+                        >
+                          Todas
+                        </Button>
+                      </Col>
+                      <Col xs={4}>
+                        <Button variant="info" onClick={() => fetchReservations(filter)} className="w-100">
+                          Refrescar
+                        </Button>
+                      </Col>
+                    </Row>
                   </div>
       
                   {loadingReservations && (
@@ -519,8 +564,8 @@ export default function AdminDashboardPage() {
                           ))
                       )
                     )}
-                </Col>
-              </Row>
+                  </Col>
+                </Row>
             )}    </Container>
   );
 }
