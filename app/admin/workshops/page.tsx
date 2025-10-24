@@ -386,17 +386,16 @@ export default function AdminWorkshopsPage() {
             <h2>Gestión de Talleres</h2>
           </Col>
           <Col xs={12} className="text-center mt-3">
-            <Row className="g-2 mb-2">
-              <Col xs={6}>
-                <Button variant="primary" onClick={() => handleShowModal()} className="w-100">Añadir Nuevo Taller</Button>
-              </Col>
-              <Col xs={6}>
-                <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'} className="w-100">
-                  Descargar CSV
-                </Button>
-              </Col>
-            </Row>
-            <div className="d-flex justify-content-end">
+          <Row className="g-0 mb-2">
+            <Col xs={6} className="px-1">
+              <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate">Añadir Nuevo Taller</Button>
+            </Col>
+            <Col xs={6} className="px-1">
+              <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'} className="w-100 text-nowrap overflow-hidden text-truncate">
+                Descargar CSV
+              </Button>
+            </Col>
+          </Row>            <div className="d-flex justify-content-end">
               <Link href="/admin" passHref>
                 <Button variant="outline-secondary">Regresar</Button>
               </Link>
