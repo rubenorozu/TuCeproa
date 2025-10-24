@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -21,6 +21,7 @@ const Header = () => {
   const { user, loading: sessionLoading, logout } = useSession();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const navbarRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -58,7 +59,9 @@ const Header = () => {
           (target.matches('.nav-link') && !target.hasAttribute('data-bs-toggle')) || // Regular nav-links (not dropdown toggles)
           target.matches('.dropdown-item') || // Dropdown items
           (target.closest('.nav-link') && !target.closest('.nav-link')?.hasAttribute('data-bs-toggle')) || // Child of regular nav-link
-          target.closest('.dropdown-item') // Child of dropdown item
+          target.closest('.dropdown-item') || // Child of dropdown item
+          target.matches('.btn') || // Check if the clicked element is a button
+          target.closest('.btn') // Check if the clicked element is inside a button
         ) {
                 const navbarToggler = document.querySelector('.navbar-toggler');
                 if (navbarToggler) {
@@ -70,6 +73,22 @@ const Header = () => {
 
   }, [user, fetchNotifications]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navbarRef.current && !navbarRef.current.contains(event.target as Node)) {
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        if (navbarToggler && navbarToggler.getAttribute('aria-expanded') === 'true') {
+          (navbarToggler as HTMLElement).click();
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleMarkAsRead = async (id: string) => {
     await fetch(`/api/notifications/${id}`, { method: 'PUT' });
     fetchNotifications();
@@ -78,6 +97,11 @@ const Header = () => {
   const handleLogout = async () => {
     await logout();
     router.push('/');
+    // Add logic to close the navbar
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    if (navbarToggler && navbarToggler.getAttribute('aria-expanded') === 'true') {
+      (navbarToggler as HTMLElement).click();
+    }
   };
 
   return (
@@ -90,7 +114,7 @@ const Header = () => {
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse w-100 w-md-auto" id="main-nav"> {/* Added w-100 w-md-auto for stability */} 
+          <div className="collapse navbar-collapse w-100 w-md-auto" id="main-nav" ref={navbarRef}> {/* Added w-100 w-md-auto for stability */} 
             <ul className="navbar-nav ms-auto align-items-center" style={{ minWidth: '150px' }}> {/* Added minWidth for stability */} 
               <li className="nav-item"><Link href="/" className="nav-link">Inicio</Link></li>
               <li className="nav-item"><Link href="/recursos" className="nav-link">Recursos</Link></li>
