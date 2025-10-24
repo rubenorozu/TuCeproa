@@ -577,14 +577,13 @@ export default function AdminDashboardPage() {
                       </Row>
                       <Row className="g-2">
                         <Col xs={4}>
-                          <Button
-                            variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
-                            onClick={() => setFilter('partially')}
-                            className="w-100"
-                          >
-                            Parciales
-                          </Button>
-                        </Col>
+                                                        <Button
+                                                          variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                                                          onClick={() => setFilter('partially_approved')}
+                                                          className="w-100"
+                                                        >
+                                                          Parciales
+                                                        </Button>                        </Col>
                         <Col xs={4}>
                           <Button
                             variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
@@ -624,7 +623,7 @@ export default function AdminDashboardPage() {
                       </Button>
                       <Button
                         variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
-                        onClick={() => setFilter('partially')}
+                        onClick={() => setFilter('partially_approved')}
                       >
                         Parciales
                       </Button>
