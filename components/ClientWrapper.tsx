@@ -12,6 +12,7 @@ export default function ClientWrapper({ children }: { children: ReactNode }) {
       <BootstrapClient /> {/* Cargar el JS de Bootstrap primero */}
       <SessionProvider>
         <CartProvider>
+          {console.log('CartProvider rendered')}
           {children}
         </CartProvider>
       </SessionProvider>

@@ -87,7 +87,7 @@ export default function ReservationsPage() {
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
       <hr />
-            <div className="d-flex"> {/* Wrapper for the row */}         <div className="row mx-auto justify-content-center">
+            <div className="row mx-auto">
           {loading ? (
             <div className="text-center">
               <Spinner animation="border" role="status">
@@ -103,8 +103,7 @@ export default function ReservationsPage() {
           ) : (
             <p>No hay recursos que coincidan con el filtro.</p>
           )}
-        </div>
-      </div>
     </div>
+  </div>
   );
 }
