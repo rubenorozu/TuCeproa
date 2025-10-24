@@ -24,7 +24,7 @@ export default function AdminInscriptionsPage() {
 
 
 
-  const [filter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
+  const [filter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('all');
 
   const fetchInscriptions = useCallback(async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all') => {
     setLoading(true);
@@ -143,7 +143,7 @@ export default function AdminInscriptionsPage() {
           <Col xs={12} className="text-center mt-3">
             <Row className="g-2">
               <Col xs={6}>
-                <Button variant="info" onClick={() => fetchInscriptions(filter)} className="w-100">
+                <Button variant="outline-secondary" onClick={() => fetchInscriptions(filter)} className="w-100" style={{ borderColor: '#1577a5', color: '#1577a5' }}>
                   Refrescar
                 </Button>
               </Col>
@@ -164,7 +164,7 @@ export default function AdminInscriptionsPage() {
         </Col>
         <Col md={6} className="text-end">
           <div className="d-flex justify-content-end gap-2">
-            <Button variant="info" onClick={() => fetchInscriptions(filter)}>
+            <Button variant="outline-secondary" onClick={() => fetchInscriptions(filter)}>
               Refrescar
             </Button>
             <Link href="/admin" passHref>

@@ -183,7 +183,7 @@ export default function AdminUsersPage() {
           <Col xs={12} className="text-center mt-3">
             <Row className="g-2">
               <Col xs={6}>
-                <Button variant="primary" onClick={() => window.location.href = '/api/admin/export?model=users'} className="w-100">
+                <Button variant="secondary" onClick={() => window.location.href = '/api/admin/export?model=users'} className="w-100 btn-hover-white-text">
                   Descargar CSV
                 </Button>
               </Col>
@@ -222,7 +222,7 @@ export default function AdminUsersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ width: 'auto' }} // Allow natural width
             />
-            <Button variant="primary" onClick={() => window.location.href = '/api/admin/export?model=users'}>
+            <Button variant="secondary" onClick={() => window.location.href = '/api/admin/export?model=users'} className="btn-hover-white-text">
               Descargar CSV
             </Button>
             <Link href="/admin" passHref>

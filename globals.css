@@ -132,6 +132,11 @@ body {
 
 @media (min-width: 768px) { /* Bootstrap's md breakpoint */
   .bg-light h3.fw-medium { /* Target the h3 within the gray footer section */
-    font-size: 1.5rem !important;
+        font-size: 1.5rem !important;
+      }
+    
+    .btn-hover-white-text:hover {
+      color: white !important; /* Use !important to override Bootstrap's default hover color */
   }
 }
+

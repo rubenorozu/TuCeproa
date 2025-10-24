@@ -388,7 +388,7 @@ export default function AdminWorkshopsPage() {
           <Col xs={12} className="text-center mt-3">
           <Row className="g-0 mb-2">
             <Col xs={6} className="px-1">
-              <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate">Añadir Nuevo Taller</Button>
+              <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Taller</Button>
             </Col>
             <Col xs={6} className="px-1">
               <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'} className="w-100 text-nowrap overflow-hidden text-truncate">
@@ -430,7 +430,7 @@ export default function AdminWorkshopsPage() {
               style={{ width: 'auto' }} // Allow natural width
               className="me-2" // Add margin to the right of the search field
             />
-            <Button variant="primary" onClick={() => handleShowModal()}>Añadir Nuevo Taller</Button>
+            <Button variant="primary" onClick={() => handleShowModal()} style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Taller</Button>
             <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'}>
               Descargar CSV
             </Button>
