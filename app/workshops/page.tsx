@@ -50,7 +50,7 @@ export default function WorkshopsPage() {
       setError(null);
       try {
         const fetchPromises: [Promise<Response>, Promise<Response>?] = [
-          fetch(`/api/workshops?search=${searchTerm}`),
+          fetch(`/api/workshops?search=${searchTerm}`, { cache: 'no-store' }),
         ];
         if (user) {
           fetchPromises.push(fetch('/api/me/inscriptions'));
