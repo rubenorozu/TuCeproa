@@ -30,6 +30,11 @@ model User {
   approvedReservations Reservation[] @relation("ApprovedReservations")
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  @@index([email])
+  @@index([firstName])
+  @@index([lastName])
+  @@index([identifier])
 }
 
 enum Role {
@@ -51,6 +56,8 @@ model Space {
   reservations Reservation[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+
+  @@index([name])
 }
 
 // NEW MODEL FOR MULTIPLE IMAGES
@@ -103,6 +110,8 @@ model Workshop {
   sessions          WorkshopSession[] // NUEVO: Relación con WorkshopSession
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
+
+  @@index([name])
 }
 
 model WorkshopSession {
@@ -185,6 +194,7 @@ model Inscription {
   createdAt   DateTime  @default(now())
 
   @@unique([workshopId, userId])
+  @@index([status])
 }
 
 model ReservationCounter {

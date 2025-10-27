@@ -22,7 +22,6 @@
     "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.8",
     "cookie": "^1.0.2",
-    "dotenv-cli": "^10.0.0",
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.544.0",
@@ -44,6 +43,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "typescript": "^5"
