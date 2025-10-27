@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSession } from '@/context/SessionContext'; // Import useSession
 
 interface Notification {
   id: string;
@@ -10,28 +11,19 @@ interface Notification {
   read: boolean;
 }
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
 const Navbar = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading: sessionLoading, logout } = useSession(); // Use useSession hook
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isClient, setIsClient] = useState(false);
+  // const [isClient, setIsClient] = useState(false); // No longer needed as useSession handles client-side
 
   useEffect(() => {
-    setIsClient(true);
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      setUser(JSON.parse(userStr));
+    // setIsClient(true); // No longer needed
+    if (!sessionLoading && user) {
       fetchNotifications();
     }
-  }, []);
+  }, [user, sessionLoading]); // Depend on user and sessionLoading
 
   const fetchNotifications = async () => {
     const token = localStorage.getItem('token');
@@ -60,9 +52,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
+    logout(); // Use the logout function from useSession
     router.push('/');
   };
 
@@ -80,13 +70,13 @@ const Navbar = () => {
             <li className="nav-item">
               <Link href="/reservations" className="nav-link">Reservas</Link>
             </li>
-            {isClient && user ? (
+            {!sessionLoading && user ? (
               <>
-                {user.role === 'SUPERUSER' && (
+                {user.role === 'SUPERUSER' || user.role === 'ADMIN_RESERVATION' || user.role === 'ADMIN_RESOURCE' ? (
                   <li className="nav-item">
                     <Link href="/admin" className="nav-link">Admin</Link>
                   </li>
-                )}
+                ) : null}
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Notificaciones {unreadCount > 0 && <span className="badge bg-danger">{unreadCount}</span>}
@@ -101,19 +91,22 @@ const Navbar = () => {
                   </ul>
                 </li>
                 <li className="nav-item">
-                  <a href="#" className="nav-link" onClick={handleLogout}>Logout</a>
+                  <Link href="/profile" className="nav-link">Perfil</Link>
+                </li>
+                <li className="nav-item">
+                  <a href="#" className="nav-link" onClick={handleLogout}>Cerrar Sesión</a>
                 </li>
               </>
-            ) : (
+            ) : !sessionLoading ? (
               <>
                 <li className="nav-item">
-                  <Link href="/login" className="nav-link">Login</Link>
+                  <Link href="/login" className="nav-link">Iniciar Sesión</Link>
                 </li>
                 <li className="nav-item">
-                  <Link href="/register" className="nav-link">Registro</Link>
+                  <Link href="/register" className="nav-link">Registrarse</Link>
                 </li>
               </>
-            )}
+            ) : null}
           </ul>
         </div>
       </div>
