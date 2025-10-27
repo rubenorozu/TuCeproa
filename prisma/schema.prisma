@@ -202,3 +202,8 @@ model ReservationCounter {
   date        String @id // Format: "YYYY-MM-DD"
   lastNumber  Int
 }
+
+model SystemSettings {
+  key   String @id
+  value String
+}

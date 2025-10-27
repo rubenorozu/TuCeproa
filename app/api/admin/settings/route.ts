@@ -1,0 +1,45 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { getServerSession } from '@/lib/auth';
+import { Role } from '@prisma/client';
+
+export async function GET() {
+  try {
+    const settings = await prisma.systemSettings.findMany();
+    const settingsObject = settings.reduce((acc, setting) => {
+      acc[setting.key] = setting.value;
+      return acc;
+    }, {} as { [key: string]: string });
+    return NextResponse.json(settingsObject);
+  } catch (error) {
+    console.error('Error al obtener la configuración:', JSON.stringify(error, null, 2));
+    return NextResponse.json({ error: 'No se pudo obtener la configuración. Por favor, revisa la conexión a la base de datos.', details: error.message }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  const session = await getServerSession();
+  if (!session || session.user.role !== Role.SUPERUSER) {
+    return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
+  }
+
+  const body = await request.json();
+  const { extraordinaryInscriptionLimit } = body;
+
+  if (extraordinaryInscriptionLimit === undefined) {
+    return NextResponse.json({ error: 'El límite de inscripciones extraordinarias es requerido.' }, { status: 400 });
+  }
+
+  try {
+    await prisma.systemSettings.upsert({
+      where: { key: 'extraordinaryInscriptionLimit' },
+      update: { value: extraordinaryInscriptionLimit.toString() },
+      create: { key: 'extraordinaryInscriptionLimit', value: extraordinaryInscriptionLimit.toString() },
+    });
+
+    return NextResponse.json({ message: 'Configuración actualizada correctamente.' });
+  } catch (error) {
+    console.error('Error al actualizar la configuración:', error);
+    return NextResponse.json({ error: 'No se pudo actualizar la configuración.' }, { status: 500 });
+  }
+}

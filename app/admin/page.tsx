@@ -84,6 +84,7 @@ export default function AdminDashboardPage() {
     workshops: '/images/admin-cards/Talleres.jpg',
     inscriptions: '/images/admin-cards/Inscripciones.jpg',
     reservations: '/placeholder.svg',
+    settings: '/images/admin-cards/Config.png',
   };
 
   if (sessionLoading || (!user && !sessionLoading)) {
@@ -182,6 +183,20 @@ export default function AdminDashboardPage() {
                         <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
                         <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
                           Ir a Inscripciones
+                        </Link>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                  <Col>
+                    <Card className="h-100">
+                      <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                        <Image src={cardImages.settings} alt="Configuración" fill style={{ objectFit: 'contain' }} />
+                      </div>
+                      <Card.Body className="d-flex flex-column text-center">
+                        <Card.Title>Configuración</Card.Title>
+                        <Card.Text className="flex-grow-1">Gestionar configuración del sistema.</Card.Text>
+                        <Link href="/admin/settings" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                          Ir a Configuración
                         </Link>
                       </Card.Body>
                     </Card>

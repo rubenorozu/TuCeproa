@@ -74,6 +74,22 @@ export async function POST(req: Request) {
 
     if (currentActiveInscriptionsCount >= 3) {
       if (isExtraordinary) {
+        const limitSetting = await prisma.systemSettings.findUnique({
+          where: { key: 'extraordinaryInscriptionLimit' },
+        });
+        const limit = limitSetting ? parseInt(limitSetting.value, 10) : 0;
+
+        const extraordinaryInscriptionsCount = await prisma.inscription.count({
+          where: {
+            userId,
+            status: InscriptionStatus.PENDING_EXTRAORDINARY,
+          },
+        });
+
+        if (extraordinaryInscriptionsCount >= limit) {
+          return NextResponse.json({ error: `Ya has alcanzado el límite de ${limit} solicitudes de inscripción extraordinarias.` }, { status: 403 });
+        }
+
         const inscription = await prisma.inscription.create({
           data: {
             workshopId,
