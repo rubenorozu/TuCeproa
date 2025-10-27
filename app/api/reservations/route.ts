@@ -195,17 +195,21 @@ export async function POST(req: Request) {
 
     const admins = await prisma.user.findMany({ where: { OR: [{ role: 'SUPERUSER' }, { role: 'ADMIN_RESERVATION' }, { role: 'ADMIN_RESOURCE' }] } });
     console.log(`Found ${admins.length} admins.`); // DEBUG
-    for (const admin of admins) {
-      console.log(`Creating notification for admin: ${admin.email}`); // DEBUG
-      await prisma.notification.create({
-        data: {
-          recipientId: admin.id,
-          message: consolidatedMessage,
-          reservationId: reservation.id,
-        },
-      });
-      console.log(`Notification created for admin: ${admin.email}`); // DEBUG
 
+    const notificationsToCreate = admins.map(admin => ({
+      recipientId: admin.id,
+      message: consolidatedMessage,
+      reservationId: reservation.id,
+    }));
+
+    if (notificationsToCreate.length > 0) {
+      await prisma.notification.createMany({
+        data: notificationsToCreate,
+      });
+      console.log(`Notifications created for ${notificationsToCreate.length} admins.`); // DEBUG
+    }
+
+    for (const admin of admins) {
       // Simulate sending an email
       console.log(`\n--- SIMULATED EMAIL (to Admin) ---\n`);
       console.log(`To: ${admin.email}`);
