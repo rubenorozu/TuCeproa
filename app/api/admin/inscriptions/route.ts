@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get('status');
+    const search = searchParams.get('search');
 
     const whereClause: Prisma.InscriptionWhereInput = {};
 
@@ -22,10 +23,30 @@ export async function GET(request: Request) {
       }
     }
 
+    if (search) {
+      whereClause.OR = [
+        {
+          user: {
+            OR: [
+              { firstName: { contains: search, mode: 'insensitive' } },
+              { lastName: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+              { identifier: { contains: search, mode: 'insensitive' } },
+            ],
+          },
+        },
+        {
+          workshop: {
+            name: { contains: search, mode: 'insensitive' },
+          },
+        },
+      ];
+    }
+
     const inscriptions = await prisma.inscription.findMany({
       where: whereClause,
       include: {
-        user: true,
+        user: { select: { firstName: true, lastName: true, email: true, identifier: true } },
         workshop: {
           select: {
             id: true,
@@ -38,6 +59,35 @@ export async function GET(request: Request) {
         createdAt: 'desc',
       },
     });
+
+    const format = searchParams.get('format');
+    if (format === 'csv') {
+      const csvRows = [];
+      csvRows.push('"Nombre del Usuario","Matrícula","Taller","Estatus de Inscripción"');
+
+      for (const inscription of inscriptions) {
+        const userName = `${inscription.user.firstName} ${inscription.user.lastName}`;
+        const userIdentifier = inscription.user.identifier || 'N/A';
+        const workshopName = inscription.workshop.name;
+        const inscriptionStatus = inscription.status;
+
+        csvRows.push(
+          `"${userName.replace(/"/g, '""')}",` +
+          `"${userIdentifier.replace(/"/g, '""')}",` +
+          `"${workshopName.replace(/"/g, '""')}",` +
+          `"${inscriptionStatus.replace(/"/g, '""')}"`
+        );
+      }
+
+      const csv = csvRows.join('\n');
+      return new Response(csv, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv',
+          'Content-Disposition': 'attachment; filename="inscripciones.csv"',
+        },
+      });
+    }
 
     return NextResponse.json(inscriptions, { status: 200 });
   } catch (error) {

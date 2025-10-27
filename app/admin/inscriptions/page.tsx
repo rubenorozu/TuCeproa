@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Spinner, Alert, Container, Row, Col, Badge } from 'react-bootstrap';
+import { Table, Button, Spinner, Alert, Container, Row, Col, Badge, Form } from 'react-bootstrap';
 import { useSession } from '@/context/SessionContext';
 import Link from 'next/link';
 import { InscriptionStatus } from '@prisma/client';
@@ -19,18 +19,15 @@ export default function AdminInscriptionsPage() {
   const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-
-
-
+  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
 
   const [filter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('all');
 
-  const fetchInscriptions = useCallback(async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all') => {
+  const fetchInscriptions = useCallback(async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all', searchQuery: string = '') => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/inscriptions?status=${statusFilter}`);
+      const response = await fetch(`/api/admin/inscriptions?status=${statusFilter}&search=${searchQuery}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar las inscripciones.');
@@ -50,9 +47,15 @@ export default function AdminInscriptionsPage() {
 
   useEffect(() => {
     if (!sessionLoading && user && (user.role === 'SUPERUSER' || user.role === 'ADMIN_RESERVATION' || user.role === 'ADMIN_RESOURCE')) {
-      fetchInscriptions(filter);
+      const handler = setTimeout(() => {
+        fetchInscriptions(filter, searchTerm);
+      }, 500); // Debounce por 500ms
+
+      return () => {
+        clearTimeout(handler);
+      };
     }
-  }, [sessionLoading, user, filter, fetchInscriptions]);
+  }, [sessionLoading, user, filter, searchTerm, fetchInscriptions]);
 
   const handleApproveReject = async (inscriptionId: string, action: 'approve' | 'reject') => {
     if (action === 'reject' && !window.confirm('¿Estás seguro de que quieres rechazar esta inscripción?')) {
@@ -141,31 +144,72 @@ export default function AdminInscriptionsPage() {
             <h2>Gestión de Inscripciones a Talleres</h2>
           </Col>
           <Col xs={12} className="text-center mt-3">
-            <Row className="g-2">
-              <Col xs={6}>
-                <Button variant="outline-secondary" onClick={() => fetchInscriptions(filter)} className="w-100" style={{ borderColor: '#1577a5', color: '#1577a5' }}>
+            <Row className="g-0 mb-2">
+              <Col xs={6} className="px-1">
+                <Button variant="outline-secondary" onClick={() => fetchInscriptions(filter, searchTerm)} className="w-100" style={{ borderColor: '#1577a5', color: '#1577a5' }}>
                   Refrescar
                 </Button>
               </Col>
-              <Col xs={6}>
-                <Link href="/admin" passHref>
-                  <Button variant="outline-secondary" className="w-100">Regresar</Button>
-                </Link>
+              <Col xs={6} className="px-1">
+                <Button variant="secondary" onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = `/api/admin/inscriptions?status=${filter}&search=${searchTerm}&format=csv`;
+                  link.setAttribute('download', 'Inscripciones_Talleres.csv');
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }} className="w-100 text-nowrap overflow-hidden text-truncate">
+                  Descargar CSV
+                </Button>
               </Col>
             </Row>
+            <div className="d-flex justify-content-end">
+              <Link href="/admin" passHref>
+                <Button variant="outline-secondary">Regresar</Button>
+              </Link>
+            </div>
+          </Col>
+        </Row>
+
+        <Row className="mb-3">
+          <Col>
+            <Form.Control
+              type="text"
+              placeholder="Buscar inscripciones por usuario, taller o ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </Col>
         </Row>
       </div>
 
       {/* Desktop Layout */}
       <Row className="d-none d-md-flex align-items-center mb-3">
-        <Col md={6} className="text-start">
+        <Col md={3} className="text-start">
           <h2>Gestión de Inscripciones a Talleres</h2>
         </Col>
-        <Col md={6} className="text-end">
+        <Col md={9} className="text-end">
           <div className="d-flex justify-content-end gap-2">
-            <Button variant="outline-secondary" onClick={() => fetchInscriptions(filter)}>
+            <Form.Control
+              type="text"
+              placeholder="Buscar inscripciones por usuario, taller o ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: 'auto' }} // Allow natural width
+              className="me-2" // Add margin to the right of the search field
+            />
+            <Button variant="outline-secondary" onClick={() => fetchInscriptions(filter, searchTerm)}>
               Refrescar
+            </Button>
+            <Button variant="secondary" onClick={() => {
+              const link = document.createElement('a');
+              link.href = `/api/admin/inscriptions?status=${filter}&search=${searchTerm}&format=csv`;
+              link.setAttribute('download', 'Inscripciones_Talleres.csv');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}>
+              Descargar CSV
             </Button>
             <Link href="/admin" passHref>
               <Button variant="outline-secondary">Regresar</Button>
