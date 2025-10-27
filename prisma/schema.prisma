@@ -162,6 +162,7 @@ enum InscriptionStatus {
   PENDING
   APPROVED
   REJECTED
+  PENDING_EXTRAORDINARY
 }
 
 model Document {

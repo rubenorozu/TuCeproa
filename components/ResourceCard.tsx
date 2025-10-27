@@ -84,13 +84,13 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
     fetchInscriptionStatus();
   }, [user, resource.id, type, refresh]);
 
-  const handleInscribe = async () => {
+  const handleInscribe = async (isExtraordinary = false) => {
     setIsSubscribing(true);
     try {
       const res = await fetch(`/api/workshops/inscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workshopId: resource.id }),
+        body: JSON.stringify({ workshopId: resource.id, isExtraordinary }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -100,7 +100,13 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
         }
         setRefresh(prev => !prev);
       } else {
-        alert(data.error || 'No se pudo realizar la inscripción.');
+        if (data.limitReached) {
+          if (window.confirm(data.error + '\n\n¿Deseas enviar una solicitud de inscripción extraordinaria?')) {
+            handleInscribe(true);
+          }
+        } else {
+          alert(data.error || 'No se pudo realizar la inscripción.');
+        }
         if (res.status === 409) {
           setRefresh(prev => !prev);
         }
@@ -189,7 +195,7 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
                                    '#F28C00',
                       whiteSpace: 'nowrap'
                     }}
-                    onClick={handleInscribe}
+                    onClick={() => handleInscribe()}
                     disabled={
                       !isAvailable ||
                       isFull ||

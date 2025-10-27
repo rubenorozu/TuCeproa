@@ -46,7 +46,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ urls: blobs.map(b => b.url) }, { status: 200 });
 
   } catch (error) {
-    console.error('Error al subir archivos a Vercel Blob:', error);
+    console.error('Error al subir archivos a Vercel Blob:', JSON.stringify(error, null, 2));
     return NextResponse.json({ error: 'Error al procesar la subida de archivos.' }, { status: 500 });
   }
 }

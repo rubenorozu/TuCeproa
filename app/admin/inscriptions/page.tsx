@@ -123,6 +123,7 @@ export default function AdminInscriptionsPage() {
   }
 
   const getStatusBadge = (status: InscriptionStatus) => {
+    console.log('Inscription status:', status);
     switch (status) {
       case 'PENDING':
         return <Badge bg="warning">Pendiente</Badge>;
@@ -130,6 +131,8 @@ export default function AdminInscriptionsPage() {
         return <Badge bg="success">Aprobada</Badge>;
       case 'REJECTED':
         return <Badge bg="danger">Rechazada</Badge>;
+      case 'PENDING_EXTRAORDINARY':
+        return <Badge bg="primary">Pendiente (Extraordinaria)</Badge>;
       default:
         return <Badge bg="secondary">{status}</Badge>;
     }
@@ -253,7 +256,7 @@ export default function AdminInscriptionsPage() {
                   <td>{new Date(inscription.createdAt).toLocaleString()}</td>
                   <td>{getStatusBadge(inscription.status)}</td>
                   <td>
-                    {inscription.status === 'PENDING' && (
+                    {(inscription.status === 'PENDING' || inscription.status === 'PENDING_EXTRAORDINARY') && (
                       <>
                         <Button variant="success" size="sm" className="me-2" onClick={() => handleApproveReject(inscription.id, 'approve')} disabled={!canApproveReject}>Aprobar</Button>
                         <Button variant="danger" size="sm" className="me-2" onClick={() => handleApproveReject(inscription.id, 'reject')} disabled={!canApproveReject}>Rechazar</Button>

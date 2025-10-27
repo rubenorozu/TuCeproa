@@ -17,8 +17,12 @@ export async function GET(request: Request) {
 
     const whereClause: Prisma.InscriptionWhereInput = {};
 
-    if (session.user.role !== Role.SUPERUSER) {
-      if (statusFilter && statusFilter !== 'all') {
+    if (statusFilter && statusFilter !== 'all') {
+      if (statusFilter === 'pending') {
+        whereClause.status = {
+          in: [InscriptionStatus.PENDING, InscriptionStatus.PENDING_EXTRAORDINARY],
+        };
+      } else {
         whereClause.status = statusFilter.toUpperCase() as InscriptionStatus;
       }
     }
@@ -43,6 +47,7 @@ export async function GET(request: Request) {
       ];
     }
 
+    console.log('whereClause:', JSON.stringify(whereClause, null, 2));
     const inscriptions = await prisma.inscription.findMany({
       where: whereClause,
       include: {
@@ -89,6 +94,7 @@ export async function GET(request: Request) {
       });
     }
 
+    console.log('inscriptions:', JSON.stringify(inscriptions, null, 2));
     return NextResponse.json(inscriptions, { status: 200 });
   } catch (error) {
     console.error('Error al obtener las inscripciones:', error);

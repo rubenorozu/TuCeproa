@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { workshopId } = await req.json();
+    const { workshopId, isExtraordinary } = await req.json();
     const userId = session.user.id;
 
     const workshop = await prisma.workshop.findUnique({
@@ -73,7 +73,17 @@ export async function POST(req: Request) {
     }).length;
 
     if (currentActiveInscriptionsCount >= 3) {
-      return NextResponse.json({ error: 'Ya tienes el máximo de 3 inscripciones activas (pendientes o aprobadas). Por favor, espera a que se resuelvan las actuales.' }, { status: 403 });
+      if (isExtraordinary) {
+        const inscription = await prisma.inscription.create({
+          data: {
+            workshopId,
+            userId,
+            status: InscriptionStatus.PENDING_EXTRAORDINARY,
+          },
+        });
+        return NextResponse.json(inscription, { status: 201 });
+      }
+      return NextResponse.json({ error: 'Ya tienes el máximo de 3 inscripciones activas (pendientes o aprobadas). Por favor, espera a que se resuelvan las actuales.', limitReached: true }, { status: 403 });
     }
 
     // Crear la inscripción
