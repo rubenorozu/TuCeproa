@@ -29,7 +29,7 @@ export async function GET(request: Request, { params }: Params) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify<UserPayload>(tokenCookie.value, secret);
 
-    if (payload.role !== 'SUPERUSER') {
+    if (payload.role !== 'SUPERUSER' && payload.role !== 'ADMIN_RESOURCE') {
       return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
     }
   } catch (err) {
@@ -45,6 +45,7 @@ export async function GET(request: Request, { params }: Params) {
         responsibleUser: { select: { firstName: true, lastName: true } },
         sessions: true, // Include sessions
         inscriptions: {
+          where: { status: 'APPROVED' }, // Filter by APPROVED status
           include: {
             user: { select: { firstName: true, lastName: true, email: true, identifier: true } }, // Add identifier
           },

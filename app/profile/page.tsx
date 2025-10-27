@@ -114,8 +114,12 @@ export default function ProfilePage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to update profile');
+        try {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'Failed to update profile');
+        } catch (jsonError) {
+          throw new Error(res.statusText || 'An unexpected error occurred');
+        }
       }
 
       const updatedData: UserProfile = await res.json();

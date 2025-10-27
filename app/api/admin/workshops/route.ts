@@ -65,6 +65,41 @@ export async function GET(request: Request) {
         createdAt: 'desc',
       },
     });
+
+    const format = searchParams.get('format');
+    if (format === 'csv') {
+      const csvRows = [];
+      // Headers
+      csvRows.push('"ID del taller","Nombre del taller","Responsable","Maestro","Descripción","Fecha de inicio","Fecha de finalización","Sesiones"');
+
+      for (const workshop of workshops) {
+        const responsibleName = workshop.responsibleUser ? `${workshop.responsibleUser.firstName} ${workshop.responsibleUser.lastName}` : 'N/A';
+        const sessions = workshop.sessions.map(session => {
+          const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+          return `${days[session.dayOfWeek]} ${session.timeStart}-${session.timeEnd}${session.room ? ` (${session.room})` : ''}`;
+        }).join('; ');
+
+        csvRows.push(
+          `"${workshop.displayId || workshop.id}",` +
+          `"${workshop.name.replace(/"/g, '""')}",` +
+          `"${responsibleName.replace(/"/g, '""')}",` +
+          `"${(workshop.teacher || 'N/A').replace(/"/g, '""')}",` +
+          `"${(workshop.description || 'N/A').replace(/"/g, '""')}",` +
+          `"${workshop.startDate ? new Date(workshop.startDate).toLocaleDateString() : 'N/A'}",` +
+          `"${workshop.endDate ? new Date(workshop.endDate).toLocaleDateString() : 'N/A'}",` +
+          `"${sessions.replace(/"/g, '""')}"`
+        );
+      }
+
+      const csv = csvRows.join('\n');
+      return new Response(csv, {
+        headers: {
+          'Content-Type': 'text/csv',
+          'Content-Disposition': 'attachment; filename="talleres.csv"',
+        },
+      });
+    }
+
     return NextResponse.json(workshops, { status: 200 });
   } catch (error) {
     console.error('Error al obtener los talleres:', error);

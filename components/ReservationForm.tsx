@@ -51,7 +51,7 @@ export default function ReservationForm() {
     formData.append('endTime', endTime);
     formData.append('justification', justification);
     if (file) {
-      formData.append('file', file);
+      formData.append('file_0', file);
     }
 
     try {
@@ -70,8 +70,12 @@ export default function ReservationForm() {
           router.push('/recursos');
         }, 2000);
       } else {
-        const data = await res.json();
-        setError(data.message || 'Algo salió mal.');
+        try {
+          const data = await res.json();
+          setError(data.message || 'Algo salió mal.');
+        } catch (jsonError) {
+          setError(res.statusText || 'Algo salió mal al procesar la respuesta del servidor.');
+        }
       }
     } catch (error) {
       setError('Algo salió mal.');
@@ -121,7 +125,7 @@ export default function ReservationForm() {
                     ></textarea>
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="file" className="form-label">Adjuntar Documento</label>
+                    <label htmlFor="file" className="form-label">Adjuntar Archivos (Opcional)</label>
                     <input
                       type="file"
                       className="form-control"

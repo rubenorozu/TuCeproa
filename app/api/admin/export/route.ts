@@ -3,112 +3,183 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma'; // Import singleton Prisma client
 
-// Helper function to convert JSON to CSV
-function jsonToCsv(jsonData: Record<string, unknown>[]): string {
-  if (!jsonData || jsonData.length === 0) {
-    return '';
-  }
-
-  const keys = Object.keys(jsonData[0]);
-  const header = keys.join(',') + '\n';
-
-  const rows = jsonData.map(row => {
-    return keys.map(key => {
-      let cell = row[key] === null || row[key] === undefined ? '' : row[key];
-      cell = String(cell).replace(/"/g, '""'); // Escape double quotes
-      if (String(cell).includes(',') || String(cell).includes('" ') || String(cell).includes('\n')) {
-        cell = `"${cell}"`;
-      }
-      return cell;
-    }).join(',');
-  }).join('\n');
-
-  return header + rows;
-}
 
 export async function GET(request: Request) {
   const session = await getServerSession();
 
-  if (!session || session.user.role !== Role.SUPERUSER) {
+  if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESOURCE)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);
   const model = searchParams.get('model');
-
-  let data: Record<string, unknown>[] = [];
-  let fileName = 'export.csv';
+  console.log('Received model:', model); // Debug log
 
   try {
     switch (model) {
       case 'users':
-        data = await prisma.user.findMany({
+        const users = await prisma.user.findMany({
           select: {
-            displayId: true,
+            id: true,
             firstName: true,
             lastName: true,
             email: true,
             identifier: true,
-            role: true,
-            isVerified: true,
-            createdAt: true,
+            phoneNumber: true,
           }
         });
-        fileName = 'Usuarios_TuCeproa.csv';
-        break;
+        const userFileName = 'Usuarios_TuCeproa.csv';
+
+        const userCsvRows = [];
+        userCsvRows.push('"ID del usuario","Nombre","Apellidos","Email","Matrícula","Teléfono"');
+        for (const user of users) {
+          userCsvRows.push(
+            `"${user.id}",` +
+            `"${(user.firstName || '').replace(/"/g, '""')}",` +
+            `"${(user.lastName || '').replace(/"/g, '""')}",` +
+            `"${user.email.replace(/"/g, '""')}",` +
+            `"${(user.identifier || 'N/A').replace(/"/g, '""')}",` +
+            `"${(user.phoneNumber || 'N/A').replace(/"/g, '""')}"`
+          );
+        }
+        const userCsv = userCsvRows.join('\n');
+        return new Response(userCsv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': `attachment; filename="${userFileName}"`,
+          },
+        });
       case 'spaces':
-        data = await prisma.space.findMany({
+        const spaces = await prisma.space.findMany({
           select: {
-            displayId: true,
+            id: true,
             name: true,
-            description: true,
-            responsibleUserId: true,
-            createdAt: true,
+            responsibleUser: {
+              select: {
+                firstName: true,
+                lastName: true,
+              }
+            },
           }
         });
-        fileName = 'Espacios_TuCeproa.csv';
-        break;
+        const spaceFileName = 'Espacios_TuCeproa.csv';
+
+        const spaceCsvRows = [];
+        spaceCsvRows.push('"ID del espacio","Nombre del espacio","Encargado"');
+        for (const space of spaces) {
+          const responsibleName = space.responsibleUser ? `${space.responsibleUser.firstName} ${space.responsibleUser.lastName}` : 'N/A';
+          spaceCsvRows.push(
+            `"${space.id}",` +
+            `"${space.name.replace(/"/g, '""')}",` +
+            `"${responsibleName.replace(/"/g, '""')}"`
+          );
+        }
+        const spaceCsv = spaceCsvRows.join('\n');
+        console.log('Returning CSV for spaces.'); // Debug log
+        return new Response(spaceCsv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': `attachment; filename="${spaceFileName}"`,
+          },
+        });
       case 'equipment':
-        data = await prisma.equipment.findMany({
+        const equipmentList = await prisma.equipment.findMany({
           select: {
-            displayId: true,
+            id: true,
             name: true,
-            description: true,
             serialNumber: true,
             fixedAssetId: true,
-            responsibleUserId: true,
-            createdAt: true,
+            responsibleUser: {
+              select: {
+                firstName: true,
+                lastName: true,
+              }
+            },
           }
         });
-        fileName = 'Equipos_TuCeproa.csv';
-        break;
+        const equipmentFileName = 'Equipos_TuCeproa.csv';
+
+        const equipmentCsvRows = [];
+        equipmentCsvRows.push('"ID del equipo","Nombre","Número de serie","Activo fijo","Responsable"');
+        for (const equipment of equipmentList) {
+          const responsibleName = equipment.responsibleUser ? `${equipment.responsibleUser.firstName} ${equipment.responsibleUser.lastName}` : 'N/A';
+          equipmentCsvRows.push(
+            `"${equipment.id}",` +
+            `"${equipment.name.replace(/"/g, '""')}",` +
+            `"${(equipment.serialNumber || 'N/A').replace(/"/g, '""')}",` +
+            `"${(equipment.fixedAssetId || 'N/A').replace(/"/g, '""')}",` +
+            `"${responsibleName.replace(/"/g, '""')}"`
+          );
+        }
+        const equipmentCsv = equipmentCsvRows.join('\n');
+        return new Response(equipmentCsv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': `attachment; filename="${equipmentFileName}"`,
+          },
+        });
       case 'workshops':
-        data = await prisma.workshop.findMany({
+        const workshopsList = await prisma.workshop.findMany({
           select: {
-            displayId: true,
+            id: true,
             name: true,
             description: true,
-            capacity: true,
             teacher: true,
-            createdAt: true,
+            startDate: true,
+            endDate: true,
+            responsibleUser: {
+              select: {
+                firstName: true,
+                lastName: true,
+              }
+            },
+            sessions: {
+              select: {
+                dayOfWeek: true,
+                timeStart: true,
+                timeEnd: true,
+                room: true,
+              }
+            },
           }
         });
-        fileName = 'Talleres_TuCeproa.csv';
-        break;
+        const workshopFileName = 'Talleres_TuCeproa.csv';
+
+        const workshopCsvRows = [];
+        workshopCsvRows.push('"ID del taller","Nombre del taller","Responsable","Maestro","Descripción","Fecha de inicio","Fecha de finalización","Sesiones"');
+        for (const workshop of workshopsList) {
+          const responsibleName = workshop.responsibleUser ? `${workshop.responsibleUser.firstName} ${workshop.responsibleUser.lastName}` : 'N/A';
+          const sessions = workshop.sessions.map(session => {
+            const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            return `${days[session.dayOfWeek]} ${session.timeStart}-${session.timeEnd}${session.room ? ` (${session.room})` : ''}`;
+          }).join('; ');
+
+          workshopCsvRows.push(
+            `"${workshop.id}",` +
+            `"${workshop.name.replace(/"/g, '""')}",` +
+            `"${responsibleName.replace(/"/g, '""')}",` +
+            `"${(workshop.teacher || 'N/A').replace(/"/g, '""')}",` +
+            `"${(workshop.description || 'N/A').replace(/"/g, '""')}",` +
+            `"${workshop.startDate ? new Date(workshop.startDate).toLocaleDateString() : 'N/A'}",` +
+            `"${workshop.endDate ? new Date(workshop.endDate).toLocaleDateString() : 'N/A'}",` +
+            `"${sessions.replace(/"/g, '""')}"`
+          );
+        }
+        const workshopCsv = workshopCsvRows.join('\n');
+        return new Response(workshopCsv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': `attachment; filename="${workshopFileName}"`,
+          },
+        });
       default:
         return NextResponse.json({ error: 'Modelo no válido.' }, { status: 400 });
     }
 
-    const csv = jsonToCsv(data);
-
-    return new NextResponse(csv, {
-           status: 200,
-           headers: {
-             'Content-Type': 'text/csv',
-             'Content-Disposition': `attachment; filename="${fileName}"`,
-           },
-         });
-     
        } catch (error) {
         console.error(`Error al exportar el modelo ${model}:`, error);
         return NextResponse.json({ error: `No se pudieron exportar los datos para ${model}.` }, {

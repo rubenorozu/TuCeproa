@@ -293,7 +293,14 @@ export default function AdminSpacesPage() {
               <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Espacio</Button>
             </Col>
             <Col xs={6} className="px-1">
-              <Button variant="secondary" onClick={() => window.location.href = '/api/admin/export?model=spaces'} className="w-100 text-nowrap overflow-hidden text-truncate btn-hover-white-text">
+              <Button variant="secondary" onClick={() => {
+                const link = document.createElement('a');
+                link.href = '/api/admin/export?model=spaces';
+                link.setAttribute('download', 'Espacios_TuCeproa.csv'); // Suggest a filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }} className="w-100 text-nowrap overflow-hidden text-truncate btn-hover-white-text">
                 Descargar CSV
               </Button>
             </Col>
@@ -333,7 +340,14 @@ export default function AdminSpacesPage() {
               className="me-2" // Add margin to the right of the search field
             />
             <Button variant="primary" onClick={() => handleShowModal()} style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Espacio</Button>
-            <Button variant="secondary" onClick={() => window.location.href = '/api/admin/spaces'} className="btn-hover-white-text">
+            <Button variant="secondary" onClick={() => {
+              const link = document.createElement('a');
+              link.href = '/api/admin/export?model=spaces';
+              link.setAttribute('download', 'Espacios_TuCeproa.csv'); // Suggest a filename
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }} className="btn-hover-white-text">
               Descargar CSV
             </Button>
             <Link href="/admin" passHref>

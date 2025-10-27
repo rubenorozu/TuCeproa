@@ -391,7 +391,14 @@ export default function AdminWorkshopsPage() {
               <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Taller</Button>
             </Col>
             <Col xs={6} className="px-1">
-              <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'} className="w-100 text-nowrap overflow-hidden text-truncate">
+              <Button variant="secondary" onClick={() => {
+                const link = document.createElement('a');
+                link.href = '/api/admin/export?model=workshops';
+                link.setAttribute('download', 'Talleres_TuCeproa.csv'); // Suggest a filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }} className="w-100 text-nowrap overflow-hidden text-truncate">
                 Descargar CSV
               </Button>
             </Col>
@@ -431,7 +438,14 @@ export default function AdminWorkshopsPage() {
               className="me-2" // Add margin to the right of the search field
             />
             <Button variant="primary" onClick={() => handleShowModal()} style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Taller</Button>
-            <Button variant="secondary" onClick={() => window.location.href = '/api/admin/workshops'}>
+            <Button variant="secondary" onClick={() => {
+              const link = document.createElement('a');
+              link.href = '/api/admin/export?model=workshops';
+              link.setAttribute('download', 'Talleres_TuCeproa.csv'); // Suggest a filename
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}>
               Descargar CSV
             </Button>
             <Link href="/admin" passHref>

@@ -43,8 +43,12 @@ export default function ChangePasswordPage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Error al cambiar la contraseña.');
+        try {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'Error al cambiar la contraseña.');
+        } catch (jsonError) {
+          throw new Error(res.statusText || 'Ocurrió un error desconocido al cambiar la contraseña.');
+        }
       }
 
       setSuccess('Contraseña cambiada con éxito.');

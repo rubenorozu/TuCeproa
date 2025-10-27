@@ -303,7 +303,14 @@ export default function AdminEquipmentPage() {
               <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Equipo</Button>
             </Col>
             <Col xs={6} className="px-1">
-              <Button variant="secondary" onClick={() => window.location.href = '/api/admin/equipment'} className="w-100 text-nowrap overflow-hidden text-truncate">
+              <Button variant="secondary" onClick={() => {
+                const link = document.createElement('a');
+                link.href = '/api/admin/export?model=equipment';
+                link.setAttribute('download', 'Equipos_TuCeproa.csv'); // Suggest a filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }} className="w-100 text-nowrap overflow-hidden text-truncate">
                 Descargar CSV
               </Button>
             </Col>
@@ -343,7 +350,14 @@ export default function AdminEquipmentPage() {
               className="me-2" // Add margin to the right of the search field
             />
             <Button variant="primary" onClick={() => handleShowModal()} style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Equipo</Button>
-            <Button variant="secondary" onClick={() => window.location.href = '/api/admin/equipment'}>
+            <Button variant="secondary" onClick={() => {
+              const link = document.createElement('a');
+              link.href = '/api/admin/export?model=equipment';
+              link.setAttribute('download', 'Equipos_TuCeproa.csv'); // Suggest a filename
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}>
               Descargar CSV
             </Button>
             <Link href="/admin" passHref>

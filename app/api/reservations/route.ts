@@ -223,6 +223,6 @@ export async function POST(req: Request) {
     return NextResponse.json(reservation, { status: 201 });
   } catch (error) {
     console.error('Error creating reservation:', error);
-    return NextResponse.json({ message: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json({ message: error.message || 'Something went wrong' }, { status: 500 });
   }
 }
