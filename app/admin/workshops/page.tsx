@@ -95,22 +95,17 @@ export default function AdminWorkshopsPage() {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
+        cache: 'no-store',
       });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar los talleres.');
       }
       const data: Workshop[] = await response.json();
-      const now = new Date();
-      const updatedWorkshops = data.map(workshop => {
-        const parsedInscriptionsStartDate = workshop.inscriptionsStartDate ? new Date(workshop.inscriptionsStartDate) : null;
-        const calculatedInscriptionsOpen = parsedInscriptionsStartDate ? parsedInscriptionsStartDate <= now : true;
-        return {
-          ...workshop,
-          inscriptionsOpen: calculatedInscriptionsOpen,
-          sessions: workshop.sessions || [] // Ensure sessions is an array
-        };
-      });
+      const updatedWorkshops = data.map(workshop => ({
+        ...workshop,
+        sessions: workshop.sessions || [] // Ensure sessions is an array
+      }));
       setWorkshops(updatedWorkshops);
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -357,7 +352,11 @@ export default function AdminWorkshopsPage() {
       }
 
       alert(`Inscripciones ${newStatus ? 'abiertas' : 'cerradas'} correctamente.`);
-      fetchWorkshops(); // Recargar la lista de talleres
+      if (user.role === 'ADMIN_RESOURCE') {
+        fetchWorkshops(searchTerm, user.id);
+      } else {
+        fetchWorkshops(searchTerm);
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -522,7 +521,12 @@ export default function AdminWorkshopsPage() {
                     className="me-2"
                     onClick={() => handleToggleInscriptions(item.id)}
                   >
-                    {item.inscriptionsOpen ? 'Cerrar' : 'Reabrir'}
+                                        {item.inscriptionsOpen 
+                      ? 'Cerrar' 
+                      : new Date(item.inscriptionsStartDate || 0) < new Date() 
+                      ? 'Reabrir' 
+                      : 'Abrir'}
+
                   </Button>
                   <Button variant="warning" size="sm" className="me-2" onClick={() => handleShowModal(item)}>
                     Editar
