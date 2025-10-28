@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Container, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function AdminSettingsPage() {
   const { user, loading: sessionLoading } = useSession();
@@ -97,9 +98,14 @@ export default function AdminSettingsPage() {
           </Form.Text>
         </Form.Group>
         {success && <Alert variant="success">{success}</Alert>}
-        <Button variant="primary" type="submit">
-          Guardar Cambios
-        </Button>
+        <div className="d-flex gap-2">
+          <Button variant="primary" type="submit">
+            Guardar Cambios
+          </Button>
+          <Link href="/admin" passHref>
+            <Button variant="outline-primary">Regresar</Button>
+          </Link>
+        </div>
       </Form>
     </Container>
   );

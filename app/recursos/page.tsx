@@ -80,8 +80,8 @@ export default function ReservationsPage() {
                   className="mb-3 mb-md-0 me-md-3" /* Add margin bottom on mobile, right on desktop */
                 />
                           <div className="btn-group w-100 w-md-auto">            <button className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('all')}>Todos</button>
-            <button className={`btn ${filter === 'space' ? 'btn-primary' : 'btn-outline-warning'}`} onClick={() => setFilter('space')}>Espacios</button>
-            <button className={`btn ${filter === 'equipment' ? 'btn-primary' : 'btn-outline-warning'}`} onClick={() => setFilter('equipment')}>Equipos</button>
+            <button className={`btn ${filter === 'space' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('space')}>Espacios</button>
+            <button className={`btn ${filter === 'equipment' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('equipment')}>Equipos</button>
           </div>
         </div>
       </div>

@@ -158,3 +158,18 @@ body {
   color: #1577a5;
   border-color: #1577a5;
 }
+
+.dropdown-item:active,
+.dropdown-item.active {
+  background-color: #1577a5 !important;
+}
+
+.btn-primary:active,
+.btn-primary:focus,
+.btn-outline-primary:active,
+.btn-outline-primary:focus {
+  background-color: #1577a5 !important;
+  border-color: #1577a5 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.25rem rgba(21, 119, 165, 0.5) !important;
+}

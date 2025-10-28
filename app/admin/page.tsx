@@ -220,7 +220,7 @@ export default function AdminDashboardPage() {
                         </Col>
                         <Col xs={4}>
                           <Button
-                            variant={filter === 'approved' ? 'success' : 'outline-success'}
+                            variant={filter === 'approved' ? 'primary' : 'outline-primary'}
                             onClick={() => setFilter('approved')}
                             className="w-100"
                           >
@@ -229,7 +229,7 @@ export default function AdminDashboardPage() {
                         </Col>
                         <Col xs={4}>
                           <Button
-                            variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                            variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
                             onClick={() => setFilter('rejected')}
                             className="w-100"
                           >
@@ -240,7 +240,7 @@ export default function AdminDashboardPage() {
                       <Row className="g-2">
                         <Col xs={4}>
                           <Button
-                            variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                            variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
                             onClick={() => setFilter('partially_approved')}
                             className="w-100"
                           >
@@ -249,7 +249,7 @@ export default function AdminDashboardPage() {
                         </Col>
                         <Col xs={4}>
                           <Button
-                            variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                            variant={filter === 'all' ? 'primary' : 'outline-primary'}
                             onClick={() => setFilter('all')}
                             className="w-100"
                           >
@@ -257,7 +257,7 @@ export default function AdminDashboardPage() {
                           </Button>
                         </Col>
                         <Col xs={4}>
-                          <Button variant="info" onClick={() => fetchReservations(filter)} className="w-100">
+                          <Button variant="primary" onClick={() => fetchReservations(filter)} className="w-100">
                             Refrescar
                           </Button>
                         </Col>
@@ -273,30 +273,30 @@ export default function AdminDashboardPage() {
                         Pendientes
                       </Button>
                       <Button
-                        variant={filter === 'approved' ? 'success' : 'outline-success'}
+                        variant={filter === 'approved' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('approved')}
                       >
                         Aprobadas
                       </Button>
                       <Button
-                        variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                        variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('rejected')}
                       >
                         Rechazadas
                       </Button>
                       <Button
-                        variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                        variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('partially_approved')}
                       >
                         Parciales
                       </Button>
                       <Button
-                        variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                        variant={filter === 'all' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('all')}
                       >
                         Todas
                       </Button>
-                      <Button variant="info" onClick={() => fetchReservations(filter)}>
+                      <Button variant="primary" onClick={() => fetchReservations(filter)}>
                         Refrescar
                       </Button>
                     </div>
@@ -420,7 +420,7 @@ export default function AdminDashboardPage() {
                                 </Col>
                                 <Col xs={4}>
                                   <Button
-                                    variant={filter === 'approved' ? 'success' : 'outline-success'}
+                                    variant={filter === 'approved' ? 'primary' : 'outline-primary'}
                                     onClick={() => setFilter('approved')}
                                     className="w-100"
                                   >
@@ -429,7 +429,7 @@ export default function AdminDashboardPage() {
                                 </Col>
                                 <Col xs={4}>
                                   <Button
-                                    variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                                    variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
                                     onClick={() => setFilter('rejected')}
                                     className="w-100"
                                   >
@@ -440,7 +440,7 @@ export default function AdminDashboardPage() {
                               <Row className="g-2">
                                 <Col xs={4}>
                                   <Button
-                                    variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                                    variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
                                     onClick={() => setFilter('partially_approved')}
                                     className="w-100"
                                   >
@@ -449,7 +449,7 @@ export default function AdminDashboardPage() {
                                 </Col>
                                 <Col xs={4}>
                                   <Button
-                                    variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                                    variant={filter === 'all' ? 'primary' : 'outline-primary'}
                                     onClick={() => setFilter('all')}
                                     className="w-100"
                                   >
@@ -457,7 +457,7 @@ export default function AdminDashboardPage() {
                                   </Button>
                                 </Col>
                                 <Col xs={4}>
-                                  <Button variant="info" onClick={() => fetchReservations(filter)} className="w-100">
+                                  <Button variant="primary" onClick={() => fetchReservations(filter)} className="w-100">
                                     Refrescar
                                   </Button>
                                 </Col>
@@ -473,30 +473,30 @@ export default function AdminDashboardPage() {
                                 Pendientes
                               </Button>
                               <Button
-                                variant={filter === 'approved' ? 'success' : 'outline-success'}
+                                variant={filter === 'approved' ? 'primary' : 'outline-primary'}
                                 onClick={() => setFilter('approved')}
                               >
                                 Aprobadas
                               </Button>
                               <Button
-                                variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                                variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
                                 onClick={() => setFilter('rejected')}
                               >
                                 Rechazadas
                               </Button>
                               <Button
-                                variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                                variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
                                 onClick={() => setFilter('partially_approved')}
                               >
                                 Parciales
                               </Button>
                               <Button
-                                variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                                variant={filter === 'all' ? 'primary' : 'outline-primary'}
                                 onClick={() => setFilter('all')}
                               >
                                 Todas
                               </Button>
-                              <Button variant="info" onClick={() => fetchReservations(filter)}>
+                              <Button variant="primary" onClick={() => fetchReservations(filter)}>
                                 Refrescar
                               </Button>
                             </div>
@@ -573,7 +573,7 @@ export default function AdminDashboardPage() {
                         </Col>
                         <Col xs={4}>
                           <Button
-                            variant={filter === 'approved' ? 'success' : 'outline-success'}
+                            variant={filter === 'approved' ? 'primary' : 'outline-primary'}
                             onClick={() => setFilter('approved')}
                             className="w-100"
                           >
@@ -582,7 +582,7 @@ export default function AdminDashboardPage() {
                         </Col>
                         <Col xs={4}>
                           <Button
-                            variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                            variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
                             onClick={() => setFilter('rejected')}
                             className="w-100"
                           >
@@ -593,7 +593,7 @@ export default function AdminDashboardPage() {
                       <Row className="g-2">
                         <Col xs={4}>
                                                         <Button
-                                                          variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                                                          variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
                                                           onClick={() => setFilter('partially_approved')}
                                                           className="w-100"
                                                         >
@@ -601,7 +601,7 @@ export default function AdminDashboardPage() {
                                                         </Button>                        </Col>
                         <Col xs={4}>
                           <Button
-                            variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                            variant={filter === 'all' ? 'primary' : 'outline-primary'}
                             onClick={() => setFilter('all')}
                             className="w-100"
                           >
@@ -609,7 +609,7 @@ export default function AdminDashboardPage() {
                           </Button>
                         </Col>
                         <Col xs={4}>
-                          <Button variant="info" onClick={() => fetchReservations(filter)} className="w-100">
+                          <Button variant="primary" onClick={() => fetchReservations(filter)} className="w-100">
                             Refrescar
                           </Button>
                         </Col>
@@ -625,30 +625,30 @@ export default function AdminDashboardPage() {
                         Pendientes
                       </Button>
                       <Button
-                        variant={filter === 'approved' ? 'success' : 'outline-success'}
+                        variant={filter === 'approved' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('approved')}
                       >
                         Aprobadas
                       </Button>
                       <Button
-                        variant={filter === 'rejected' ? 'danger' : 'outline-danger'}
+                        variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('rejected')}
                       >
                         Rechazadas
                       </Button>
                       <Button
-                        variant={filter === 'partially_approved' ? 'warning' : 'outline-warning'}
+                        variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('partially_approved')}
                       >
                         Parciales
                       </Button>
                       <Button
-                        variant={filter === 'all' ? 'secondary' : 'outline-secondary'}
+                        variant={filter === 'all' ? 'primary' : 'outline-primary'}
                         onClick={() => setFilter('all')}
                       >
                         Todas
                       </Button>
-                      <Button variant="info" onClick={() => fetchReservations(filter)}>
+                      <Button variant="primary" onClick={() => fetchReservations(filter)}>
                         Refrescar
                       </Button>
                     </div>
