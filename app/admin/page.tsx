@@ -105,11 +105,9 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <Container fluid className="mt-4">
+    <Container fluid style={{ paddingTop: '100px' }}>
       <Row className="mb-4">
         <Col>
-          <h2>Dashboard de Administración</h2>
-          <br />
           <p className="mb-4">Bienvenido, {user.email}. Aquí puedes gestionar la plataforma.</p>
         </Col>
       </Row>
