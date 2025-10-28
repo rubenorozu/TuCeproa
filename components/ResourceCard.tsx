@@ -5,6 +5,7 @@ import Link from 'next/link';
 // import Image from 'next/image'; // Reemplazado por <img> estándar
 import { useCart } from '@/context/CartContext';
 import { useSession } from '@/context/SessionContext';
+import styles from './ResourceCard.module.css';
 
 interface Inscription {
   workshopId: string;
@@ -169,8 +170,7 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
               <div className="d-grid gap-2 d-md-flex w-100">
                 <Link
                   href={`/recursos/${resource.id}?type=${type}`}
-                  className="btn btn-outline-primary"
-                  style={{ color: '#0076A8', borderColor: '#0076A8' }}
+                  className={`btn ${styles.customPrimaryButton} flex-fill`}
                 >
                   Ver más
                 </Link>

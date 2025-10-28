@@ -140,3 +140,21 @@ body {
   }
 }
 
+.btn-outline-primary:hover,
+.btn-outline-warning:hover,
+.btn-primary:hover,
+.btn-warning:hover {
+  background-color: #1577a5;
+  color: #ffffff !important;
+  border-color: #1577a5;
+}
+
+.btn-primary {
+  background-color: #1577a5;
+  border-color: #1577a5;
+}
+
+.btn-outline-primary {
+  color: #1577a5;
+  border-color: #1577a5;
+}

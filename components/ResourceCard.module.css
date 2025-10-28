@@ -1,0 +1,22 @@
+.customPrimaryButton {
+  /* Estado normal: Fondo blanco, texto azul, borde azul */
+  color: #1577a5;
+  border-color: #1577a5;
+  background-color: transparent; /* Para que sea "outline" */
+}
+
+.customPrimaryButton:hover {
+  /* Estado hover: Fondo azul, texto blanco, borde azul */
+  background-color: #1577a5;
+  color: #ffffff;
+  border-color: #1577a5;
+}
+
+.customPrimaryButton:focus,
+.customPrimaryButton:active {
+  /* Estado active/focus: Fondo azul, texto blanco, borde azul */
+  background-color: #1577a5;
+  color: #ffffff;
+  border-color: #1577a5;
+  box-shadow: 0 0 0 0.25rem rgba(21, 119, 165, 0.5); /* Sombra de focus */
+}

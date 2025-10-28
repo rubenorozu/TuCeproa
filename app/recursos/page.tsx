@@ -79,9 +79,9 @@ export default function ReservationsPage() {
                   style={{ width: '100%' }} /* Make search full width on mobile */
                   className="mb-3 mb-md-0 me-md-3" /* Add margin bottom on mobile, right on desktop */
                 />
-                          <div className="btn-group w-100 w-md-auto">            <button className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('all')} style={filter === 'all' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Todos</button>
-            <button className={`btn ${filter === 'space' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('space')} style={filter === 'space' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Espacios</button>
-            <button className={`btn ${filter === 'equipment' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('equipment')} style={filter === 'equipment' ? { backgroundColor: '#0076A8', borderColor: '#0076A8' } : { color: '#0076A8', borderColor: '#0076A8' }}>Equipos</button>
+                          <div className="btn-group w-100 w-md-auto">            <button className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('all')}>Todos</button>
+            <button className={`btn ${filter === 'space' ? 'btn-primary' : 'btn-outline-warning'}`} onClick={() => setFilter('space')}>Espacios</button>
+            <button className={`btn ${filter === 'equipment' ? 'btn-primary' : 'btn-outline-warning'}`} onClick={() => setFilter('equipment')}>Equipos</button>
           </div>
         </div>
       </div>
