@@ -139,7 +139,7 @@ export default function AdminSpacesPage() {
     setForm({
       name: space?.name || '',
       description: space?.description || '',
-      responsibleUserId: (user.role === 'ADMIN_RESOURCE' && !space) ? user.id : space?.responsibleUserId || '',
+      responsibleUserId: (user && user.role === 'ADMIN_RESOURCE' && !space) ? user.id : space?.responsibleUserId || '',
     });
     setExistingImages(space?.images || []);
     setSelectedFiles(null);
@@ -271,7 +271,7 @@ export default function AdminSpacesPage() {
     }
   };
 
-  if (sessionLoading || (!user && !sessionLoading)) {
+  if (sessionLoading || !user) {
     return <Container className="mt-5 text-center"><Spinner animation="border" /><p>Cargando sesión...</p></Container>;
   }
 

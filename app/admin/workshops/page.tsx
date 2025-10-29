@@ -170,7 +170,7 @@ export default function AdminWorkshopsPage() {
     setForm({
       name: item?.name || '',
       description: item?.description || '',
-      responsibleUserId: (user.role === 'ADMIN_RESOURCE' && !item) ? user.id : item?.responsibleUserId || '',
+      responsibleUserId: (user && user.role === 'ADMIN_RESOURCE' && !item) ? user.id : item?.responsibleUserId || '',
       capacity: item?.capacity || 0,
       availableFrom: item?.availableFrom ? new Date(item.availableFrom).toISOString().slice(0, 16) : '',
       teacher: item?.teacher || '',
@@ -352,7 +352,7 @@ export default function AdminWorkshopsPage() {
       }
 
       alert(`Inscripciones ${newStatus ? 'abiertas' : 'cerradas'} correctamente.`);
-      if (user.role === 'ADMIN_RESOURCE') {
+      if (user && user.role === 'ADMIN_RESOURCE') {
         fetchWorkshops(searchTerm, user.id);
       } else {
         fetchWorkshops(searchTerm);
@@ -368,7 +368,7 @@ export default function AdminWorkshopsPage() {
     }
   };
 
-  if (sessionLoading || (!user && !sessionLoading)) {
+  if (sessionLoading || !user) {
     return <Container className="mt-5 text-center"><Spinner animation="border" /><p>Cargando sesión...</p></Container>;
   }
 

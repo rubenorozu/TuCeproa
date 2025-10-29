@@ -164,7 +164,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  if (sessionLoading || (!currentUser && !sessionLoading)) {
+  if (sessionLoading || !currentUser) {
     return <Container className="mt-5 text-center"><Spinner animation="border" /><p>Cargando sesión...</p></Container>;
   }
 
