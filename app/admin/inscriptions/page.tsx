@@ -114,7 +114,7 @@ export default function AdminInscriptionsPage() {
     }
   };
 
-  if (sessionLoading || (!user && !sessionLoading)) {
+  if (sessionLoading || !user) {
     return <Container className="mt-5 text-center"><Spinner animation="border" /><p>Cargando sesión...</p></Container>;
   }
 

@@ -145,7 +145,7 @@ export default function AdminEquipmentPage() {
       description: item?.description || '',
       serialNumber: item?.serialNumber || '',
       fixedAssetId: item?.fixedAssetId || '',
-      responsibleUserId: (user.role === 'ADMIN_RESOURCE' && !item) ? user.id : item?.responsibleUserId || '',
+      responsibleUserId: (user && user.role === 'ADMIN_RESOURCE' && !item) ? user.id : item?.responsibleUserId || '',
     });
     setExistingImages(item?.images || []);
     setSelectedFiles(null);
@@ -281,7 +281,7 @@ export default function AdminEquipmentPage() {
     }
   };
 
-  if (sessionLoading || (!user && !sessionLoading)) {
+  if (sessionLoading || !user) {
     return <Container className="mt-5 text-center"><Spinner animation="border" /><p>Cargando sesión...</p></Container>;
   }
 

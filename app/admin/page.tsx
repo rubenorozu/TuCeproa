@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
     settings: '/images/admin-cards/Config.png',
   };
 
-  if (sessionLoading || (!user && !sessionLoading)) {
+  if (sessionLoading || !user) {
     return (
       <Container className="mt-5 text-center">
         <Spinner animation="border" />
