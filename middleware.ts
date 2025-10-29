@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
 
     // Verificar roles para rutas /admin
     const allowedAdminRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
-    if (!allowedAdminRoles.includes(session.user.role as string)) {
+    if (!allowedAdminRoles.some(role => role === session.user.role)) {
       // Rol no autorizado, redirigir a home o mostrar error
       return NextResponse.redirect(new URL('/', request.url));
     }
