@@ -94,8 +94,20 @@ export async function POST(request: Request) {
   try {
     const { name, description, serialNumber, fixedAssetId, images, responsibleUserId } = await request.json();
 
-    if (!name) {
-      return NextResponse.json({ error: 'El nombre del equipo es obligatorio.' }, { status: 400 });
+    if (!name || name.length < 3 || name.length > 100) {
+      return NextResponse.json({ error: 'El nombre del equipo es obligatorio y debe tener entre 3 y 100 caracteres.' }, { status: 400 });
+    }
+
+    if (description && description.length > 500) {
+      return NextResponse.json({ error: 'La descripción del equipo no puede exceder los 500 caracteres.' }, { status: 400 });
+    }
+
+    if (serialNumber && serialNumber.length > 50) {
+      return NextResponse.json({ error: 'El número de serie no puede exceder los 50 caracteres.' }, { status: 400 });
+    }
+
+    if (fixedAssetId && fixedAssetId.length > 50) {
+      return NextResponse.json({ error: 'El ID de activo fijo no puede exceder los 50 caracteres.' }, { status: 400 });
     }
 
     let finalResponsibleUserId = responsibleUserId;

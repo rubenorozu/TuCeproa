@@ -13,6 +13,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Missing fields' }, { status: 400 });
     }
 
+    // Password complexity validation
+    if (password.length < 8) {
+      return NextResponse.json({ message: 'La contraseña debe tener al menos 8 caracteres.' }, { status: 400 });
+    }
+    if (!/[A-Z]/.test(password)) {
+      return NextResponse.json({ message: 'La contraseña debe contener al menos una letra mayúscula.' }, { status: 400 });
+    }
+    if (!/[a-z]/.test(password)) {
+      return NextResponse.json({ message: 'La contraseña debe contener al menos una letra minúscula.' }, { status: 400 });
+    }
+    if (!/[0-9]/.test(password)) {
+      return NextResponse.json({ message: 'La contraseña debe contener al menos un número.' }, { status: 400 });
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      return NextResponse.json({ message: 'La contraseña debe contener al menos un carácter especial.' }, { status: 400 });
+    }
+
     const domain = email.split('@')[1];
     if (!ALLOWED_DOMAINS.includes(domain)) {
       return NextResponse.json({ message: 'Invalid email domain' }, { status: 400 });
