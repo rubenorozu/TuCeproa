@@ -23,11 +23,11 @@ export default function ReservationTable({ items, filter, handleApproveReject, c
     <Table striped bordered hover responsive size="sm" className="mb-0">
       <thead>
         <tr>
-          <th>ID Reserva</th>
-          <th>Recurso</th>
-          <th>Justificación</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <th className="text-start" style={{ width: '240px' }}>ID Reserva</th>
+          <th className="text-start" style={{ width: '480px' }}>Recurso</th>
+          <th className="text-start" style={{ width: '480px' }}>Justificación</th>
+          <th className="text-start" style={{ width: '120px' }}>Estado</th>
+          <th className="text-start">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -41,20 +41,20 @@ export default function ReservationTable({ items, filter, handleApproveReject, c
 
             return (
               <tr key={reservation.id}>
-                <td>{reservation.displayId}</td>
-                <td>
+                <td className="text-start text-truncate overflow-hidden" style={{ maxWidth: '240px' }}>{reservation.displayId}</td>
+                <td className="text-start text-truncate overflow-hidden" style={{ maxWidth: '480px' }}>
                   {reservation.space?.name ||
                    reservation.equipment?.name ||
                    reservation.workshop?.name}
                 </td>
-                <td>{reservation.justification}</td>
-                <td>{reservation.status}</td>
-                <td>
+                <td className="text-start text-truncate overflow-hidden" style={{ maxWidth: '480px' }}>{reservation.justification}</td>
+                <td className="text-start text-nowrap" style={{ maxWidth: '120px' }}>{reservation.status}</td>
+                <td className="text-start">
                   {reservation.status === 'PENDING' && (
-                    <>
-                      <Button variant="success" size="sm" className="me-2" onClick={() => handleApproveReject(reservation.id, 'approve')} disabled={!canApproveReject}>Aprobar</Button>
-                      <Button variant="danger" size="sm" className="me-2" onClick={() => handleApproveReject(reservation.id, 'reject')} disabled={!canApproveReject}>Rechazar</Button>
-                    </>
+                    <div className="d-inline-flex gap-2 flex-nowrap justify-content-start">
+                      <Button variant="success" size="sm" onClick={() => handleApproveReject(reservation.id, 'approve')} disabled={!canApproveReject}>Aprobar</Button>
+                      <Button variant="danger" size="sm" onClick={() => handleApproveReject(reservation.id, 'reject')} disabled={!canApproveReject}>Rechazar</Button>
+                    </div>
                   )}
                 </td>
               </tr>

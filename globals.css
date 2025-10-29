@@ -173,3 +173,9 @@ body {
   color: #ffffff !important;
   box-shadow: 0 0 0 0.25rem rgba(21, 119, 165, 0.5) !important;
 }
+
+/* Hide stray '}' character if it appears as a pseudo-element after the last table data cell */
+tbody > tr > td:last-child::after {
+  content: '';
+  display: none;
+}
