@@ -13,7 +13,7 @@ export async function GET() {
     return NextResponse.json(settingsObject);
   } catch (error) {
     console.error('Error al obtener la configuración:', JSON.stringify(error, null, 2));
-    return NextResponse.json({ error: 'No se pudo obtener la configuración. Por favor, revisa la conexión a la base de datos.', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'No se pudo obtener la configuración. Por favor, revisa la conexión a la base de datos.', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
 

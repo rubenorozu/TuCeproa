@@ -29,8 +29,7 @@ export async function POST(req: Request) {
     await createSession(user.id, user.role);
 
     // Remove password from the user object before sending it back
-    const userWithoutPassword = { ...user };
-    delete userWithoutPassword.password;
+    const { password: _, ...userWithoutPassword } = user;
 
     return NextResponse.json({ message: 'Inicio de sesión exitoso', user: userWithoutPassword }, { status: 200 });
 

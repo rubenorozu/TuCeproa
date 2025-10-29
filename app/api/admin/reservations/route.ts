@@ -70,7 +70,7 @@ export async function GET(request: Request) {
     Object.values(grouped).forEach(group => {
       const statuses = new Set(group.items.map(item => item.status));
       if (statuses.size === 1) {
-        group.overallStatus = statuses.values().next().value;
+        group.overallStatus = statuses.values().next().value as string;
       } else {
         group.overallStatus = 'PARTIALLY_APPROVED';
       }
