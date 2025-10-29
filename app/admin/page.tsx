@@ -18,18 +18,25 @@ export default function AdminDashboardPage() {
   const [loadingReservations, setLoadingReservations] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all' | 'partially_approved'>('pending');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const pageSize = 10; // Define a fixed page size for now
 
-  const fetchReservations = async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all' | 'partially_approved') => {
+  const fetchReservations = async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all' | 'partially_approved', page: number = 1) => {
     setLoadingReservations(true);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/reservations?status=${statusFilter}`);
+      const response = await fetch(`/api/admin/reservations?status=${statusFilter}&page=${page}&pageSize=${pageSize}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar las reservaciones.');
       }
-      const data: GroupedReservation[] = await response.json();
-      setGroupedReservations(data);
+      const result = await response.json(); // API now returns { data, pagination }
+      setGroupedReservations(result.data);
+      setTotalPages(result.pagination.pageCount);
+      setTotalItems(result.pagination.total);
+      setCurrentPage(result.pagination.page);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -43,9 +50,9 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!sessionLoading && user && (user.role === Role.SUPERUSER || user.role === Role.ADMIN_RESERVATION || user.role === Role.ADMIN_RESOURCE)) {
-      fetchReservations(filter);
+      fetchReservations(filter, currentPage);
     }
-  }, [sessionLoading, user, filter]);
+  }, [sessionLoading, user, filter, currentPage]);
 
   const handleApproveReject = useCallback(
     async (reservationId: string, action: 'approve' | 'reject') => {
@@ -338,7 +345,38 @@ export default function AdminDashboardPage() {
                           ))
                       )
                     )}
-                  </Col>
+                    {/* Pagination Controls */}
+                    {!loadingReservations && !error && totalPages > 1 && (
+                      <Row className="mt-3">
+                        <Col className="d-flex justify-content-center">
+                          <ButtonGroup>
+                            <Button
+                              variant="outline-primary"
+                              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                              disabled={currentPage === 1}
+                            >
+                              Anterior
+                            </Button>
+                            {[...Array(totalPages)].map((_, index) => (
+                              <Button
+                                key={index + 1}
+                                variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
+                                onClick={() => setCurrentPage(index + 1)}
+                              >
+                                {index + 1}
+                              </Button>
+                            ))}
+                            <Button
+                              variant="outline-primary"
+                              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                              disabled={currentPage === totalPages}
+                            >
+                              Siguiente
+                            </Button>
+                          </ButtonGroup>
+                        </Col>
+                      </Row>
+                    )}                  </Col>
                 </Row>
               </>
             ) : user.role === Role.ADMIN_RESOURCE ? (
