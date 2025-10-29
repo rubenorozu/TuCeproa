@@ -128,7 +128,7 @@ export default function ResourceDetailPage() {
   };
 
   const isFull = resource?.type === 'workshop' && resource?.capacity && resource?.capacity > 0 && resource?._count?.inscriptions && resource._count.inscriptions >= resource.capacity;
-  const areInscriptionsOpen = resource?.type === 'workshop' && (resource?.inscriptionsOpen ?? true);
+  const areInscriptionsOpen: boolean = resource?.type === 'workshop' && (resource?.inscriptionsOpen === true || resource?.inscriptionsOpen === false ? resource.inscriptionsOpen : false);
   const inscriptionsNotStarted = resource?.type === 'workshop' && resource?.inscriptionsStartDate && new Date() < new Date(resource.inscriptionsStartDate);
 
   if (loading) {
@@ -242,7 +242,7 @@ export default function ResourceDetailPage() {
             variant="primary"
             onClick={handleInscribe}
             className="me-2"
-            disabled={isSubscribing || isFull || !areInscriptionsOpen || inscriptionsNotStarted}
+            disabled={Boolean(isSubscribing || isFull || !areInscriptionsOpen || inscriptionsNotStarted)}
             style={{ backgroundColor: '#0076A8', borderColor: '#0076A8' }}
             title={
               isFull ? 'Taller lleno'
