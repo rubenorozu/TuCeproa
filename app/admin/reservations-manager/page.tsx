@@ -115,9 +115,11 @@ export default function ReservationsManagerPage() {
             ) : (
               groupedReservations
                 .filter(group => group.items && group.items.length > 0)
-                .map(group => (
+                .map(group => {
+                  return (
                   <ReservationCard key={group.cartSubmissionId} group={group} filter={filter} handleApproveReject={handleApproveReject} currentUser={user} />
-              ))
+                  );
+              })
             )
           )}
         </Col>

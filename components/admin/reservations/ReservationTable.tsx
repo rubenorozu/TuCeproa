@@ -39,6 +39,8 @@ export default function ReservationTable({ items, filter, handleApproveReject, c
                reservation.equipment?.responsibleUserId === currentUser.id);
             const canApproveReject = currentUser?.role === Role.SUPERUSER || isResponsible;
 
+            console.log(`DEBUG: Reservation ID: ${reservation.id}, Status: ${reservation.status}, Has Equipment: ${!!reservation.equipment}, Is Approved/Partially Approved: ${reservation.status === 'APPROVED' || reservation.status === 'PARTIALLY_APPROVED'}`);
+
             return (
               <tr key={reservation.id}>
                 <td className="text-start text-truncate overflow-hidden" style={{ maxWidth: '240px' }}>{reservation.displayId}</td>

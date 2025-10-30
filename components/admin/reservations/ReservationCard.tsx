@@ -37,6 +37,12 @@ export default function ReservationCard({ group, filter, handleApproveReject, cu
           <strong>Usuario:</strong> {group.items[0].user.name || group.items[0].user.email}
           <span className="ms-3">Inicio: {new Date(group.items[0].startTime).toLocaleString()}</span>
           <span className="ms-3">Fin: {new Date(group.items[0].endTime).toLocaleString()}</span>
+          {/* Add Generar Hoja de Salida button here if group contains approved equipment */}
+          {group.items.some(item => (item.status === 'APPROVED' || item.status === 'PARTIALLY_APPROVED') && item.equipment) && (
+            <a href={`/api/admin/reservations/${group.cartSubmissionId}/exit-sheet`} className="btn btn-info btn-sm ms-3" target="_blank">
+              Generar Hoja de Salida
+            </a>
+          )}
         </div>
       </Card.Header>
       <Card.Body className="p-0">
