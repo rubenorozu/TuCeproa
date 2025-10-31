@@ -23,7 +23,7 @@ const Footer = () => {
             <Image src="/assets/UNIVA.svg" alt="UNIVA" width={156} height={78} style={{ objectFit: 'contain' }} />
           </div>
           <small className="text-muted text-end flex-grow-1 pe-3">
-            Copyright 2025. Universidad del Valle de Atemajac. Todos los derechos Reservados.
+            <Link href="/aviso-de-privacidad">Aviso de Privacidad</Link> | Copyright 2025. Universidad del Valle de Atemajac. Todos los derechos Reservados.
           </small>
         </div>
       </div>

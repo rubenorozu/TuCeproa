@@ -26,8 +26,8 @@ export default function Infografia() { // Changed component name to Infografia
     },
     {
       numero: 4,
-      titulo: "Descarga tu formato",
-      texto: "Obtén el documento requerido",
+      titulo: "Consulta el reglamento y descarga tus formatos",
+      texto: 'Consulta el <a href="/docs/reglamento.pdf" target="_blank" rel="noopener noreferrer">reglamento</a> y descarga el <a href="/docs/formato.docx" target="_blank" rel="noopener noreferrer">formato que debes adjuntar</a>.',
       icono: FileText,
     },
     {
@@ -69,7 +69,7 @@ export default function Infografia() { // Changed component name to Infografia
                 <paso.icono size={22} className={styles.icono} />
                 <h2 className={styles.subtitulo}>{paso.titulo}</h2>
               </div>
-              <p className={styles.texto}>{paso.texto}</p>
+              <p className={styles.texto} dangerouslySetInnerHTML={{ __html: paso.texto }}></p>
             </div>
           </div>
         ))}
