@@ -13,6 +13,16 @@ interface Notification {
   id: string;
   message: string;
   read: boolean;
+  createdAt: string;
+  reservationId?: string;
+  reservation?: {
+    id: string;
+    space?: { name: string };
+    equipment?: { name: string };
+    workshop?: { name: string };
+    startTime: string;
+    endTime: string;
+  } | null;
 }
 
 interface SessionContextType {
@@ -37,7 +47,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchSession = useCallback(async () => {
-    console.log('DEBUG SessionContext: fetchSession llamado. refreshTrigger:', refreshTrigger);
+
     setLoading(true);
     try {
       const res = await fetch('/api/auth/session');
@@ -45,21 +55,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         if (data.user) {
           setUser({ id: data.user.id, role: data.user.role, firstName: data.user.firstName, lastName: data.user.lastName, email: data.user.email });
-          console.log('DEBUG SessionContext: Usuario establecido:', data.user.email);
+
         } else {
           setUser(null);
-          console.log('DEBUG SessionContext: No hay usuario en la respuesta.');
+
         }
       } else {
         setUser(null);
-        console.log('DEBUG SessionContext: Respuesta no OK de /api/auth/session.');
+
       }
     } catch (error) {
-      console.error('DEBUG SessionContext: Error fetching session:', error);
+      console.error('Error fetching session:', error);
       setUser(null);
     } finally {
       setLoading(false);
-      console.log('DEBUG SessionContext: Carga de sesión finalizada. Loading:', false);
+
     }
   }, [refreshTrigger]);
 
@@ -124,7 +134,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshSession = async () => {
-    console.log('DEBUG SessionContext: refreshSession llamado. Incrementando trigger.');
+
     setRefreshTrigger(prev => prev + 1);
   };
 
