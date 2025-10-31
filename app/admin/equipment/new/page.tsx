@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSession } from '@/context/SessionContext';
 
 export default function NewEquipmentPage() {
+  const { user: sessionUser, loading: sessionLoading } = useSession();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
@@ -17,18 +19,16 @@ export default function NewEquipmentPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    if (!token || !user || JSON.parse(user).role !== 'SUPERUSER') {
+    if (sessionLoading) return;
+
+    if (!sessionUser || (sessionUser.role !== 'SUPERUSER' && sessionUser.role !== 'ADMIN_RESOURCE')) {
       router.push('/login');
       return;
     }
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch('/api/admin/users', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
+        const res = await fetch('/api/admin/users');
         if (res.ok) {
           const data = await res.json();
           setUsers(data.filter((u: { role: string }) => u.role === 'SUPERUSER' || u.role === 'ADMIN_RESOURCE'));
@@ -40,7 +40,7 @@ export default function NewEquipmentPage() {
       }
     };
     fetchUsers();
-  }, [router]);
+  }, [router, sessionLoading, sessionUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +52,6 @@ export default function NewEquipmentPage() {
       return;
     }
 
-    const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('name', name);
     formData.append('description', description);
@@ -66,9 +65,6 @@ export default function NewEquipmentPage() {
     try {
       const res = await fetch('/api/admin/equipment', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -82,7 +78,7 @@ export default function NewEquipmentPage() {
       setDescription('');
       setSerialNumber('');
       setFixedAssetId('');
-      router.push('/admin/equipment'); // Redirect to equipment list
+      router.push('/admin/equipment');
     } catch (err: unknown) {
         if (err instanceof Error) {
             setError(err.message);

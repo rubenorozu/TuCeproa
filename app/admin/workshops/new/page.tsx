@@ -9,12 +9,12 @@ export default function NewWorkshopPage() {
   const { user: sessionUser, loading: sessionLoading } = useSession();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [teacher, setTeacher] = useState(''); // NUEVO: Estado para el profesor
-  const [availableFrom, setAvailableFrom] = useState(''); // RESTAURADO: Fecha de apertura de inscripciones
-  const [startDate, setStartDate] = useState(''); // NUEVO: Fecha de inicio del taller
-  const [endDate, setEndDate] = useState(''); // NUEVO: Fecha de fin del taller
-  const [inscriptionsStartDate, setInscriptionsStartDate] = useState(''); // NUEVO: Fecha de apertura de inscripciones
-  const [workshopSessions, setWorkshopSessions] = useState([{ dayOfWeek: 1, timeStart: '09:00', timeEnd: '10:00', room: '' }]); // Nuevo estado para sesiones con campos de recurrencia
+  const [teacher, setTeacher] = useState('');
+  const [availableFrom, setAvailableFrom] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [inscriptionsStartDate, setInscriptionsStartDate] = useState('');
+  const [workshopSessions, setWorkshopSessions] = useState([{ dayOfWeek: 1, timeStart: '09:00', timeEnd: '10:00', room: '' }]);
   const [users, setUsers] = useState<{ id: string; firstName: string; lastName: string; email: string; role: string }[]>([]);
   const [responsibleUserId, setResponsibleUserId] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -23,7 +23,7 @@ export default function NewWorkshopPage() {
   const router = useRouter();
 
   const handleAddSession = () => {
-    setWorkshopSessions([...workshopSessions, { dayOfWeek: 1, timeStart: '', timeEnd: '', room: '' }]); // Corregido: Añadir dayOfWeek
+    setWorkshopSessions([...workshopSessions, { dayOfWeek: 1, timeStart: '', timeEnd: '', room: '' }]);
   };
 
   const handleRemoveSession = (index: number) => {
@@ -38,19 +38,16 @@ export default function NewWorkshopPage() {
   };
 
   useEffect(() => {
-    if (sessionLoading) return; // Wait for session to load
+    if (sessionLoading) return;
 
-    if (!sessionUser || sessionUser.role !== 'SUPERUSER') {
-      router.push('/'); // Redirect if not superuser
+    if (!sessionUser || (sessionUser.role !== 'SUPERUSER' && sessionUser.role !== 'ADMIN_RESOURCE')) {
+      router.push('/login');
       return;
     }
 
     const fetchUsers = async () => {
       try {
-        const token = localStorage.getItem('token'); // Fallback, sessionUser should have token if logged in
-        const res = await fetch('/api/admin/users', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
+        const res = await fetch('/api/admin/users');
         if (res.ok) {
           const data = await res.json();
           setUsers(data.filter((u: { role: string }) => u.role === 'SUPERUSER' || u.role === 'ADMIN_RESOURCE'));
@@ -79,25 +76,14 @@ export default function NewWorkshopPage() {
       return;
     }
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('No autenticado. Por favor, inicie sesión.');
-      router.push('/login');
-      return;
-    }
-
     const imageUrls: { url: string }[] = [];
     if (imageFile) {
-      // Subir la imagen primero
       const imageFormData = new FormData();
-      imageFormData.append('file', imageFile); // La API de upload espera 'file'
+      imageFormData.append('file', imageFile);
 
       try {
         const uploadRes = await fetch('/api/upload', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
           body: imageFormData,
         });
 
@@ -106,14 +92,14 @@ export default function NewWorkshopPage() {
           throw new Error(errorData.message || 'Error al subir la imagen.');
         }
         const uploadData = await uploadRes.json();
-        imageUrls.push({ url: uploadData.url }); // Asumiendo que la API de upload devuelve { url: '...' }
+        imageUrls.push({ url: uploadData.url });
       } catch (uploadError: unknown) {
         if (uploadError instanceof Error) {
           setError(`Error al subir la imagen: ${uploadError.message}`);
         } else {
           setError('Ocurrió un error desconocido al subir la imagen.');
         }
-        return; // Detener el proceso si la subida de imagen falla
+        return;
       }
     }
 
@@ -121,19 +107,18 @@ export default function NewWorkshopPage() {
       const res = await fetch('/api/admin/workshops', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json', // Ahora enviamos JSON
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name,
           description,
-          availableFrom: availableFrom ? new Date(availableFrom).toISOString() : null, // RESTAURADO: Enviar availableFrom
-          startDate: startDate ? new Date(startDate).toISOString() : null, // NUEVO: Enviar startDate
-          endDate: endDate ? new Date(endDate).toISOString() : null, // NUEVO: Enviar endDate
-          inscriptionsStartDate: inscriptionsStartDate ? new Date(inscriptionsStartDate).toISOString() : null, // NUEVO: Enviar inscriptionsStartDate
+          availableFrom: availableFrom ? new Date(availableFrom).toISOString() : null,
+          startDate: startDate ? new Date(startDate).toISOString() : null,
+          endDate: endDate ? new Date(endDate).toISOString() : null,
+          inscriptionsStartDate: inscriptionsStartDate ? new Date(inscriptionsStartDate).toISOString() : null,
           teacher,
           responsibleUserId,
-          images: imageUrls, // Enviar las URLs de las imágenes
+          images: imageUrls,
           sessions: workshopSessions.map(session => ({
             dayOfWeek: session.dayOfWeek,
             timeStart: session.timeStart,
@@ -149,16 +134,15 @@ export default function NewWorkshopPage() {
       }
 
       setSuccess('Taller creado con éxito!');
-      // Reset form fields
       setName('');
       setDescription('');
       setAvailableFrom('');
-      setEndDate(''); // NUEVO: Resetear endDate
-      setInscriptionsStartDate(''); // NUEVO: Resetear inscriptionsStartDate
-      setWorkshopSessions([{ dayOfWeek: 1, timeStart: '', timeEnd: '', room: '' }]); // Resetear sesiones con dayOfWeek
+      setEndDate('');
+      setInscriptionsStartDate('');
+      setWorkshopSessions([{ dayOfWeek: 1, timeStart: '', timeEnd: '', room: '' }]);
       setResponsibleUserId('');
       setImageFile(null);
-      router.push('/admin/workshops'); // Redirect to workshops list
+      router.push('/admin/workshops');
     } catch (err: unknown) {
         if (err instanceof Error) {
             setError(err.message);
@@ -249,7 +233,6 @@ export default function NewWorkshopPage() {
             />
           </div>
         </div>
-        {/* Sección para añadir sesiones */}
         <div className="mb-3">
           <label className="form-label">Sesiones Recurrentes</label>
           {workshopSessions.map((session, index) => (

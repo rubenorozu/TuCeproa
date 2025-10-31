@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSession } from '@/context/SessionContext';
 
 export default function NewSpacePage() {
+  const { user: sessionUser, loading: sessionLoading } = useSession();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -15,18 +17,16 @@ export default function NewSpacePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    if (!token || !user || JSON.parse(user).role !== 'SUPERUSER') {
+    if (sessionLoading) return;
+
+    if (!sessionUser || (sessionUser.role !== 'SUPERUSER' && sessionUser.role !== 'ADMIN_RESOURCE')) {
       router.push('/login');
       return;
     }
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch('/api/admin/users', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
+        const res = await fetch('/api/admin/users');
         if (res.ok) {
           const data = await res.json();
           setUsers(data.filter((u: { role: string }) => u.role === 'SUPERUSER' || u.role === 'ADMIN_RESOURCE'));
@@ -38,7 +38,7 @@ export default function NewSpacePage() {
       }
     };
     fetchUsers();
-  }, [router]);
+  }, [router, sessionLoading, sessionUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,10 +50,8 @@ export default function NewSpacePage() {
       return;
     }
 
-    const token = localStorage.getItem('token');
     let imageUrls: string[] = [];
 
-    // 1. Subir la imagen si existe
     if (imageFile) {
       try {
         const imageFormData = new FormData();
@@ -61,9 +59,6 @@ export default function NewSpacePage() {
 
         const uploadRes = await fetch('/api/upload', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
           body: imageFormData,
         });
 
@@ -79,7 +74,6 @@ export default function NewSpacePage() {
       }
     }
 
-    // 2. Crear el espacio con los datos y la URL de la imagen
     try {
       const spaceData = {
         name,
@@ -91,7 +85,6 @@ export default function NewSpacePage() {
       const res = await fetch('/api/admin/spaces', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(spaceData),
@@ -103,12 +96,11 @@ export default function NewSpacePage() {
       }
 
       setSuccess('Espacio creado con éxito!');
-      // Reset form
       setName('');
       setDescription('');
       setResponsibleUserId('');
       setImageFile(null);
-      router.push('/admin/spaces'); // Redirect to spaces list
+      router.push('/admin/spaces');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al crear el espacio.');
     }

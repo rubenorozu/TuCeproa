@@ -13,7 +13,6 @@ interface UserPayload {
 export async function POST(request: Request): Promise<NextResponse> {
   const cookieStore = cookies();
   const tokenCookie = cookieStore.get('session');
-
   if (!tokenCookie) {
     return NextResponse.json({ error: 'Acceso denegado. Se requiere autenticación.' }, { status: 401 });
   }
@@ -46,7 +45,11 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ urls: blobs.map(b => b.url) }, { status: 200 });
 
   } catch (error) {
-    console.error('Error al subir archivos a Vercel Blob:', JSON.stringify(error, null, 2));
+    console.error('Error al subir archivos a Vercel Blob:', error);
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return NextResponse.json({ error: 'Error al procesar la subida de archivos.' }, { status: 500 });
   }
 }

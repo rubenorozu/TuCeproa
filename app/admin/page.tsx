@@ -11,8 +11,7 @@ import ReservationCard from '@/components/admin/reservations/ReservationCard';
 
 export default function AdminDashboardPage() {
   const { user, loading: sessionLoading } = useSession();
-  console.log('DEBUG AdminDashboardPage: user:', user);
-  console.log('DEBUG AdminDashboardPage: user.role:', user?.role);
+
 
   const [groupedReservations, setGroupedReservations] = useState<GroupedReservation[]>([]);
   const [loadingReservations, setLoadingReservations] = useState(true);
@@ -118,31 +117,31 @@ export default function AdminDashboardPage() {
     );
   }
 
-  return (
-    <Container fluid style={{ paddingTop: '100px' }}>
-      <Row className="mb-4">
-        <Col>
-          <p className="mb-4">Bienvenido, {user.email}. Aquí puedes gestionar la plataforma.</p>
-        </Col>
-      </Row>
+  const renderAdminCards = () => {
+    const isSuperUser = user.role === Role.SUPERUSER;
+    const isAdminResource = user.role === Role.ADMIN_RESOURCE;
+    const isAdminReservation = user.role === Role.ADMIN_RESERVATION;
 
-      {user.role === Role.SUPERUSER ? (
-        <>
-          <Row className="mb-4 admin-card-row">
-            <Col>
-              <Card className="h-100">
-                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                  <Image src={cardImages.users} alt="Usuarios" fill style={{ objectFit: 'contain' }} />
-                </div>
-                <Card.Body className="d-flex flex-column text-center">
-                  <Card.Title>Usuarios</Card.Title>
-                  <Card.Text className="flex-grow-1">Gestionar cuentas de usuario.</Card.Text>
-                  <Link href="/admin/users" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                    Ir a Usuarios
-                  </Link>
-                </Card.Body>
-              </Card>
-            </Col>
+    return (
+      <Row className="mb-4 admin-card-row">
+        {isSuperUser && (
+          <Col>
+            <Card className="h-100">
+              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                <Image src={cardImages.users} alt="Usuarios" fill style={{ objectFit: 'contain' }} />
+              </div>
+              <Card.Body className="d-flex flex-column text-center">
+                <Card.Title>Usuarios</Card.Title>
+                <Card.Text className="flex-grow-1">Gestionar cuentas de usuario.</Card.Text>
+                <Link href="/admin/users" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                  Ir a Usuarios
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        )}
+        {(isSuperUser || isAdminResource) && (
+          <>
             <Col>
               <Card className="h-100">
                 <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
@@ -185,384 +184,263 @@ export default function AdminDashboardPage() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col>
-              <Card className="h-100">
-                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                  <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
-                </div>
-                <Card.Body className="d-flex flex-column text-center">
-                  <Card.Title>Inscripciones</Card.Title>
-                  <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
-                  <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                    Ir a Inscripciones
-                  </Link>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col>
-              <Card className="h-100">
-                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                  <Image src={cardImages.settings} alt="Configuración" fill style={{ objectFit: 'contain' }} />
-                </div>
-                <Card.Body className="d-flex flex-column text-center">
-                  <Card.Title>Configuración</Card.Title>
-                  <Card.Text className="flex-grow-1">Gestionar configuración del sistema.</Card.Text>
-                  <Link href="/admin/settings" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                    Ir a Configuración
-                  </Link>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row className="mb-4">
-            <Col>
-              <h3>Reservaciones</h3>
-              {/* Mobile Layout */}
-              <div className="d-block d-md-none mb-3">
-                <Row className="mb-3">
-                  <Col>
-                    <Form.Control
-                      type="text"
-                      placeholder="Buscar en reservaciones..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </Col>
-                </Row>
-                <Row className="g-2 mb-2">
-                  <Col xs={4}>
-                    <Button
-                      variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                      onClick={() => setFilter('pending')}
-                      className="w-100"
-                    >
-                      Pendientes
-                    </Button>
-                  </Col>
-                  <Col xs={4}>
-                    <Button
-                      variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                      onClick={() => setFilter('approved')}
-                      className="w-100"
-                    >
-                      Aprobadas
-                    </Button>
-                  </Col>
-                  <Col xs={4}>
-                    <Button
-                      variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                      onClick={() => setFilter('rejected')}
-                      className="w-100"
-                    >
-                      Rechazadas
-                    </Button>
-                  </Col>
-                </Row>
-                <Row className="g-2">
-                  <Col xs={4}>
-                    <Button
-                      variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                      onClick={() => setFilter('partially_approved')}
-                      className="w-100"
-                    >
-                      Parciales
-                    </Button>
-                  </Col>
-                  <Col xs={4}>
-                    <Button
-                      variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                      onClick={() => setFilter('all')}
-                      className="w-100"
-                    >
-                      Todas
-                    </Button>
-                  </Col>
-                  <Col xs={4}>
-                    <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)} className="w-100">
-                      Refrescar
-                    </Button>
-                  </Col>
-                </Row>
-              </div>
-
-              {/* Desktop Layout */}
-              <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
-                <Button
-                  variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                  onClick={() => setFilter('pending')}
-                >
-                  Pendientes
-                </Button>
-                <Button
-                  variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                  onClick={() => setFilter('approved')}
-                >
-                  Aprobadas
-                </Button>
-                <Button
-                  variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                  onClick={() => setFilter('rejected')}
-                >
-                  Rechazadas
-                </Button>
-                <Button
-                  variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                  onClick={() => setFilter('partially_approved')}
-                >
-                  Parciales
-                </Button>
-                <Button
-                  variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                  onClick={() => setFilter('all')}
-                >
-                  Todas
-                </Button>
-                <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)}>
-                  Refrescar
-                </Button>
-                <div className="ms-auto">
-                  <Form.Control
-                    type="text"
-                    placeholder="Buscar en reservaciones..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ width: '250px' }}
-                  />
-                </div>
-              </div>
-
-              {loadingReservations && (
-                <div className="text-center">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Cargando...</span>
-                  </Spinner>
-                </div>
-              )}
-
-              {error && <Alert variant="danger">{error}</Alert>}
-
-              {!loadingReservations && !error && (
-                groupedReservations.length === 0 ? (
-                  <Alert variant="info">
-                    No hay reservaciones{' '}
-                    {filter === 'all'
-                      ? ''
-                      : filter === 'pending'
-                      ? 'pendientes'
-                      : filter === 'approved'
-                      ? 'aprobadas'
-                      : filter === 'rejected'
-                      ? 'rechazadas'
-                      : 'parciales'}
-                    .
-                  </Alert>
-                ) : (
-                  groupedReservations
-                    .filter(group => group.items && group.items.length > 0)
-                    .map(group => (
-                      <ReservationCard
-                        key={group.cartSubmissionId}
-                        group={group}
-                        filter={filter}
-                        handleApproveReject={handleApproveReject}
-                        currentUser={user}
-                      />
-                    ))
-                )
-              )}
-              {/* Pagination Controls */}
-              {!loadingReservations && !error && totalPages > 1 && (
-                <Row className="mt-3">
-                  <Col className="d-flex justify-content-center">
-                    <ButtonGroup>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        disabled={currentPage === 1}
-                      >
-                        Anterior
-                      </Button>
-                      {[...Array(totalPages)].map((_, index) => (
-                        <Button
-                          key={index + 1}
-                          variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
-                          onClick={() => setCurrentPage(index + 1)}
-                        >
-                          {index + 1}
-                        </Button>
-                      ))}
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        disabled={currentPage === totalPages}
-                      >
-                        Siguiente
-                      </Button>
-                    </ButtonGroup>
-                  </Col>
-                </Row>
-              )}
-            </Col>
-          </Row>
-        </>
-      ) : (
-        <Row>
+          </>
+        )}
+        {(isSuperUser || isAdminResource || isAdminReservation) && (
           <Col>
-            <h3>Reservaciones</h3>
-            {/* Mobile Layout */}
-            <div className="d-block d-md-none mb-3">
-              <Row className="mb-3">
-                <Col>
-                  <Form.Control
-                    type="text"
-                    placeholder="Buscar en reservaciones..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </Col>
-              </Row>
-              <Row className="g-2 mb-2">
-                <Col xs={4}>
-                  <Button
-                    variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                    onClick={() => setFilter('pending')}
-                    className="w-100"
-                  >
-                    Pendientes
-                  </Button>
-                </Col>
-                <Col xs={4}>
-                  <Button
-                    variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                    onClick={() => setFilter('approved')}
-                    className="w-100"
-                  >
-                    Aprobadas
-                  </Button>
-                </Col>
-                <Col xs={4}>
-                  <Button
-                    variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                    onClick={() => setFilter('rejected')}
-                    className="w-100"
-                  >
-                    Rechazadas
-                  </Button>
-                </Col>
-              </Row>
-              <Row className="g-2">
-                <Col xs={4}>
-                  <Button
-                    variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                    onClick={() => setFilter('partially_approved')}
-                    className="w-100"
-                  >
-                    Parciales
-                  </Button>
-                </Col>
-                <Col xs={4}>
-                  <Button
-                    variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                    onClick={() => setFilter('all')}
-                    className="w-100"
-                  >
-                    Todas
-                  </Button>
-                </Col>
-                <Col xs={4}>
-                  <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)} className="w-100">
-                    Refrescar
-                  </Button>
-                </Col>
-              </Row>
-            </div>
+            <Card className="h-100">
+              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
+              </div>
+              <Card.Body className="d-flex flex-column text-center">
+                <Card.Title>Inscripciones</Card.Title>
+                <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
+                <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                  Ir a Inscripciones
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        )}
+        {isSuperUser && (
+          <Col>
+            <Card className="h-100">
+              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                <Image src={cardImages.settings} alt="Configuración" fill style={{ objectFit: 'contain' }} />
+              </div>
+              <Card.Body className="d-flex flex-column text-center">
+                <Card.Title>Configuración</Card.Title>
+                <Card.Text className="flex-grow-1">Gestionar configuración del sistema.</Card.Text>
+                <Link href="/admin/settings" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                  Ir a Configuración
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        )}
+      </Row>
+    );
+  };
 
-            {/* Desktop Layout */}
-            <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
+  const renderReservations = () => (
+    <Col>
+        <h3>Reservaciones</h3>
+        {/* Mobile Layout */}
+        <div className="d-block d-md-none mb-3">
+          <Row className="mb-3">
+            <Col>
               <Form.Control
                 type="text"
                 placeholder="Buscar en reservaciones..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: '250px' }}
               />
+            </Col>
+          </Row>
+          <Row className="g-2 mb-2">
+            <Col xs={4}>
               <Button
                 variant={filter === 'pending' ? 'primary' : 'outline-primary'}
                 onClick={() => setFilter('pending')}
+                className="w-100"
               >
                 Pendientes
               </Button>
+            </Col>
+            <Col xs={4}>
               <Button
                 variant={filter === 'approved' ? 'primary' : 'outline-primary'}
                 onClick={() => setFilter('approved')}
+                className="w-100"
               >
                 Aprobadas
               </Button>
+            </Col>
+            <Col xs={4}>
               <Button
                 variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
                 onClick={() => setFilter('rejected')}
+                className="w-100"
               >
                 Rechazadas
               </Button>
+            </Col>
+          </Row>
+          <Row className="g-2">
+            <Col xs={4}>
               <Button
                 variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
                 onClick={() => setFilter('partially_approved')}
+                className="w-100"
               >
                 Parciales
               </Button>
+            </Col>
+            <Col xs={4}>
               <Button
                 variant={filter === 'all' ? 'primary' : 'outline-primary'}
                 onClick={() => setFilter('all')}
+                className="w-100"
               >
                 Todas
               </Button>
-              <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)}>
+            </Col>
+            <Col xs={4}>
+              <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)} className="w-100">
                 Refrescar
               </Button>
-            </div>
-
-            {loadingReservations && (
-              <div className="text-center">
-                <Spinner animation="border" role="status">
-                  <span className="visually-hidden">Cargando...</span>
-                </Spinner>
-              </div>
-            )}
-
-            {error && <Alert variant="danger">{error}</Alert>}
-
-            {!loadingReservations && !error && (
-              groupedReservations.length === 0 ? (
-                <Alert variant="info">
-                  No hay reservaciones{' '}
-                  {filter === 'all'
-                    ? ''
-                    : filter === 'pending'
-                    ? 'pendientes'
-                    : filter === 'approved'
-                    ? 'aprobadas'
-                    : filter === 'rejected'
-                    ? 'rechazadas'
-                    : 'parciales'}
-                  .
-                </Alert>
-              ) : (
-                groupedReservations
-                  .filter(group => group.items && group.items.length > 0)
-                  .map(group => (
-                      <ReservationCard
-                        key={group.cartSubmissionId}
-                        group={group}
-                        filter={filter}
-                        handleApproveReject={handleApproveReject}
-                        currentUser={user}
-                      />
-                    ))
-                )
-              )}
             </Col>
           </Row>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
+          <Button
+            variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+            onClick={() => setFilter('pending')}
+          >
+            Pendientes
+          </Button>
+          <Button
+            variant={filter === 'approved' ? 'primary' : 'outline-primary'}
+            onClick={() => setFilter('approved')}
+          >
+            Aprobadas
+          </Button>
+          <Button
+            variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
+            onClick={() => setFilter('rejected')}
+          >
+            Rechazadas
+          </Button>
+          <Button
+            variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
+            onClick={() => setFilter('partially_approved')}
+          >
+            Parciales
+          </Button>
+          <Button
+            variant={filter === 'all' ? 'primary' : 'outline-primary'}
+            onClick={() => setFilter('all')}
+          >
+            Todas
+          </Button>
+          <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)}>
+            Refrescar
+          </Button>
+          <div className="ms-auto">
+            <Form.Control
+              type="text"
+              placeholder="Buscar en reservaciones..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: '250px' }}
+            />
+          </div>
+        </div>
+
+        {loadingReservations && (
+          <div className="text-center">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </Spinner>
+          </div>
+        )}
+
+        {error && <Alert variant="danger">{error}</Alert>}
+
+        {!loadingReservations && !error && (
+          groupedReservations.length === 0 ? (
+            <Alert variant="info">
+              No hay reservaciones{' '}
+              {filter === 'all'
+                ? ''
+                : filter === 'pending'
+                ? 'pendientes'
+                : filter === 'approved'
+                ? 'aprobadas'
+                : filter === 'rejected'
+                ? 'rechazadas'
+                : 'parciales'}
+              .
+            </Alert>
+          ) : (
+            groupedReservations
+              .filter(group => group.items && group.items.length > 0)
+              .map(group => (
+                <ReservationCard
+                  key={group.cartSubmissionId}
+                  group={group}
+                  filter={filter}
+                  handleApproveReject={handleApproveReject}
+                  currentUser={user}
+                />
+              ))
+          )
+        )}
+        {/* Pagination Controls */}
+        {!loadingReservations && !error && totalPages > 1 && (
+          <Row className="mt-3">
+            <Col className="d-flex justify-content-center">
+              <ButtonGroup>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </Button>
+                {[...Array(totalPages)].map((_, index) => (
+                  <Button
+                    key={index + 1}
+                    variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline-primary"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                </Button>
+              </ButtonGroup>
+            </Col>
+          </Row>
+        )}
+      </Col>
+  );
+
+  const isAdminReservation = user.role === Role.ADMIN_RESERVATION;
+
+  return (
+    <Container fluid style={{ paddingTop: '100px' }}>
+      <Row className="mb-4">
+        <Col>
+          <p className="mb-4">Bienvenido, {user.email}. Aquí puedes gestionar la plataforma.</p>
+        </Col>
+      </Row>
+
+      {isAdminReservation ? (
+        <Row>
+          <Col md={3}>
+            {renderAdminCards()}
+          </Col>
+          <Col md={9}>
+            <Row className="mb-4">
+              {renderReservations()}
+            </Row>
+          </Col>
+        </Row>
+      ) : (
+        <>
+          {renderAdminCards()}
+          <Row className="mb-4">
+            {renderReservations()}
+          </Row>
+        </>
       )}
     </Container>
   );
