@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Card, Button, Spinner, Alert, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Alert, ButtonGroup, Form } from 'react-bootstrap';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from '@/context/SessionContext';
@@ -21,13 +21,14 @@ export default function AdminDashboardPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
   const pageSize = 10; // Define a fixed page size for now
 
-  const fetchReservations = async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all' | 'partially_approved', page: number = 1) => {
+  const fetchReservations = async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all' | 'partially_approved', page: number = 1, searchQuery: string = '') => {
     setLoadingReservations(true);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/reservations?status=${statusFilter}&page=${page}&pageSize=${pageSize}`);
+      const response = await fetch(`/api/admin/reservations?status=${statusFilter}&page=${page}&pageSize=${pageSize}&search=${searchQuery}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar las reservaciones.');
@@ -50,9 +51,15 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!sessionLoading && user && (user.role === Role.SUPERUSER || user.role === Role.ADMIN_RESERVATION || user.role === Role.ADMIN_RESOURCE)) {
-      fetchReservations(filter, currentPage);
+      const handler = setTimeout(() => {
+        fetchReservations(filter, currentPage, searchTerm);
+      }, 500); // Debounce for 500ms
+
+      return () => {
+        clearTimeout(handler);
+      };
     }
-  }, [sessionLoading, user, filter, currentPage]);
+  }, [sessionLoading, user, filter, currentPage, searchTerm]);
 
   const handleApproveReject = useCallback(
     async (reservationId: string, action: 'approve' | 'reject') => {
@@ -119,617 +126,444 @@ export default function AdminDashboardPage() {
         </Col>
       </Row>
 
-            {user.role === Role.SUPERUSER ? (
-              <>
-                <Row className="mb-4 admin-card-row">
+      {user.role === Role.SUPERUSER ? (
+        <>
+          <Row className="mb-4 admin-card-row">
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.users} alt="Usuarios" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Usuarios</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar cuentas de usuario.</Card.Text>
+                  <Link href="/admin/users" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Usuarios
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.spaces} alt="Espacios" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Espacios</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar espacios físicos.</Card.Text>
+                  <Link href="/admin/spaces" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Espacios
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.equipment} alt="Equipos" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Equipos</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar equipos disponibles.</Card.Text>
+                  <Link href="/admin/equipment" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Equipos
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.workshops} alt="Talleres" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Talleres</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar talleres y eventos.</Card.Text>
+                  <Link href="/admin/workshops" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Talleres
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Inscripciones</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
+                  <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Inscripciones
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.settings} alt="Configuración" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Configuración</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar configuración del sistema.</Card.Text>
+                  <Link href="/admin/settings" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Configuración
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
+          <Row className="mb-4">
+            <Col>
+              <h3>Reservaciones</h3>
+              {/* Mobile Layout */}
+              <div className="d-block d-md-none mb-3">
+                <Row className="mb-3">
                   <Col>
-                    <Card className="h-100">
-                      <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                        <Image src={cardImages.users} alt="Usuarios" fill style={{ objectFit: 'contain' }} />
-                      </div>
-                      <Card.Body className="d-flex flex-column text-center">
-                        <Card.Title>Usuarios</Card.Title>
-                        <Card.Text className="flex-grow-1">Gestionar cuentas de usuario.</Card.Text>
-                        <Link href="/admin/users" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                          Ir a Usuarios
-                        </Link>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card className="h-100">
-                      <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                        <Image src={cardImages.spaces} alt="Espacios" fill style={{ objectFit: 'contain' }} />
-                      </div>
-                      <Card.Body className="d-flex flex-column text-center">
-                        <Card.Title>Espacios</Card.Title>
-                        <Card.Text className="flex-grow-1">Gestionar espacios físicos.</Card.Text>
-                        <Link href="/admin/spaces" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                          Ir a Espacios
-                        </Link>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card className="h-100">
-                      <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                        <Image src={cardImages.equipment} alt="Equipos" fill style={{ objectFit: 'contain' }} />
-                      </div>
-                      <Card.Body className="d-flex flex-column text-center">
-                        <Card.Title>Equipos</Card.Title>
-                        <Card.Text className="flex-grow-1">Gestionar equipos disponibles.</Card.Text>
-                        <Link href="/admin/equipment" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                          Ir a Equipos
-                        </Link>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card className="h-100">
-                      <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                        <Image src={cardImages.workshops} alt="Talleres" fill style={{ objectFit: 'contain' }} />
-                      </div>
-                      <Card.Body className="d-flex flex-column text-center">
-                        <Card.Title>Talleres</Card.Title>
-                        <Card.Text className="flex-grow-1">Gestionar talleres y eventos.</Card.Text>
-                        <Link href="/admin/workshops" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                          Ir a Talleres
-                        </Link>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card className="h-100">
-                      <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                        <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
-                      </div>
-                      <Card.Body className="d-flex flex-column text-center">
-                        <Card.Title>Inscripciones</Card.Title>
-                        <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
-                        <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                          Ir a Inscripciones
-                        </Link>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col>
-                    <Card className="h-100">
-                      <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                        <Image src={cardImages.settings} alt="Configuración" fill style={{ objectFit: 'contain' }} />
-                      </div>
-                      <Card.Body className="d-flex flex-column text-center">
-                        <Card.Title>Configuración</Card.Title>
-                        <Card.Text className="flex-grow-1">Gestionar configuración del sistema.</Card.Text>
-                        <Link href="/admin/settings" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                          Ir a Configuración
-                        </Link>
-                      </Card.Body>
-                    </Card>
+                    <Form.Control
+                      type="text"
+                      placeholder="Buscar en reservaciones..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </Col>
                 </Row>
-      
-                <Row className="mb-4">
-                  <Col>
-                    <h3>Reservaciones</h3>
-                    {/* Mobile Layout */}
-                    <div className="d-block d-md-none mb-3">
-                      <Row className="g-2 mb-2">
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('pending')}
-                            className="w-100"
-                          >
-                            Pendientes
-                          </Button>
-                        </Col>
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('approved')}
-                            className="w-100"
-                          >
-                            Aprobadas
-                          </Button>
-                        </Col>
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('rejected')}
-                            className="w-100"
-                          >
-                            Rechazadas
-                          </Button>
-                        </Col>
-                      </Row>
-                      <Row className="g-2">
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('partially_approved')}
-                            className="w-100"
-                          >
-                            Parciales
-                          </Button>
-                        </Col>
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('all')}
-                            className="w-100"
-                          >
-                            Todas
-                          </Button>
-                        </Col>
-                        <Col xs={4}>
-                          <Button variant="primary" onClick={() => fetchReservations(filter)} className="w-100">
-                            Refrescar
-                          </Button>
-                        </Col>
-                      </Row>
-                    </div>
-
-                    {/* Desktop Layout */}
-                    <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
-                      <Button
-                        variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('pending')}
-                      >
-                        Pendientes
-                      </Button>
-                      <Button
-                        variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('approved')}
-                      >
-                        Aprobadas
-                      </Button>
-                      <Button
-                        variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('rejected')}
-                      >
-                        Rechazadas
-                      </Button>
-                      <Button
-                        variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('partially_approved')}
-                      >
-                        Parciales
-                      </Button>
-                      <Button
-                        variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('all')}
-                      >
-                        Todas
-                      </Button>
-                      <Button variant="primary" onClick={() => fetchReservations(filter)}>
-                        Refrescar
-                      </Button>
-                    </div>
-      
-                    {loadingReservations && (
-                      <div className="text-center">
-                        <Spinner animation="border" role="status">
-                          <span className="visually-hidden">Cargando...</span>
-                        </Spinner>
-                      </div>
-                    )}
-      
-                    {error && <Alert variant="danger">{error}</Alert>}
-      
-                    {!loadingReservations && !error && (
-                      groupedReservations.length === 0 ? (
-                        <Alert variant="info">
-                          No hay reservaciones{' '}
-                          {filter === 'all'
-                            ? ''
-                            : filter === 'pending'
-                            ? 'pendientes'
-                            : filter === 'approved'
-                            ? 'aprobadas'
-                            : filter === 'rejected'
-                            ? 'rechazadas'
-                            : 'parciales'}
-                          .
-                        </Alert>
-                      ) : (
-                        groupedReservations
-                          .filter(group => group.items && group.items.length > 0)
-                          .map(group => (
-                            <ReservationCard
-                              key={group.cartSubmissionId}
-                              group={group}
-                              filter={filter}
-                              handleApproveReject={handleApproveReject}
-                              currentUser={user}
-                            />
-                          ))
-                      )
-                    )}
-                    {/* Pagination Controls */}
-                    {!loadingReservations && !error && totalPages > 1 && (
-                      <Row className="mt-3">
-                        <Col className="d-flex justify-content-center">
-                          <ButtonGroup>
-                            <Button
-                              variant="outline-primary"
-                              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                              disabled={currentPage === 1}
-                            >
-                              Anterior
-                            </Button>
-                            {[...Array(totalPages)].map((_, index) => (
-                              <Button
-                                key={index + 1}
-                                variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
-                                onClick={() => setCurrentPage(index + 1)}
-                              >
-                                {index + 1}
-                              </Button>
-                            ))}
-                            <Button
-                              variant="outline-primary"
-                              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                              disabled={currentPage === totalPages}
-                            >
-                              Siguiente
-                            </Button>
-                          </ButtonGroup>
-                        </Col>
-                      </Row>
-                    )}                  </Col>
+                <Row className="g-2 mb-2">
+                  <Col xs={4}>
+                    <Button
+                      variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+                      onClick={() => setFilter('pending')}
+                      className="w-100"
+                    >
+                      Pendientes
+                    </Button>
+                  </Col>
+                  <Col xs={4}>
+                    <Button
+                      variant={filter === 'approved' ? 'primary' : 'outline-primary'}
+                      onClick={() => setFilter('approved')}
+                      className="w-100"
+                    >
+                      Aprobadas
+                    </Button>
+                  </Col>
+                  <Col xs={4}>
+                    <Button
+                      variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
+                      onClick={() => setFilter('rejected')}
+                      className="w-100"
+                    >
+                      Rechazadas
+                    </Button>
+                  </Col>
                 </Row>
-              </>
-            ) : user.role === Role.ADMIN_RESOURCE ? (
-                      <>
-                        <Row className="mb-4 admin-card-row">
-                          <Col>
-                            <Card className="h-100">
-                              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                                <Image src={cardImages.spaces} alt="Espacios" fill style={{ objectFit: 'contain' }} />
-                              </div>
-                              <Card.Body className="d-flex flex-column text-center">
-                                <Card.Title>Espacios</Card.Title>
-                                <Card.Text className="flex-grow-1">Gestionar espacios físicos.</Card.Text>
-                                <Link href="/admin/spaces" className="btn btn-primary mt-auto">
-                                  Ir a Espacios
-                                </Link>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col>
-                            <Card className="h-100">
-                              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                                <Image src={cardImages.equipment} alt="Equipos" fill style={{ objectFit: 'contain' }} />
-                              </div>
-                              <Card.Body className="d-flex flex-column text-center">
-                                <Card.Title>Equipos</Card.Title>
-                                <Card.Text className="flex-grow-1">Gestionar equipos disponibles.</Card.Text>
-                                <Link href="/admin/equipment" className="btn btn-primary mt-auto">
-                                  Ir a Equipos
-                                </Link>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col>
-                            <Card className="h-100">
-                              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                                <Image src={cardImages.workshops} alt="Talleres" fill style={{ objectFit: 'contain' }} />
-                              </div>
-                              <Card.Body className="d-flex flex-column text-center">
-                                <Card.Title>Talleres</Card.Title>
-                                <Card.Text className="flex-grow-1">Gestionar talleres y eventos.</Card.Text>
-                                <Link href="/admin/workshops" className="btn btn-primary mt-auto">
-                                  Ir a Talleres
-                                </Link>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                          <Col>
-                            <Card className="h-100">
-                              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                                <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
-                              </div>
-                              <Card.Body className="d-flex flex-column text-center">
-                                <Card.Title>Inscripciones</Card.Title>
-                                <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
-                                <Link href="/admin/inscriptions" className="btn btn-primary mt-auto">
-                                  Ir a Inscripciones
-                                </Link>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        </Row>
-                        <Row className="mb-4">
-                          <Col>
-                            <h3>Reservaciones</h3>
-                            {/* Mobile Layout */}
-                            <div className="d-block d-md-none mb-3">
-                              <Row className="g-2 mb-2">
-                                <Col xs={4}>
-                                  <Button
-                                    variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                                    onClick={() => setFilter('pending')}
-                                    className="w-100"
-                                  >
-                                    Pendientes
-                                  </Button>
-                                </Col>
-                                <Col xs={4}>
-                                  <Button
-                                    variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                                    onClick={() => setFilter('approved')}
-                                    className="w-100"
-                                  >
-                                    Aprobadas
-                                  </Button>
-                                </Col>
-                                <Col xs={4}>
-                                  <Button
-                                    variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                                    onClick={() => setFilter('rejected')}
-                                    className="w-100"
-                                  >
-                                    Rechazadas
-                                  </Button>
-                                </Col>
-                              </Row>
-                              <Row className="g-2">
-                                <Col xs={4}>
-                                  <Button
-                                    variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                                    onClick={() => setFilter('partially_approved')}
-                                    className="w-100"
-                                  >
-                                    Parciales
-                                  </Button>
-                                </Col>
-                                <Col xs={4}>
-                                  <Button
-                                    variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                                    onClick={() => setFilter('all')}
-                                    className="w-100"
-                                  >
-                                    Todas
-                                  </Button>
-                                </Col>
-                                <Col xs={4}>
-                                  <Button variant="primary" onClick={() => fetchReservations(filter)} className="w-100">
-                                    Refrescar
-                                  </Button>
-                                </Col>
-                              </Row>
-                            </div>
+                <Row className="g-2">
+                  <Col xs={4}>
+                    <Button
+                      variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
+                      onClick={() => setFilter('partially_approved')}
+                      className="w-100"
+                    >
+                      Parciales
+                    </Button>
+                  </Col>
+                  <Col xs={4}>
+                    <Button
+                      variant={filter === 'all' ? 'primary' : 'outline-primary'}
+                      onClick={() => setFilter('all')}
+                      className="w-100"
+                    >
+                      Todas
+                    </Button>
+                  </Col>
+                  <Col xs={4}>
+                    <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)} className="w-100">
+                      Refrescar
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
 
-                            {/* Desktop Layout */}
-                            <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
-                              <Button
-                                variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                                onClick={() => setFilter('pending')}
-                              >
-                                Pendientes
-                              </Button>
-                              <Button
-                                variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                                onClick={() => setFilter('approved')}
-                              >
-                                Aprobadas
-                              </Button>
-                              <Button
-                                variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                                onClick={() => setFilter('rejected')}
-                              >
-                                Rechazadas
-                              </Button>
-                              <Button
-                                variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                                onClick={() => setFilter('partially_approved')}
-                              >
-                                Parciales
-                              </Button>
-                              <Button
-                                variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                                onClick={() => setFilter('all')}
-                              >
-                                Todas
-                              </Button>
-                              <Button variant="primary" onClick={() => fetchReservations(filter)}>
-                                Refrescar
-                              </Button>
-                            </div>
-              
-                            {loadingReservations && (
-                              <div className="text-center">
-                                <Spinner animation="border" role="status">
-                                  <span className="visually-hidden">Cargando...</span>
-                                </Spinner>
-                              </div>
-                            )}
-              
-                            {error && <Alert variant="danger">{error}</Alert>}
-              
-                            {!loadingReservations && !error && (
-                              groupedReservations.length === 0 ? (
-                                <Alert variant="info">
-                                  No hay reservaciones{' '}
-                                  {filter === 'all'
-                                    ? ''
-                                    : filter === 'pending'
-                                    ? 'pendientes'
-                                    : filter === 'approved'
-                                    ? 'aprobadas'
-                                    : filter === 'rejected'
-                                    ? 'rechazadas'
-                                    : 'parciales'}
-                                  .
-                                </Alert>
-                              ) : (
-                                groupedReservations
-                                  .filter(group => group.items && group.items.length > 0)
-                                  .map(group => (
-                                    <ReservationCard
-                                      key={group.cartSubmissionId}
-                                      group={group}
-                                      filter={filter}
-                                      handleApproveReject={handleApproveReject}
-                                      currentUser={user}
-                                    />
-                                  ))
-                              )
-                            )}
-                          </Col>
-                        </Row>
-                      </>            ) : (
-              <Row>
-                          <Col md={2}>
-                            <Card>
-                              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>                      <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
-                    </div>
-                    <Card.Body className="d-flex flex-column text-center">
-                      <Card.Title>Inscripciones</Card.Title>
-                      <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
-                      <Link href="/admin/inscriptions" className="btn btn-primary mt-auto">
-                        Ir a Inscripciones
-                      </Link>
-                    </Card.Body>
-                  </Card>
+              {/* Desktop Layout */}
+              <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
+                <Button
+                  variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+                  onClick={() => setFilter('pending')}
+                >
+                  Pendientes
+                </Button>
+                <Button
+                  variant={filter === 'approved' ? 'primary' : 'outline-primary'}
+                  onClick={() => setFilter('approved')}
+                >
+                  Aprobadas
+                </Button>
+                <Button
+                  variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
+                  onClick={() => setFilter('rejected')}
+                >
+                  Rechazadas
+                </Button>
+                <Button
+                  variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
+                  onClick={() => setFilter('partially_approved')}
+                >
+                  Parciales
+                </Button>
+                <Button
+                  variant={filter === 'all' ? 'primary' : 'outline-primary'}
+                  onClick={() => setFilter('all')}
+                >
+                  Todas
+                </Button>
+                <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)}>
+                  Refrescar
+                </Button>
+                <div className="ms-auto">
+                  <Form.Control
+                    type="text"
+                    placeholder="Buscar en reservaciones..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ width: '250px' }}
+                  />
+                </div>
+              </div>
+
+              {loadingReservations && (
+                <div className="text-center">
+                  <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                  </Spinner>
+                </div>
+              )}
+
+              {error && <Alert variant="danger">{error}</Alert>}
+
+              {!loadingReservations && !error && (
+                groupedReservations.length === 0 ? (
+                  <Alert variant="info">
+                    No hay reservaciones{' '}
+                    {filter === 'all'
+                      ? ''
+                      : filter === 'pending'
+                      ? 'pendientes'
+                      : filter === 'approved'
+                      ? 'aprobadas'
+                      : filter === 'rejected'
+                      ? 'rechazadas'
+                      : 'parciales'}
+                    .
+                  </Alert>
+                ) : (
+                  groupedReservations
+                    .filter(group => group.items && group.items.length > 0)
+                    .map(group => (
+                      <ReservationCard
+                        key={group.cartSubmissionId}
+                        group={group}
+                        filter={filter}
+                        handleApproveReject={handleApproveReject}
+                        currentUser={user}
+                      />
+                    ))
+                )
+              )}
+              {/* Pagination Controls */}
+              {!loadingReservations && !error && totalPages > 1 && (
+                <Row className="mt-3">
+                  <Col className="d-flex justify-content-center">
+                    <ButtonGroup>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        Anterior
+                      </Button>
+                      {[...Array(totalPages)].map((_, index) => (
+                        <Button
+                          key={index + 1}
+                          variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
+                          onClick={() => setCurrentPage(index + 1)}
+                        >
+                          {index + 1}
+                        </Button>
+                      ))}
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        Siguiente
+                      </Button>
+                    </ButtonGroup>
+                  </Col>
+                </Row>
+              )}
+            </Col>
+          </Row>
+        </>
+      ) : (
+        <Row>
+          <Col>
+            <h3>Reservaciones</h3>
+            {/* Mobile Layout */}
+            <div className="d-block d-md-none mb-3">
+              <Row className="mb-3">
+                <Col>
+                  <Form.Control
+                    type="text"
+                    placeholder="Buscar en reservaciones..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </Col>
-                <Col md={10}>
-                  <h3>Reservaciones</h3>
-                    {/* Mobile Layout */}
-                    <div className="d-block d-md-none mb-3">
-                      <Row className="g-2 mb-2">
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('pending')}
-                            className="w-100"
-                          >
-                            Pendientes
-                          </Button>
-                        </Col>
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('approved')}
-                            className="w-100"
-                          >
-                            Aprobadas
-                          </Button>
-                        </Col>
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('rejected')}
-                            className="w-100"
-                          >
-                            Rechazadas
-                          </Button>
-                        </Col>
-                      </Row>
-                      <Row className="g-2">
-                        <Col xs={4}>
-                                                        <Button
-                                                          variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                                                          onClick={() => setFilter('partially_approved')}
-                                                          className="w-100"
-                                                        >
-                                                          Parciales
-                                                        </Button>                        </Col>
-                        <Col xs={4}>
-                          <Button
-                            variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                            onClick={() => setFilter('all')}
-                            className="w-100"
-                          >
-                            Todas
-                          </Button>
-                        </Col>
-                        <Col xs={4}>
-                          <Button variant="primary" onClick={() => fetchReservations(filter)} className="w-100">
-                            Refrescar
-                          </Button>
-                        </Col>
-                      </Row>
-                    </div>
+              </Row>
+              <Row className="g-2 mb-2">
+                <Col xs={4}>
+                  <Button
+                    variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+                    onClick={() => setFilter('pending')}
+                    className="w-100"
+                  >
+                    Pendientes
+                  </Button>
+                </Col>
+                <Col xs={4}>
+                  <Button
+                    variant={filter === 'approved' ? 'primary' : 'outline-primary'}
+                    onClick={() => setFilter('approved')}
+                    className="w-100"
+                  >
+                    Aprobadas
+                  </Button>
+                </Col>
+                <Col xs={4}>
+                  <Button
+                    variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
+                    onClick={() => setFilter('rejected')}
+                    className="w-100"
+                  >
+                    Rechazadas
+                  </Button>
+                </Col>
+              </Row>
+              <Row className="g-2">
+                <Col xs={4}>
+                  <Button
+                    variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
+                    onClick={() => setFilter('partially_approved')}
+                    className="w-100"
+                  >
+                    Parciales
+                  </Button>
+                </Col>
+                <Col xs={4}>
+                  <Button
+                    variant={filter === 'all' ? 'primary' : 'outline-primary'}
+                    onClick={() => setFilter('all')}
+                    className="w-100"
+                  >
+                    Todas
+                  </Button>
+                </Col>
+                <Col xs={4}>
+                  <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)} className="w-100">
+                    Refrescar
+                  </Button>
+                </Col>
+              </Row>
+            </div>
 
-                    {/* Desktop Layout */}
-                    <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
-                      <Button
-                        variant={filter === 'pending' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('pending')}
-                      >
-                        Pendientes
-                      </Button>
-                      <Button
-                        variant={filter === 'approved' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('approved')}
-                      >
-                        Aprobadas
-                      </Button>
-                      <Button
-                        variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('rejected')}
-                      >
-                        Rechazadas
-                      </Button>
-                      <Button
-                        variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('partially_approved')}
-                      >
-                        Parciales
-                      </Button>
-                      <Button
-                        variant={filter === 'all' ? 'primary' : 'outline-primary'}
-                        onClick={() => setFilter('all')}
-                      >
-                        Todas
-                      </Button>
-                      <Button variant="primary" onClick={() => fetchReservations(filter)}>
-                        Refrescar
-                      </Button>
-                    </div>
-      
-                  {loadingReservations && (
-                    <div className="text-center">
-                      <Spinner animation="border" role="status">
-                        <span className="visually-hidden">Cargando...</span>
-                      </Spinner>
-                    </div>
-                  )}
-      
-                  {error && <Alert variant="danger">{error}</Alert>}
-      
-                  {!loadingReservations && !error && (
-                    groupedReservations.length === 0 ? (
-                      <Alert variant="info">
-                        No hay reservaciones{' '}
-                        {filter === 'all'
-                          ? ''
-                          : filter === 'pending'
-                          ? 'pendientes'
-                          : filter === 'approved'
-                          ? 'aprobadas'
-                          : filter === 'rejected'
-                          ? 'rechazadas'
-                          : 'parciales'}
-                        .
-                      </Alert>
-                    ) : (
-                      groupedReservations
-                        .filter(group => group.items && group.items.length > 0)
-                        .map(group => (
-                            <ReservationCard
-                              key={group.cartSubmissionId}
-                              group={group}
-                              filter={filter}
-                              handleApproveReject={handleApproveReject}
-                              currentUser={user}
-                            />
-                          ))
-                      )
-                    )}
-                  </Col>
-                </Row>
-            )}    </Container>
+            {/* Desktop Layout */}
+            <div className="d-none d-md-flex justify-content-start gap-2 mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Buscar en reservaciones..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ width: '250px' }}
+              />
+              <Button
+                variant={filter === 'pending' ? 'primary' : 'outline-primary'}
+                onClick={() => setFilter('pending')}
+              >
+                Pendientes
+              </Button>
+              <Button
+                variant={filter === 'approved' ? 'primary' : 'outline-primary'}
+                onClick={() => setFilter('approved')}
+              >
+                Aprobadas
+              </Button>
+              <Button
+                variant={filter === 'rejected' ? 'primary' : 'outline-primary'}
+                onClick={() => setFilter('rejected')}
+              >
+                Rechazadas
+              </Button>
+              <Button
+                variant={filter === 'partially_approved' ? 'primary' : 'outline-primary'}
+                onClick={() => setFilter('partially_approved')}
+              >
+                Parciales
+              </Button>
+              <Button
+                variant={filter === 'all' ? 'primary' : 'outline-primary'}
+                onClick={() => setFilter('all')}
+              >
+                Todas
+              </Button>
+              <Button variant="primary" onClick={() => fetchReservations(filter, currentPage, searchTerm)}>
+                Refrescar
+              </Button>
+            </div>
+
+            {loadingReservations && (
+              <div className="text-center">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Cargando...</span>
+                </Spinner>
+              </div>
+            )}
+
+            {error && <Alert variant="danger">{error}</Alert>}
+
+            {!loadingReservations && !error && (
+              groupedReservations.length === 0 ? (
+                <Alert variant="info">
+                  No hay reservaciones{' '}
+                  {filter === 'all'
+                    ? ''
+                    : filter === 'pending'
+                    ? 'pendientes'
+                    : filter === 'approved'
+                    ? 'aprobadas'
+                    : filter === 'rejected'
+                    ? 'rechazadas'
+                    : 'parciales'}
+                  .
+                </Alert>
+              ) : (
+                groupedReservations
+                  .filter(group => group.items && group.items.length > 0)
+                  .map(group => (
+                      <ReservationCard
+                        key={group.cartSubmissionId}
+                        group={group}
+                        filter={filter}
+                        handleApproveReject={handleApproveReject}
+                        currentUser={user}
+                      />
+                    ))
+                )
+              )}
+            </Col>
+          </Row>
+      )}
+    </Container>
   );
 }

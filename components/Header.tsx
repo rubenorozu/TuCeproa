@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -9,44 +9,13 @@ import { useCart } from '@/context/CartContext';
 import { useSession } from '@/context/SessionContext';
 import styles from './Header.module.css';
 
-interface Notification {
-  id: string;
-  message: string;
-  read: boolean;
-}
-
 const Header = () => {
   const router = useRouter();
   const { cart } = useCart();
-  const { user, loading: sessionLoading, logout } = useSession();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { user, loading: sessionLoading, logout, unreadCount } = useSession();
   const navbarRef = useRef<HTMLDivElement>(null);
 
-  const fetchNotifications = useCallback(async () => {
-    if (!user) return;
-    try {
-      const res = await fetch('/api/notifications');
-      if (res.ok) {
-        const data = await res.json();
-        setNotifications(data);
-        setUnreadCount(data.filter((n: Notification) => !n.read).length);
-      }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    }
-  }, [user]);
-
   useEffect(() => {
-    if (user) {
-      fetchNotifications();
-      const interval = setInterval(fetchNotifications, 30000);
-      return () => clearInterval(interval);
-    } else {
-      setNotifications([]);
-      setUnreadCount(0);
-    }
-
     // Logic to close Bootstrap navbar on link click
     const navbarCollapse = document.getElementById('main-nav');
     if (navbarCollapse) {
@@ -70,8 +39,7 @@ const Header = () => {
               }
             });
           }    }
-
-  }, [user, fetchNotifications]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,11 +56,6 @@ const Header = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  const handleMarkAsRead = async (id: string) => {
-    await fetch(`/api/notifications/${id}`, { method: 'PUT' });
-    fetchNotifications();
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -131,6 +94,7 @@ const Header = () => {
                   <li className="nav-item dropdown">
                     <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
+                      {unreadCount > 0 && <span className="badge rounded-pill bg-danger ms-2">{unreadCount}</span>}
                     </a>
                     <ul className="dropdown-menu dropdown-menu-end">
                       <li><Link href="/profile" className="dropdown-item">Mi espacio</Link></li>

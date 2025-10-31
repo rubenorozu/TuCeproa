@@ -1,55 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/context/SessionContext'; // Import useSession
 
-interface Notification {
-  id: string;
-  message: string;
-  read: boolean;
-}
-
 const Navbar = () => {
   const router = useRouter();
-  const { user, loading: sessionLoading, logout } = useSession(); // Use useSession hook
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  // const [isClient, setIsClient] = useState(false); // No longer needed as useSession handles client-side
-
-  useEffect(() => {
-    // setIsClient(true); // No longer needed
-    if (!sessionLoading && user) {
-      fetchNotifications();
-    }
-  }, [user, sessionLoading]); // Depend on user and sessionLoading
-
-  const fetchNotifications = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    const res = await fetch('/api/notifications', {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      setNotifications(data);
-      setUnreadCount(data.filter((n: Notification) => !n.read).length);
-    }
-  };
-
-  const handleMarkAsRead = async (id: string) => {
-    const token = localStorage.getItem('token');
-    await fetch(`/api/notifications/${id}`,
-      {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` },
-      }
-    );
-    fetchNotifications(); // Refresh notifications
-  };
+  const { user, loading: sessionLoading, logout, notifications, unreadCount, markNotificationAsRead } = useSession(); // Use useSession hook
 
   const handleLogout = () => {
     logout(); // Use the logout function from useSession
@@ -85,7 +43,7 @@ const Navbar = () => {
                     {notifications.length === 0 && <li className="dropdown-item">No hay notificaciones</li>}
                     {notifications.map(n => (
                       <li key={n.id}>
-                        <a className={`dropdown-item ${n.read ? '' : 'fw-bold'}`} href="#" onClick={() => handleMarkAsRead(n.id)}>{n.message}</a>
+                        <a className={`dropdown-item ${n.read ? '' : 'fw-bold'}`} href="#" onClick={() => markNotificationAsRead(n.id)}>{n.message}</a>
                       </li>
                     ))}
                   </ul>

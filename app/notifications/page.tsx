@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useSession } from '@/context/SessionContext'; // Importar useSession
 
 interface Notification {
@@ -22,73 +21,23 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { user, loading: sessionLoading } = useSession(); // Usar useSession
+  const { user, loading: sessionLoading, notifications, markNotificationAsRead, fetchNotifications } = useSession(); // Usar useSession
 
   useEffect(() => {
     if (!sessionLoading && !user) {
       router.push('/login');
-      return;
     }
-    if (user) { // Solo cargar notificaciones si hay un usuario
-      fetchNotifications();
+    if (user) {
+      handleMarkAllAsRead();
     }
   }, [router, user, sessionLoading]);
-
-  const fetchNotifications = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/notifications');
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to fetch notifications');
-      }
-
-      const data: Notification[] = await res.json();
-      setNotifications(data);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMarkAsRead = async (id: string) => {
-    try {
-      const res = await fetch(`/api/notifications/${id}`,
-        {
-          method: 'PUT',
-        }
-      );
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to mark notification as read');
-      }
-
-      fetchNotifications(); // Refresh notifications
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
-    }
-  };
 
   const handleMarkAllAsRead = async () => {
     try {
       const res = await fetch('/api/notifications/mark-all-as-read', {
         method: 'PUT',
+        credentials: 'include',
       });
 
       if (!res.ok) {
@@ -99,19 +48,15 @@ export default function NotificationsPage() {
       fetchNotifications(); // Refresh notifications
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message);
+        console.error(err);
       } else {
-        setError('An unknown error occurred');
+        console.error('An unknown error occurred');
       }
     }
   };
 
-  if (loading) {
+  if (sessionLoading) {
     return <div className="container mt-5">Cargando notificaciones...</div>;
-  }
-
-  if (error) {
-    return <div className="container mt-5 alert alert-danger">Error: {error}</div>;
   }
 
   const groupedNotifications = notifications.reduce((acc, notification) => {
@@ -160,7 +105,7 @@ export default function NotificationsPage() {
                       <small>{new Date(notification.createdAt).toLocaleString()}</small>
                     </div>
                     {!notification.read && (
-                      <button className="btn btn-sm btn-outline-primary mt-2" onClick={() => handleMarkAsRead(notification.id)}>
+                      <button className="btn btn-sm btn-outline-primary mt-2" onClick={() => markNotificationAsRead(notification.id)}>
                         Marcar como leída
                       </button>
                     )}

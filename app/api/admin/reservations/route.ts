@@ -16,25 +16,31 @@ export async function GET(request: Request) {
     const statusFilter = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '10');
-    const skip = (page - 1) * pageSize;
-    const take = pageSize;
-
+    const search = searchParams.get('search');
+    
     const whereClause: Prisma.ReservationWhereInput = {};
 
-    // Apply status filter directly in Prisma query if possible
-    if (statusFilter && statusFilter !== 'all') {
+    if (statusFilter && statusFilter !== 'all' && statusFilter.toUpperCase() !== 'PARTIALLY_APPROVED') {
       const filterValue = statusFilter.toUpperCase();
-      if (filterValue === 'PENDING') {
-        whereClause.status = 'PENDING';
-      } else if (filterValue === 'APPROVED') {
-        whereClause.status = 'APPROVED';
-      } else if (filterValue === 'REJECTED') {
-        whereClause.status = 'REJECTED';
+      if (Object.values(ReservationStatus).includes(filterValue as ReservationStatus)) {
+        whereClause.status = filterValue as ReservationStatus;
       }
-      // 'PARTIALLY_APPROVED' and 'all' will be handled after grouping
     }
 
-    // Fetch reservations with pagination
+    if (search) {
+      whereClause.OR = [
+        { user: { firstName: { contains: search, mode: 'insensitive' } } },
+        { user: { lastName: { contains: search, mode: 'insensitive' } } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+        { subject: { contains: search, mode: 'insensitive' } },
+        { justification: { contains: search, mode: 'insensitive' } },
+        { space: { name: { contains: search, mode: 'insensitive' } } },
+        { equipment: { name: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    const isPartialFilter = statusFilter?.toUpperCase() === 'PARTIALLY_APPROVED';
+
     const reservations = await prisma.reservation.findMany({
       where: whereClause,
       select: { 
@@ -55,18 +61,17 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: 'desc',
       },
-      skip,
-      take,
+      // If filtering for partial, we can't use database-level pagination
+      ...(isPartialFilter ? {} : {
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
     });
-
-    // Get total count for pagination metadata
-    const totalReservations = await prisma.reservation.count({ where: whereClause });
 
     const grouped: { [key: string]: GroupedReservation } = {};
 
     for (const r of reservations) {
       const groupId = r.cartSubmissionId || `single-${r.id}`;
-
       if (!grouped[groupId]) {
         grouped[groupId] = {
           cartSubmissionId: groupId,
@@ -74,13 +79,11 @@ export async function GET(request: Request) {
           overallStatus: 'PENDING', 
         };
       }
-
       const userName = `${r.user.firstName || ''} ${r.user.lastName || ''}`.trim() || null;
-
       grouped[groupId].items.push({
         ...r,
-        startTime: r.startTime.toISOString(), // Convertir a string
-        endTime: r.endTime.toISOString(),     // Convertir a string
+        startTime: r.startTime.toISOString(),
+        endTime: r.endTime.toISOString(),
         user: {
           id: r.user.id,
           email: r.user.email,
@@ -103,13 +106,20 @@ export async function GET(request: Request) {
 
     let finalResult = Object.values(grouped);
 
-    // Re-apply filter for 'PARTIALLY_APPROVED' and 'all' if not applied in whereClause
-    if (statusFilter && statusFilter !== 'all' && statusFilter.toUpperCase() === 'PARTIALLY_APPROVED') {
+    if (isPartialFilter) {
       finalResult = finalResult.filter(group => group.overallStatus === 'PARTIALLY_APPROVED');
     }
 
+    const totalReservations = isPartialFilter 
+      ? finalResult.length 
+      : await prisma.reservation.count({ where: whereClause });
+
+    const paginatedResult = isPartialFilter 
+      ? finalResult.slice((page - 1) * pageSize, page * pageSize)
+      : finalResult;
+
     return NextResponse.json({
-      data: finalResult,
+      data: paginatedResult,
       pagination: {
         total: totalReservations,
         page,
