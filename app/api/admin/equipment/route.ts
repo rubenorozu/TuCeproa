@@ -45,16 +45,16 @@ export async function GET(request: Request) {
 
     if (search) {
       whereClause.OR = [
-        { name: { contains: search } },
-        { description: { contains: search } },
-        { serialNumber: { contains: search } },
-        { fixedAssetId: { contains: search } },
-        { displayId: { not: null, contains: search } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { serialNumber: { contains: search, mode: 'insensitive' } },
+        { fixedAssetId: { contains: search, mode: 'insensitive' } },
+        { displayId: { not: null, contains: search, mode: 'insensitive' } },
         {
           responsibleUser: {
             OR: [
-              { firstName: { contains: search } },
-              { lastName: { contains: search } },
+              { firstName: { contains: search, mode: 'insensitive' } },
+              { lastName: { contains: search, mode: 'insensitive' } },
             ],
           },
         },
