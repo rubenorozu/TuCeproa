@@ -15,10 +15,10 @@ export async function GET() {
     const rooms = await prisma.workshopSession.findMany({
       distinct: ['room'],
       where: {
-        room: {
-          not: null,
-          not: ''
-        }
+        AND: [
+          { room: { not: null } },
+          { room: { not: '' } }
+        ]
       },
       select: {
         room: true,

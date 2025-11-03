@@ -15,10 +15,10 @@ export async function GET() {
     const teachers = await prisma.workshop.findMany({
       distinct: ['teacher'],
       where: {
-        teacher: {
-          not: null,
-          not: ''
-        }
+        AND: [
+          { teacher: { not: null } },
+          { teacher: { not: '' } }
+        ]
       },
       select: {
         teacher: true,
