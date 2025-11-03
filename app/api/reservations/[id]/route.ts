@@ -3,7 +3,7 @@ import { getServerSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Role, ReservationStatus } from '@prisma/client';
 
-const allowedAdminRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
+const allowedAdminRoles: Role[] = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
 
 // PATCH /api/reservations/[id]
 // Updates the status of a reservation (e.g., to approve or reject it)
