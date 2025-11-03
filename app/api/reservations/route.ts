@@ -48,6 +48,16 @@ export async function GET(request: NextRequest) {
             lastName: true,
           },
         },
+        space: {
+          select: {
+            responsibleUserId: true,
+          },
+        },
+        equipment: {
+          select: {
+            responsibleUserId: true,
+          },
+        },
       },
     });
     return NextResponse.json(reservations);

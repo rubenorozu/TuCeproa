@@ -4,8 +4,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer, Event as BigCalendarEvent } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, startOfMonth, endOfMonth, startOfDay, endOfDay, endOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale/es';
-import { Reservation, ReservationStatus } from '@prisma/client';
-
+import { Reservation, ReservationStatus, Role } from '@prisma/client';
+import { useSession } from '@/context/SessionContext';
 
 // --- Modal Styles --- //
 const modalOverlayStyle: React.CSSProperties = {
@@ -37,9 +37,11 @@ interface CalendarEvent extends BigCalendarEvent {
   id: string;
   status?: ReservationStatus;
   isBlock: boolean;
+  fullReservation: any;
 }
 
 export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarProps) {
+  const { user: currentUser } = useSession();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [view, setView] = useState('week');
   const [date, setDate] = useState(new Date());
@@ -51,7 +53,7 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
 
   const fetchEvents = useCallback(async () => {
     if (!spaceId && !equipmentId) return;
-
+    setIsLoading(true);
     let apiQuery = '';
     if (spaceId) {
       apiQuery = `spaceId=${spaceId}`;
@@ -60,35 +62,40 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     }
 
     let viewStart, viewEnd;
-
     if (view === 'month') {
       viewStart = startOfMonth(date);
       viewEnd = endOfMonth(date);
     } else if (view === 'day') {
       viewStart = startOfDay(date);
       viewEnd = endOfDay(date);
-    } else { // Default to week
+    } else {
       viewStart = startOfWeek(date, { locale: es });
       viewEnd = endOfWeek(date, { locale: es });
     }
 
-    const response = await fetch(`/api/reservations?${apiQuery}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`);
-    if (response.ok) {
-      const reservations: (Reservation & { user: { firstName: string, lastName: string } })[] = await response.json();
-      const formattedEvents: CalendarEvent[] = reservations
-        .filter(res => res.status !== 'REJECTED')
-        .map((res) => ({
-          id: res.id,
-          title: `${res.justification} (${res.user.firstName} ${res.user.lastName})`,
-          start: new Date(res.startTime),
-          end: new Date(res.endTime),
-          resourceId: res.id,
-          status: res.status,
-          isBlock: res.subject === 'Bloqueo Administrativo',
-        }));
-      setEvents(formattedEvents);
+    try {
+      const response = await fetch(`/api/reservations?${apiQuery}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`);
+      if (response.ok) {
+        const reservations = await response.json();
+        const formattedEvents: CalendarEvent[] = reservations
+          .filter((res: any) => res.status !== 'REJECTED')
+          .map((res: any) => ({
+            id: res.id,
+            title: `${res.justification} (${res.user.firstName} ${res.user.lastName})`,
+            start: new Date(res.startTime),
+            end: new Date(res.endTime),
+            status: res.status,
+            isBlock: res.subject === 'Bloqueo Administrativo',
+            fullReservation: res,
+          }));
+        setEvents(formattedEvents);
+      }
+    } catch (error) {
+      console.error("Failed to fetch reservations:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [spaceId, equipmentId, date, view]); // Added view to dependency array
+  }, [spaceId, equipmentId, date, view]);
 
   useEffect(() => {
     fetchEvents();
@@ -168,6 +175,15 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     }
   }), []);
 
+  let canApproveReject = false;
+  if (selectedEvent && currentUser) {
+    const reservation = selectedEvent.fullReservation;
+    const isResponsible = (currentUser.role === Role.ADMIN_RESERVATION || currentUser.role === Role.ADMIN_RESOURCE) &&
+      (reservation.space?.responsibleUserId === currentUser.id ||
+       reservation.equipment?.responsibleUserId === currentUser.id);
+    canApproveReject = currentUser.role === Role.SUPERUSER || isResponsible;
+  }
+
   return (
     <>
       {selectedEvent && (
@@ -175,18 +191,22 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
           <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
             <div style={modalHeaderStyle}>{selectedEvent.title}</div>
             <div style={modalBodyStyle}>
+              <p><strong>Solicitante:</strong> {selectedEvent.fullReservation.user.firstName} {selectedEvent.fullReservation.user.lastName}</p>
               <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
               <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
               <p><strong>Estado:</strong> {selectedEvent.status}</p>
+              <p><strong>Justificación:</strong> {selectedEvent.fullReservation.justification}</p>
             </div>
             <div style={modalFooterStyle}>
-              {selectedEvent.status === 'PENDING' && (
+              {selectedEvent.status === 'PENDING' && canApproveReject && (
                 <>
                   <button style={{...buttonStyle, backgroundColor: '#5cb85c'}} onClick={() => handleEventAction('APPROVE')}>Aprobar</button>
                   <button style={{...buttonStyle, backgroundColor: '#f0ad4e'}} onClick={() => handleEventAction('REJECT')}>Rechazar</button>
                 </>
               )}
-              <button style={{...buttonStyle, backgroundColor: '#d9534f'}} onClick={() => handleEventAction('DELETE')}>Eliminar</button>
+              {canApproveReject && (
+                 <button style={{...buttonStyle, backgroundColor: '#d9534f'}} onClick={() => handleEventAction('DELETE')}>Eliminar</button>
+              )}
               <button style={{...buttonStyle, backgroundColor: '#6c757d'}} onClick={() => setSelectedEvent(null)}>Cerrar</button>
             </div>
           </div>
