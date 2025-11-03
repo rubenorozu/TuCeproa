@@ -96,6 +96,7 @@ export default function AdminDashboardPage() {
     equipment: '/images/admin-cards/Equipos.jpg',
     workshops: '/images/admin-cards/Talleres.jpg',
     inscriptions: '/images/admin-cards/Inscripciones.jpg',
+    calendars: '/images/admin-cards/Calendarios.jpg', // New unified calendar card
     reservations: '/placeholder.svg',
     settings: '/images/admin-cards/Config.png',
   };
@@ -187,20 +188,36 @@ export default function AdminDashboardPage() {
           </>
         )}
         {(isSuperUser || isAdminResource || isAdminReservation) && (
-          <Col>
-            <Card className="h-100">
-              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
-                <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
-              </div>
-              <Card.Body className="d-flex flex-column text-center">
-                <Card.Title>Inscripciones</Card.Title>
-                <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
-                <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
-                  Ir a Inscripciones
-                </Link>
-              </Card.Body>
-            </Card>
-          </Col>
+          <>
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.inscriptions} alt="Inscripciones" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Inscripciones</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar inscripciones a talleres.</Card.Text>
+                  <Link href="/admin/inscriptions" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Inscripciones
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col>
+              <Card className="h-100">
+                <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                  <Image src={cardImages.calendars} alt="Calendarios" fill style={{ objectFit: 'contain' }} />
+                </div>
+                <Card.Body className="d-flex flex-column text-center">
+                  <Card.Title>Calendarios</Card.Title>
+                  <Card.Text className="flex-grow-1">Gestionar reservas de espacios y equipos.</Card.Text>
+                  <Link href="/admin/calendars" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                    Ir a Calendarios
+                  </Link>
+                </Card.Body>
+              </Card>
+            </Col>
+          </>
         )}
         {isSuperUser && (
           <Col>

@@ -1,3 +1,5 @@
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 body {
   /* Intentionally left empty for now, can be customized later */
 }
@@ -100,7 +102,7 @@ body {
   }
 
   .admin-card-row::after {
-    content: '';
+    content: '''';
     display: block;
     flex-shrink: 0;
     width: 30%; /* Adjust this value as needed */
@@ -176,6 +178,13 @@ body {
 
 /* Hide stray '}' character if it appears as a pseudo-element after the last table data cell */
 tbody > tr > td:last-child::after {
-  content: '';
+  content: '''';
   display: none;
+}
+
+/* Custom styles for react-big-calendar */
+.rbc-event {
+  min-height: 50px; /* Increase min-height to allow for more text */
+  white-space: normal; /* Allow text to wrap */
+  padding: 4px 6px;
 }

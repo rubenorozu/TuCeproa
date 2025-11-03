@@ -28,6 +28,8 @@ model User {
   managedEquipment   Equipment[]
   managedWorkshops   Workshop[]
   approvedReservations Reservation[] @relation("ApprovedReservations")
+  checkedOutReservations Reservation[] @relation("CheckedOutReservations")
+  checkedInReservations  Reservation[] @relation("CheckedInReservations")
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
@@ -42,6 +44,7 @@ enum Role {
   ADMIN_RESOURCE
   ADMIN_RESERVATION
   SUPERUSER
+  VIGILANCIA
 }
 
 model Space {
@@ -145,6 +148,12 @@ model Reservation {
   status        ReservationStatus @default(PENDING)
   approvedByUserId String?
   approvedByUser   User?             @relation("ApprovedReservations", fields: [approvedByUserId], references: [id])
+  checkedOutAt      DateTime?
+  checkedOutByUserId String?
+  checkedOutByUser   User?             @relation("CheckedOutReservations", fields: [checkedOutByUserId], references: [id])
+  checkedInAt       DateTime?
+  checkedInByUserId  String?
+  checkedInByUser    User?             @relation("CheckedInReservations", fields: [checkedInByUserId], references: [id])
   documents     Document[]
   notifications Notification[]
   createdAt     DateTime  @default(now())
