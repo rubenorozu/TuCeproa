@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Space, Equipment } from '@prisma/client';
 import ResourceCalendarView from '@/components/reservations/ResourceCalendarView';
+import WorkshopCalendarView from '@/components/reservations/WorkshopCalendarView';
 import { Button, Nav } from 'react-bootstrap';
 import Link from 'next/link';
 
@@ -12,7 +13,7 @@ interface TabbedCalendarViewProps {
 }
 
 export default function TabbedCalendarView({ spaces, equipment }: TabbedCalendarViewProps) {
-  const [activeTab, setActiveTab] = useState<'spaces' | 'equipment'>('spaces');
+  const [activeTab, setActiveTab] = useState<'spaces' | 'equipment' | 'workshops'>('spaces');
 
   return (
     <div className="container mx-auto p-4" style={{ marginTop: '3rem' }}>
@@ -24,6 +25,9 @@ export default function TabbedCalendarView({ spaces, equipment }: TabbedCalendar
         <Nav.Item>
           <Nav.Link eventKey="equipment">Equipos</Nav.Link>
         </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="workshops">Talleres</Nav.Link>
+        </Nav.Item>
       </Nav>
 
       {activeTab === 'spaces' && (
@@ -31,6 +35,9 @@ export default function TabbedCalendarView({ spaces, equipment }: TabbedCalendar
       )}
       {activeTab === 'equipment' && (
         <ResourceCalendarView resources={equipment} resourceType="equipment" />
+      )}
+      {activeTab === 'workshops' && (
+        <WorkshopCalendarView />
       )}
     </div>
   );
