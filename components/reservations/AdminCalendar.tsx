@@ -2,13 +2,10 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer, Event as BigCalendarEvent } from 'react-big-calendar';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
+import { format, parse, startOfWeek, getDay, startOfMonth, endOfMonth, startOfDay, endOfDay, endOfWeek } from 'date-fns';
 import es from 'date-fns/locale/es';
 import { Reservation, ReservationStatus } from '@prisma/client';
-import { startOfMonth, endOfMonth, startOfDay, endOfDay, endOfWeek } from 'date-fns';
+
 
 // --- Modal Styles --- //
 const modalOverlayStyle: React.CSSProperties = {
