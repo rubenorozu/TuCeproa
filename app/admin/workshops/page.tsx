@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Button, Spinner, Alert, Container, Row, Col, Modal, Form } from 'react-bootstrap';
+import { Table, Button, Spinner, Alert, Container, Row, Col, Modal, Form, ButtonGroup } from 'react-bootstrap';
 // import Image from 'next/image'; // Reemplazado por <img>
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
@@ -57,7 +57,7 @@ export default function AdminWorkshopsPage() {
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [currentWorkshop, setCurrentWorkshop] = useState<Workshop | null>(null);
   const [form, setForm] = useState({
@@ -67,11 +67,11 @@ export default function AdminWorkshopsPage() {
     capacity: 0,
     availableFrom: '',
     teacher: '',
-    startDate: '', // NUEVO: Fecha de inicio del taller
-    endDate: '', // NUEVO: Fecha de fin del taller
-    inscriptionsStartDate: '', // NUEVO: Fecha de apertura de inscripciones
+    startDate: '',
+    endDate: '',
+    inscriptionsStartDate: '',
   });
-  const [modalWorkshopSessions, setModalWorkshopSessions] = useState<WorkshopSession[]>([{ dayOfWeek: 1, timeStart: '09:00', timeEnd: '10:00', room: '' } as WorkshopSession]); // Nuevo estado para sesiones en el modal
+  const [modalWorkshopSessions, setModalWorkshopSessions] = useState<WorkshopSession[]>([{ dayOfWeek: 1, timeStart: '09:00', timeEnd: '10:00', room: '' } as WorkshopSession]);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [existingImages, setExistingImages] = useState<Image[]>([]);
 
@@ -79,18 +79,22 @@ export default function AdminWorkshopsPage() {
   const [responsibleUsersLoading, setResponsibleUsersLoading] = useState(true);
   const [responsibleUsersError, setResponsibleUsersError] = useState<string | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Define page size
+
   useEffect(() => {
     if (!sessionLoading && (!user || (user.role !== 'SUPERUSER' && user.role !== 'ADMIN_RESOURCE'))) {
       router.push('/'); // Redirigir si no es superusuario ni ADMIN_RESOURCE
     }
   }, [user, sessionLoading, router]);
 
-  async function fetchWorkshops(searchQuery: string = '', responsibleUserId: string | null = null) {
+  async function fetchWorkshops(searchQuery: string = '', responsibleUserId: string | null = null, page: number = 1) {
     setLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const url = `/api/admin/workshops?search=${searchQuery}${responsibleUserId ? `&responsibleUserId=${responsibleUserId}` : ''}`;
+      const url = `/api/admin/workshops?search=${searchQuery}${responsibleUserId ? `&responsibleUserId=${responsibleUserId}` : ''}&page=${page}&pageSize=${pageSize}`;
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -101,12 +105,13 @@ export default function AdminWorkshopsPage() {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar los talleres.');
       }
-      const data: Workshop[] = await response.json();
-      const updatedWorkshops = data.map(workshop => ({
+      const result = await response.json();
+      const updatedWorkshops = result.workshops.map((workshop: Workshop) => ({
         ...workshop,
-        sessions: workshop.sessions || [] // Ensure sessions is an array
+        sessions: workshop.sessions || []
       }));
       setWorkshops(updatedWorkshops);
+      setTotalPages(Math.ceil(result.totalWorkshops / pageSize));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -147,9 +152,9 @@ export default function AdminWorkshopsPage() {
     if (!sessionLoading && user && (user.role === 'SUPERUSER' || user.role === 'ADMIN_RESOURCE')) {
       const handler = setTimeout(() => {
         if (user.role === 'ADMIN_RESOURCE') {
-          fetchWorkshops(searchTerm, user.id);
+          fetchWorkshops(searchTerm, user.id, currentPage);
         } else {
-          fetchWorkshops(searchTerm);
+          fetchWorkshops(searchTerm, null, currentPage);
         }
       }, 500); // Debounce por 500ms
 
@@ -157,7 +162,7 @@ export default function AdminWorkshopsPage() {
         clearTimeout(handler);
       };
     }
-  }, [sessionLoading, user, searchTerm]);
+  }, [sessionLoading, user, searchTerm, currentPage]);
 
   useEffect(() => {
     if (!sessionLoading && user && user.role === 'SUPERUSER') {
@@ -465,83 +470,112 @@ export default function AdminWorkshopsPage() {
       {error && <Alert variant="danger">{error}</Alert>}
 
       {!loading && !error && (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>ID</th><th>Nombre</th><th>Responsable</th><th>Imágenes</th><th>Sesiones</th><th>Inscripciones</th><th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {workshops.map(item => (
-              <tr key={item.id}>
-                <td>{item.displayId || item.id}</td>
-                <td>{item.name}</td>
-                <td>
-                  {item.responsibleUser
-                    ? `${item.responsibleUser.firstName} ${item.responsibleUser.lastName}`
-                    : 'N/A'}
-                </td>
-                <td>
-                  {item.images && item.images.length > 0 ? (
-                    <div className="d-flex flex-wrap">
-                      {item.images.map(img => (
-                        <img key={img.id} src={img.url} alt="Workshop Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} />
-                      ))}
-                    </div>
-                  ) : (
-                    'N/A'
-                  )}
-                </td>
-                <td>
-                  {item.sessions && item.sessions.length > 0 ? (
-                    <ul>
-                      {item.sessions.map((session, idx) => {
-                        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-                        const dayName = days[session.dayOfWeek];
-                        return (
-                          <li key={idx}>
-                            {dayName}: {session.timeStart} - {session.timeEnd} ({session.room || 'Sin aula'})
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : (
-                    'Sin sesiones'
-                  )}
-                </td>
-                <td>
-                  <span className={`badge ${item.inscriptionsOpen ? 'bg-success' : 'bg-danger'}`}>
-                    {item.inscriptionsOpen ? 'Abiertas' : 'Cerradas'}
-                  </span>
-                </td>
-                <td>
-                  <Button
-                    variant={item.inscriptionsOpen ? 'danger' : 'success'}
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleToggleInscriptions(item.id)}
-                  >
-                                        {item.inscriptionsOpen 
-                      ? 'Cerrar' 
-                      : new Date(item.inscriptionsStartDate || 0) < new Date() 
-                      ? 'Reabrir' 
-                      : 'Abrir'}
-
-                  </Button>
-                  <Button variant="warning" size="sm" className="me-2" onClick={() => handleShowModal(item)}>
-                    Editar
-                  </Button>
-                  <a href={`/api/admin/workshops/${item.id}/inscriptions/pdf`} className="btn btn-success btn-sm me-2" target="_blank">
-                    Descargar PDF
-                  </a>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>
-                    Eliminar
-                  </Button>
-                </td>
+        <>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>ID</th><th>Nombre</th><th>Responsable</th><th>Imágenes</th><th>Sesiones</th><th>Inscripciones</th><th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {workshops.map(item => (
+                <tr key={item.id}>
+                  <td>{item.displayId || item.id}</td>
+                  <td>{item.name}</td>
+                  <td>
+                    {item.responsibleUser
+                      ? `${item.responsibleUser.firstName} ${item.responsibleUser.lastName}`
+                      : 'N/A'}
+                  </td>
+                  <td>
+                    {item.images && item.images.length > 0 ? (
+                      <div className="d-flex flex-wrap">
+                        {item.images.map(img => (
+                          <img key={img.id} src={img.url} alt="Workshop Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} />
+                        ))}
+                      </div>
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                  <td>
+                    {item.sessions && item.sessions.length > 0 ? (
+                      <ul>
+                        {item.sessions.map((session, idx) => {
+                          const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                          const dayName = days[session.dayOfWeek];
+                          return (
+                            <li key={idx}>
+                              {dayName}: {session.timeStart} - {session.timeEnd} ({session.room || 'Sin aula'})
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      'Sin sesiones'
+                    )}
+                  </td>
+                  <td>
+                    <span className={`badge ${item.inscriptionsOpen ? 'bg-success' : 'bg-danger'}`}>
+                      {item.inscriptionsOpen ? 'Abiertas' : 'Cerradas'}
+                    </span>
+                  </td>
+                  <td>
+                    <Button
+                      variant={item.inscriptionsOpen ? 'danger' : 'success'}
+                      size="sm"
+                      className="me-2"
+                      onClick={() => handleToggleInscriptions(item.id)}
+                    >
+                                          {item.inscriptionsOpen 
+                        ? 'Cerrar' 
+                        : new Date(item.inscriptionsStartDate || 0) < new Date() 
+                        ? 'Reabrir' 
+                        : 'Abrir'}
+
+                    </Button>
+                    <Button variant="warning" size="sm" className="me-2" onClick={() => handleShowModal(item)}>
+                      Editar
+                    </Button>
+                    <a href={`/api/admin/workshops/${item.id}/inscriptions/pdf`} className="btn btn-success btn-sm me-2" target="_blank">
+                      Descargar PDF
+                    </a>
+                    <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>
+                      Eliminar
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <div className="d-flex justify-content-center mt-3">
+            <ButtonGroup>
+              <Button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                variant="outline-primary"
+              >
+                Anterior
+              </Button>
+              {[...Array(totalPages)].map((_, index) => (
+                <Button
+                  key={index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                  variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+              <Button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                variant="outline-primary"
+              >
+                Siguiente
+              </Button>
+            </ButtonGroup>
+          </div>
+        </>
       )}
 
       <Modal show={showModal} onHide={handleCloseModal}>

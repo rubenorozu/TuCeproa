@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Spinner, Alert, Container, Row, Col, Form } from 'react-bootstrap';
+import { Table, Button, Spinner, Alert, Container, Row, Col, Form, ButtonGroup } from 'react-bootstrap';
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -23,25 +23,29 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Define page size
   const { user: currentUser, loading: sessionLoading } = useSession();
   const router = useRouter();
 
-  const fetchUsers = useCallback(async (searchQuery: string = '') => {
+  const fetchUsers = useCallback(async (searchQuery: string = '', page: number = 1) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/users?search=${searchQuery}`, {
+      const response = await fetch(`/api/admin/users?search=${searchQuery}&page=${page}&pageSize=${pageSize}`, {
         headers: {
-          'x-user-role': currentUser?.role || '', // Enviar el rol del usuario actual
+          'x-user-role': currentUser?.role || '',
         },
       });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar los usuarios.');
       }
-      const data: User[] = await response.json();
-      setUsers(data);
+      const result = await response.json();
+      setUsers(result.users);
+      setTotalPages(Math.ceil(result.totalUsers / pageSize));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -62,14 +66,14 @@ export default function AdminUsersPage() {
   useEffect(() => {
     if (!sessionLoading && currentUser && currentUser.role === 'SUPERUSER') {
       const handler = setTimeout(() => {
-        fetchUsers(searchTerm);
+        fetchUsers(searchTerm, currentPage);
       }, 500); // Debounce por 500ms
 
       return () => {
         clearTimeout(handler);
       };
     }
-  }, [sessionLoading, currentUser, searchTerm, fetchUsers]);
+  }, [sessionLoading, currentUser, searchTerm, currentPage, fetchUsers]);
 
   const handleRoleChange = async (userId: string, newRole: Role) => {
     try {
@@ -96,7 +100,7 @@ export default function AdminUsersPage() {
         setError('An unknown error occurred');
         alert('An unknown error occurred');
       }
-      fetchUsers(); // Re-fetch para revertir el cambio visual en caso de error
+      fetchUsers(searchTerm, currentPage); // Re-fetch para revertir el cambio visual en caso de error
     }
   };
 
@@ -243,51 +247,80 @@ export default function AdminUsersPage() {
       {error && <Alert variant="danger">{error}</Alert>}
 
       {!loading && !error && (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>ID del Usuario</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Matrícula / ID</th>
-              <th>Verificado</th>
-              <th>Fecha de Creación</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => (
-              <tr key={user.id}>
-                <td>{user.displayId || user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>
-                  <Form.Select
-                    value={user.role}
-                    onChange={(e) => handleRoleChange(user.id, e.target.value as Role)}
-                    disabled={user.id === currentUser.id} // Deshabilitar para el usuario actual
-                  >
-                    {Object.values(Role).map(role => (
-                      <option key={role} value={role}>{role}</option>
-                    ))}
-                  </Form.Select>
-                </td>
-                <td>{user.identifier}</td>
-                <td>{user.isVerified ? 'Sí' : 'No'}</td>
-                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <Button variant="info" size="sm" className="me-2" onClick={() => handleResetPassword(user.id, user.email)}>
-                    Restablecer Contraseña
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} disabled={user.id === currentUser.id}>
-                    Eliminar
-                  </Button>
-                </td>
+        <>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>ID del Usuario</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Matrícula / ID</th>
+                <th>Verificado</th>
+                <th>Fecha de Creación</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user.id}>
+                  <td>{user.displayId || user.id}</td>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <Form.Select
+                      value={user.role}
+                      onChange={(e) => handleRoleChange(user.id, e.target.value as Role)}
+                      disabled={user.id === currentUser.id} // Deshabilitar para el usuario actual
+                    >
+                      {Object.values(Role).map(role => (
+                        <option key={role} value={role}>{role}</option>
+                      ))}
+                    </Form.Select>
+                  </td>
+                  <td>{user.identifier}</td>
+                  <td>{user.isVerified ? 'Sí' : 'No'}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <Button variant="info" size="sm" className="me-2" onClick={() => handleResetPassword(user.id, user.email)}>
+                      Restablecer Contraseña
+                    </Button>
+                    <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} disabled={user.id === currentUser.id}>
+                      Eliminar
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <div className="d-flex justify-content-center mt-3">
+            <ButtonGroup>
+              <Button
+                variant="outline-primary"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </Button>
+              {[...Array(totalPages)].map((_, index) => (
+                <Button
+                  key={index + 1}
+                  variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+              <Button
+                variant="outline-primary"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Siguiente
+              </Button>
+            </ButtonGroup>
+          </div>
+        </>
       )}
     </Container>
   );

@@ -15,18 +15,22 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
 
     const whereClause: Prisma.UserWhereInput = {};
 
     if (search) {
       whereClause.OR = [
-        { firstName: { contains: search } },
-        { lastName: { contains: search } },
-        { email: { contains: search } },
-        { identifier: { contains: search } },
-        { displayId: { not: null, contains: search } },
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { identifier: { contains: search, mode: 'insensitive' } },
+        { displayId: { not: null, contains: search, mode: 'insensitive' } },
       ];
     }
+
+    const skip = (page - 1) * pageSize;
 
     const users = await prisma.user.findMany({
       where: whereClause,
@@ -42,7 +46,11 @@ export async function GET(req: Request) {
         createdAt: true,
       },
       orderBy: { firstName: 'asc' },
+      skip,
+      take: pageSize,
     });
+
+    const totalUsers = await prisma.user.count({ where: whereClause });
 
     const safeUsers = users.map(user => ({
       id: user.id,
@@ -55,7 +63,7 @@ export async function GET(req: Request) {
       createdAt: user.createdAt.toISOString(),
     }));
 
-    return NextResponse.json(safeUsers);
+    return NextResponse.json({ users: safeUsers, totalUsers });
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ message: 'Something went wrong' }, { status: 500 });

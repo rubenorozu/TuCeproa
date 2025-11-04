@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Spinner, Alert, Container, Row, Col, Badge, Form } from 'react-bootstrap';
+import { Table, Button, Spinner, Alert, Container, Row, Col, Badge, Form, ButtonGroup } from 'react-bootstrap';
 import { useSession } from '@/context/SessionContext';
 import Link from 'next/link';
 import { InscriptionStatus } from '@prisma/client';
@@ -19,21 +19,26 @@ export default function AdminInscriptionsPage() {
   const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [filter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('all');
 
-  const fetchInscriptions = useCallback(async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all', searchQuery: string = '') => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Define page size
+
+  const fetchInscriptions = useCallback(async (statusFilter: 'pending' | 'approved' | 'rejected' | 'all', searchQuery: string = '', page: number = 1) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/inscriptions?status=${statusFilter}&search=${searchQuery}`);
+      const response = await fetch(`/api/admin/inscriptions?status=${statusFilter}&search=${searchQuery}&page=${page}&pageSize=${pageSize}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar las inscripciones.');
       }
-      const data: Inscription[] = await response.json();
-      setInscriptions(data);
+      const result = await response.json();
+      setInscriptions(result.inscriptions);
+      setTotalPages(Math.ceil(result.totalInscriptions / pageSize));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -48,14 +53,14 @@ export default function AdminInscriptionsPage() {
   useEffect(() => {
     if (!sessionLoading && user && (user.role === 'SUPERUSER' || user.role === 'ADMIN_RESERVATION' || user.role === 'ADMIN_RESOURCE')) {
       const handler = setTimeout(() => {
-        fetchInscriptions(filter, searchTerm);
+        fetchInscriptions(filter, searchTerm, currentPage);
       }, 500); // Debounce por 500ms
 
       return () => {
         clearTimeout(handler);
       };
     }
-  }, [sessionLoading, user, filter, searchTerm, fetchInscriptions]);
+  }, [sessionLoading, user, filter, searchTerm, currentPage, fetchInscriptions]);
 
   const handleApproveReject = async (inscriptionId: string, action: 'approve' | 'reject') => {
     if (action === 'reject' && !window.confirm('¿Estás seguro de que quieres rechazar esta inscripción?')) {
@@ -232,43 +237,72 @@ export default function AdminInscriptionsPage() {
       {error && <Alert variant="danger">{error}</Alert>}
 
       {!loading && !error && (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Taller</th>
-              <th>Usuario</th>
-              <th>Email</th>
-              <th>Fecha de Solicitud</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inscriptions.map(inscription => {
-              const isResponsible = (user?.role === 'ADMIN_RESERVATION' || user?.role === 'ADMIN_RESOURCE') && inscription.workshop.responsibleUserId === user.id;
-              const canApproveReject = user?.role === 'SUPERUSER' || isResponsible;
+        <>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Taller</th>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Fecha de Solicitud</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inscriptions.map(inscription => {
+                const isResponsible = (user?.role === 'ADMIN_RESERVATION' || user?.role === 'ADMIN_RESOURCE') && inscription.workshop.responsibleUserId === user.id;
+                const canApproveReject = user?.role === 'SUPERUSER' || isResponsible;
 
-              return (
-                <tr key={inscription.id}>
-                  <td>{inscription.workshop.name}</td>
-                  <td>{`${inscription.user.firstName} ${inscription.user.lastName}`}</td>
-                  <td>{inscription.user.email}</td>
-                  <td>{new Date(inscription.createdAt).toLocaleString()}</td>
-                  <td>{getStatusBadge(inscription.status)}</td>
-                  <td>
-                    {(inscription.status === 'PENDING' || inscription.status === 'PENDING_EXTRAORDINARY') && (
-                      <>
-                        <Button variant="success" size="sm" className="me-2" onClick={() => handleApproveReject(inscription.id, 'approve')} disabled={!canApproveReject}>Aprobar</Button>
-                        <Button variant="danger" size="sm" className="me-2" onClick={() => handleApproveReject(inscription.id, 'reject')} disabled={!canApproveReject}>Rechazar</Button>
-                      </>
-                    )}
-                    <Button variant="secondary" size="sm" onClick={() => handleDelete(inscription.id)} disabled={user?.role !== 'SUPERUSER' && !isResponsible}>Eliminar</Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+                return (
+                  <tr key={inscription.id}>
+                    <td>{inscription.workshop.name}</td>
+                    <td>{`${inscription.user.firstName} ${inscription.user.lastName}`}</td>
+                    <td>{inscription.user.email}</td>
+                    <td>{new Date(inscription.createdAt).toLocaleString()}</td>
+                    <td>{getStatusBadge(inscription.status)}</td>
+                    <td>
+                      {(inscription.status === 'PENDING' || inscription.status === 'PENDING_EXTRAORDINARY') && (
+                        <>
+                          <Button variant="success" size="sm" className="me-2" onClick={() => handleApproveReject(inscription.id, 'approve')} disabled={!canApproveReject}>Aprobar</Button>
+                          <Button variant="danger" size="sm" className="me-2" onClick={() => handleApproveReject(inscription.id, 'reject')} disabled={!canApproveReject}>Rechazar</Button>
+                        </>
+                      )}
+                      <Button variant="secondary" size="sm" onClick={() => handleDelete(inscription.id)} disabled={user?.role !== 'SUPERUSER' && !isResponsible}>Eliminar</Button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+          <div className="d-flex justify-content-center mt-3">
+            <ButtonGroup>
+              <Button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                variant="outline-primary"
+              >
+                Anterior
+              </Button>
+              {[...Array(totalPages)].map((_, index) => (
+                <Button
+                  key={index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                  variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+              <Button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                variant="outline-primary"
+              >
+                Siguiente
+              </Button>
+            </ButtonGroup>
+          </div>
+        </>
       )}
     </Container>
   );

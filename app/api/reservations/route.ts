@@ -82,6 +82,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Authorization check for ADMIN_RESOURCE and ADMIN_RESERVATION roles
+    if (session.user.role === Role.ADMIN_RESOURCE || session.user.role === Role.ADMIN_RESERVATION) {
+      let resource;
+      if (spaceId) {
+        resource = await prisma.space.findUnique({ where: { id: spaceId } });
+      } else if (equipmentId) {
+        resource = await prisma.equipment.findUnique({ where: { id: equipmentId } });
+      }
+
+      if (!resource || resource.responsibleUserId !== session.user.id) {
+        return NextResponse.json({ error: 'Acceso denegado. No eres responsable de este recurso.' }, { status: 403 });
+      }
+    }
+
     const data: any = {
       startTime: new Date(start),
       endTime: new Date(end),

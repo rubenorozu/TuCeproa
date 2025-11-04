@@ -25,6 +25,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
 
     const whereClause: Prisma.SpaceWhereInput = {};
 
@@ -34,21 +36,22 @@ export async function GET(request: Request) {
 
     if (search) {
       whereClause.OR = [
-        { name: { contains: search } },
-        { description: { contains: search } },
-        { displayId: { not: null, contains: search } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { displayId: { not: null, contains: search, mode: 'insensitive' } },
         {
           responsibleUser: {
             OR: [
-              { firstName: { contains: search } },
-              { lastName: { contains: search } },
+              { firstName: { contains: search, mode: 'insensitive' } },
+              { lastName: { contains: search, mode: 'insensitive' } },
             ],
           },
         },
       ];
     }
 
-    console.log('DEBUG API: Ejecutando prisma.space.findMany...');
+    const skip = (page - 1) * pageSize;
+
     const spaces = await prisma.space.findMany({
       where: whereClause,
       include: {
@@ -63,9 +66,13 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: 'desc',
       },
+      skip,
+      take: pageSize,
     });
-    console.log('DEBUG API: Datos de espacios devueltos:', spaces);
-    return NextResponse.json(spaces, { status: 200 });
+
+    const totalSpaces = await prisma.space.count({ where: whereClause });
+
+    return NextResponse.json({ spaces, totalSpaces }, { status: 200 });
   } catch (error) {
     console.error('Error al obtener los espacios:', error);
     return NextResponse.json({ error: 'No se pudo obtener la lista de espacios.' }, { status: 500 });

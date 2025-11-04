@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Button, Spinner, Alert, Container, Row, Col, Modal, Form } from 'react-bootstrap';
+import { Table, Button, Spinner, Alert, Container, Row, Col, Modal, Form, ButtonGroup } from 'react-bootstrap';
 // import Image from 'next/image'; // Reemplazado por <img>
 import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
@@ -41,11 +41,11 @@ export default function AdminSpacesPage() {
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
-  const [success, setSuccess] = useState<string | null>(null); // Añadir estado de éxito
+  const [searchTerm, setSearchTerm] = useState('');
+  const [success, setSuccess] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [currentSpace, setCurrentSpace] = useState<Space | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Nuevo estado para controlar el envío
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -58,24 +58,29 @@ export default function AdminSpacesPage() {
   const [responsibleUsersLoading, setResponsibleUsersLoading] = useState(true);
   const [responsibleUsersError, setResponsibleUsersError] = useState<string | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Define page size
+
   useEffect(() => {
     if (!sessionLoading && (!user || (user.role !== 'SUPERUSER' && user.role !== 'ADMIN_RESOURCE'))) {
       router.push('/'); // Redirigir si no es superusuario ni ADMIN_RESOURCE
     }
   }, [user, sessionLoading, router]);
 
-  async function fetchSpaces(searchQuery: string = '', responsibleUserId: string | null = null) {
+  async function fetchSpaces(searchQuery: string = '', responsibleUserId: string | null = null, page: number = 1) {
     setLoading(true);
     setError(null);
     try {
-      const url = `/api/admin/spaces?search=${searchQuery}${responsibleUserId ? `&responsibleUserId=${responsibleUserId}` : ''}`;
+      const url = `/api/admin/spaces?search=${searchQuery}${responsibleUserId ? `&responsibleUserId=${responsibleUserId}` : ''}&page=${page}&pageSize=${pageSize}`;
       const response = await fetch(url);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar los espacios.');
       }
-      const data: Space[] = await response.json();
-      setSpaces(data);
+      const result = await response.json();
+      setSpaces(result.spaces);
+      setTotalPages(Math.ceil(result.totalSpaces / pageSize));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -116,9 +121,9 @@ export default function AdminSpacesPage() {
     if (!sessionLoading && user && (user.role === 'SUPERUSER' || user.role === 'ADMIN_RESOURCE')) {
       const handler = setTimeout(() => {
         if (user.role === 'ADMIN_RESOURCE') {
-          fetchSpaces(searchTerm, user.id);
+          fetchSpaces(searchTerm, user.id, currentPage);
         } else {
-          fetchSpaces(searchTerm);
+          fetchSpaces(searchTerm, null, currentPage);
         }
       }, 500); // Debounce por 500ms
 
@@ -126,7 +131,7 @@ export default function AdminSpacesPage() {
         clearTimeout(handler);
       };
     }
-  }, [sessionLoading, user, searchTerm]);
+  }, [sessionLoading, user, searchTerm, currentPage]);
 
   useEffect(() => {
     if (!sessionLoading && user && user.role === 'SUPERUSER') {
@@ -367,50 +372,77 @@ export default function AdminSpacesPage() {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {!loading && !error && (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>ID</th><th>Nombre</th><th>Imágenes</th><th>Responsable</th><th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {spaces.map(space => (
-              <tr key={space.id}>
-                <td>{space.displayId || space.id}</td>
-                <td>{space.name}</td>
-                <td>
-                  {space.images && space.images.length > 0 ? (
-                    <div className="d-flex flex-wrap">
-                      {space.images.map(img => (
-                        <img key={img.id} src={img.url} alt="Space Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" />
-                      ))}
-                    </div>
-                  ) : (
-                    'N/A'
-                  )}
-                </td>
-                <td>
-                  {space.responsibleUser
-                    ? `${space.responsibleUser.firstName} ${space.responsibleUser.lastName}`
-                    : 'N/A'}
-                </td>
-                <td>
-                  <Button variant="warning" size="sm" className="me-2" onClick={() => handleShowModal(space)}>
-                    Editar
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(space.id)}>
-                    Eliminar
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
+            {!loading && !error && (
+              <>
+                <Table striped bordered hover responsive>
+                  <thead>
+                    <tr>
+                      <th>ID</th><th>Nombre</th><th>Imágenes</th><th>Responsable</th><th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {spaces.map(space => (
+                      <tr key={space.id}>
+                        <td>{space.displayId || space.id}</td>
+                        <td>{space.name}</td>
+                        <td>
+                          {space.images && space.images.length > 0 ? (
+                            <div className="d-flex flex-wrap">
+                              {space.images.map(img => (
+                                <img key={img.id} src={img.url} alt="Space Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" />
+                              ))}
+                            </div>
+                          ) : (
+                            'N/A'
+                          )}
+                        </td>
+                        <td>
+                          {space.responsibleUser
+                            ? `${space.responsibleUser.firstName} ${space.responsibleUser.lastName}`
+                            : 'N/A'}
+                        </td>
+                        <td>
+                          <Button variant="warning" size="sm" className="me-2" onClick={() => handleShowModal(space)}>
+                            Editar
+                          </Button>
+                          <Button variant="danger" size="sm" onClick={() => handleDelete(space.id)}>
+                            Eliminar
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+          <div className="d-flex justify-content-center mt-3">
+            <ButtonGroup>
+              <Button
+                variant="outline-primary"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </Button>
+              {[...Array(totalPages)].map((_, index) => (
+                <Button
+                  key={index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                  variant={currentPage === index + 1 ? 'primary' : 'outline-primary'}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+              <Button
+                variant="outline-primary"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Siguiente
+              </Button>
+            </ButtonGroup>
+          </div>              </>
+            )}
+      
+            <Modal show={showModal} onHide={handleCloseModal}>        <Modal.Header closeButton>
           <Modal.Title>{currentSpace ? 'Editar Espacio' : 'Añadir Nuevo Espacio'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>

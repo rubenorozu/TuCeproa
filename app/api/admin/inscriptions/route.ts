@@ -14,6 +14,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get('status');
     const search = searchParams.get('search');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
 
     const whereClause: Prisma.InscriptionWhereInput = {};
 
@@ -47,6 +49,8 @@ export async function GET(request: Request) {
       ];
     }
 
+    const skip = (page - 1) * pageSize;
+
     console.log('whereClause:', JSON.stringify(whereClause, null, 2));
     const inscriptions = await prisma.inscription.findMany({
       where: whereClause,
@@ -63,7 +67,11 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: 'desc',
       },
+      skip,
+      take: pageSize,
     });
+
+    const totalInscriptions = await prisma.inscription.count({ where: whereClause });
 
     const format = searchParams.get('format');
     if (format === 'csv') {
@@ -95,7 +103,7 @@ export async function GET(request: Request) {
     }
 
     console.log('inscriptions:', JSON.stringify(inscriptions, null, 2));
-    return NextResponse.json(inscriptions, { status: 200 });
+    return NextResponse.json({ inscriptions, totalInscriptions }, { status: 200 });
   } catch (error) {
     console.error('Error al obtener las inscripciones:', error);
     return NextResponse.json({ error: 'No se pudieron obtener las inscripciones.' }, { status: 500 });

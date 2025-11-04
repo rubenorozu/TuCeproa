@@ -25,6 +25,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
 
     const whereClause: Prisma.WorkshopWhereInput = {};
 
@@ -49,6 +51,8 @@ export async function GET(request: Request) {
       ];
     }
 
+    const skip = (page - 1) * pageSize;
+
     const workshops = await prisma.workshop.findMany({
       where: whereClause,
       include: {
@@ -64,7 +68,11 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: 'desc',
       },
+      skip,
+      take: pageSize,
     });
+
+    const totalWorkshops = await prisma.workshop.count({ where: whereClause });
 
     const format = searchParams.get('format');
     if (format === 'csv') {
@@ -100,7 +108,7 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json(workshops, { status: 200 });
+    return NextResponse.json({ workshops, totalWorkshops }, { status: 200 });
   } catch (error) {
     console.error('Error al obtener los talleres:', error);
     return NextResponse.json({ error: 'No se pudo obtener la lista de talleres.' }, { status: 500 });
