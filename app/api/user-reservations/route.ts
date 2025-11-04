@@ -29,9 +29,20 @@ export async function GET(req: Request) {
     return NextResponse.json({ message: 'La sesión no es válida.' }, { status: 401 });
   }
 
+  const { searchParams } = new URL(req.url);
+  const start = searchParams.get('start');
+  const end = searchParams.get('end');
+
+  const where: any = { userId };
+
+  if (start && end) {
+    where.startTime = { gte: new Date(start) };
+    where.endTime = { lte: new Date(end) };
+  }
+
   try {
     const reservations = await prisma.reservation.findMany({
-      where: { userId },
+      where,
       include: {
         space: {
           select: { name: true }

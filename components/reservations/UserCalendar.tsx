@@ -4,8 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer, Event as BigCalendarEvent } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, startOfMonth, endOfMonth, startOfDay, endOfDay, endOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale/es';
-import { Reservation, ReservationStatus, Role } from '@prisma/client';
-import { useSession } from '@/context/SessionContext';
+import { Reservation, ReservationStatus } from '@prisma/client';
 
 // --- Modal Styles --- //
 const modalOverlayStyle: React.CSSProperties = {
@@ -28,22 +27,15 @@ const buttonStyle: React.CSSProperties = {
 const locales = { 'es': es };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek: () => startOfWeek(new Date(), { locale: es }), getDay, locales });
 
-interface AdminCalendarProps {
-  spaceId?: string;
-  equipmentId?: string;
-}
-
 interface CalendarEvent extends BigCalendarEvent {
   id: string;
   status?: ReservationStatus;
-  isBlock: boolean;
   fullReservation: any;
 }
 
-export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarProps) {
-  const { user: currentUser } = useSession();
+export default function UserCalendar() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [view, setView] = useState('week');
+  const [view, setView] = useState('month');
   const [date, setDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,15 +44,7 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
   const onView = useCallback((newView: string) => setView(newView), [setView]);
 
   const fetchEvents = useCallback(async () => {
-    if (!spaceId && !equipmentId) return;
     setIsLoading(true);
-    let apiQuery = '';
-    if (spaceId) {
-      apiQuery = `spaceId=${spaceId}`;
-    } else if (equipmentId) {
-      apiQuery = `equipmentId=${equipmentId}`;
-    }
-
     let viewStart, viewEnd;
     if (view === 'month') {
       viewStart = startOfMonth(date);
@@ -74,18 +58,17 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     }
 
     try {
-      const response = await fetch(`/api/reservations?${apiQuery}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`);
+      const response = await fetch(`/api/user-reservations?start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`);
       if (response.ok) {
         const reservations = await response.json();
         const formattedEvents: CalendarEvent[] = reservations
           .filter((res: any) => res.status !== 'REJECTED')
           .map((res: any) => ({
             id: res.id,
-            title: `${res.justification} (${res.user.firstName} ${res.user.lastName})`,
+            title: res.justification,
             start: new Date(res.startTime),
             end: new Date(res.endTime),
             status: res.status,
-            isBlock: res.subject === 'Bloqueo Administrativo',
             fullReservation: res,
           }));
         setEvents(formattedEvents);
@@ -95,90 +78,15 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     } finally {
       setIsLoading(false);
     }
-  }, [spaceId, equipmentId, date, view]);
+  }, [date, view]);
 
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
 
-  const handleSelectSlot = useCallback(
-    async ({ start, end }: { start: Date, end: Date }) => {
-      const title = window.prompt('Motivo del bloqueo:');
-      if (title) {
-        setIsLoading(true);
-        const body: any = { start, end, title };
-        if (spaceId) body.spaceId = spaceId;
-        else if (equipmentId) body.equipmentId = equipmentId;
-
-        const response = await fetch('/api/reservations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        setIsLoading(false);
-        if (response.ok) {
-          alert('¡Horario bloqueado exitosamente!');
-          fetchEvents();
-        } else {
-          alert('Error al crear el bloqueo.');
-        }
-      }
-    },
-    [spaceId, equipmentId, fetchEvents]
-  );
-
-  const handleEventAction = async (action: 'APPROVE' | 'REJECT' | 'DELETE') => {
-    if (!selectedEvent) return;
-
-    const eventId = selectedEvent.id;
-    let url = '';
-    let method = 'POST';
-
-    if (action === 'APPROVE') {
-      url = `/api/admin/reservations/${eventId}/approve`;
-    } else if (action === 'REJECT') {
-      if (!window.confirm('¿Estás seguro de que quieres rechazar esta reservación?')) {
-        return;
-      }
-      url = `/api/admin/reservations/${eventId}/reject`;
-    } else if (action === 'DELETE') {
-      if (!window.confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
-        return;
-      }
-      url = `/api/reservations/${eventId}`;
-      method = 'DELETE';
-    }
-
-    if (!url) return;
-
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(url, { method });
-      const responseData = await response.json().catch(() => null); // Catch cases where response is not JSON
-
-      if (response.ok) {
-        alert(`¡Acción completada con éxito!`);
-        setSelectedEvent(null);
-        fetchEvents();
-      } else {
-        // Use the error message from the response, or a default one
-        const errorMessage = responseData?.error || 'Ocurrió un error al procesar la solicitud.';
-        alert(`Error: ${errorMessage}`);
-      }
-    } catch (error) {
-      console.error('Error processing event action:', error);
-      alert('Ocurrió un error de red o del servidor.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const eventStyleGetter = (event: CalendarEvent) => {
     let backgroundColor = '#3174ad'; // Blue for approved
-    if (event.isBlock) {
-      backgroundColor = '#d9534f'; // Red for blocks
-    } else if (event.status === 'PENDING') {
+    if (event.status === 'PENDING') {
       backgroundColor = '#f0ad4e'; // Orange for pending
     }
     return { style: { backgroundColor, opacity: isLoading ? 0.5 : 1 } };
@@ -190,15 +98,6 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     }
   }), []);
 
-  let canApproveReject = false;
-  if (selectedEvent && currentUser) {
-    const reservation = selectedEvent.fullReservation;
-    const isResponsible = (currentUser.role === Role.ADMIN_RESERVATION || currentUser.role === Role.ADMIN_RESOURCE) &&
-      (reservation.space?.responsibleUserId === currentUser.id ||
-       reservation.equipment?.responsibleUserId === currentUser.id);
-    canApproveReject = currentUser.role === Role.SUPERUSER || isResponsible;
-  }
-
   return (
     <>
       {selectedEvent && (
@@ -206,22 +105,13 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
           <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
             <div style={modalHeaderStyle}>{selectedEvent.title}</div>
             <div style={modalBodyStyle}>
-              <p><strong>Solicitante:</strong> {selectedEvent.fullReservation.user.firstName} {selectedEvent.fullReservation.user.lastName}</p>
+              <p><strong>Recurso:</strong> {selectedEvent.fullReservation.space?.name || selectedEvent.fullReservation.equipment?.name}</p>
               <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
               <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
               <p><strong>Estado:</strong> {selectedEvent.status}</p>
               <p><strong>Justificación:</strong> {selectedEvent.fullReservation.justification}</p>
             </div>
             <div style={modalFooterStyle}>
-              {selectedEvent.status === 'PENDING' && canApproveReject && (
-                <>
-                  <button style={{...buttonStyle, backgroundColor: '#5cb85c'}} onClick={() => handleEventAction('APPROVE')}>Aprobar</button>
-                  <button style={{...buttonStyle, backgroundColor: '#f0ad4e'}} onClick={() => handleEventAction('REJECT')}>Rechazar</button>
-                </>
-              )}
-              {canApproveReject && (
-                 <button style={{...buttonStyle, backgroundColor: '#d9534f'}} onClick={() => handleEventAction('DELETE')}>Eliminar</button>
-              )}
               <button style={{...buttonStyle, backgroundColor: '#6c757d'}} onClick={() => setSelectedEvent(null)}>Cerrar</button>
             </div>
           </div>
@@ -233,12 +123,10 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: '100%', opacity: isLoading ? 0.5 : 1 }}
+        style={{ height: '70vh', opacity: isLoading ? 0.5 : 1 }}
         culture="es"
         messages={messages}
-        selectable
         onSelectEvent={(event) => setSelectedEvent(event as CalendarEvent)}
-        onSelectSlot={handleSelectSlot}
         onNavigate={onNavigate}
         onView={onView}
         view={view as any}

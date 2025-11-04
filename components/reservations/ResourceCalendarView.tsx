@@ -22,8 +22,8 @@ export default function ResourceCalendarView({ resources, resourceType }: Resour
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="mb-4">
-        <div>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div className="mb-3 mb-md-0">
           <label htmlFor="resource-selector" className="block text-sm font-medium text-gray-700 mb-1">
             {label}
           </label>
@@ -44,7 +44,7 @@ export default function ResourceCalendarView({ resources, resourceType }: Resour
         </div>
         <Link href="/admin" passHref legacyBehavior>
           <Button variant="outline-secondary">
-            &larr; Regresar al Panel
+            &larr; Regresar
           </Button>
         </Link>
       </div>
