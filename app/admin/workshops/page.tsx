@@ -181,7 +181,7 @@ export default function AdminWorkshopsPage() {
       teacher: item?.teacher || '',
       startDate: item?.startDate ? new Date(item.startDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar startDate
       endDate: item?.endDate ? new Date(item.endDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar endDate
-      inscriptionsStartDate: item?.inscriptionsStartDate ? new Date(item.inscriptionsStartDate).toISOString().split('T')[0] : '', // NUEVO: Inicializar inscriptionsStartDate
+      inscriptionsStartDate: item?.inscriptionsStartDate ? new Date(item.inscriptionsStartDate).toISOString().slice(0, 16) : '', // NUEVO: Inicializar inscriptionsStartDate
     });
     setModalWorkshopSessions(item?.sessions && item.sessions.length > 0 ? item.sessions.map(s => ({
       id: s.id,
@@ -691,9 +691,9 @@ export default function AdminWorkshopsPage() {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Fecha de Apertura de Inscripciones</Form.Label>
+              <Form.Label>Fecha y Hora de Apertura de Inscripciones</Form.Label>
               <Form.Control
-                type="date"
+                type="datetime-local"
                 name="inscriptionsStartDate"
                 value={form.inscriptionsStartDate}
                 onChange={handleChange}
