@@ -10,7 +10,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   const session = await getServerSession();
   // 1. Authentication & Authorization
   const allowedRoles = [Role.SUPERUSER, Role.VIGILANCIA];
-  if (!session || !allowedRoles.includes(session.user.role)) {
+  if (!session || !allowedRoles.some(role => role === session.user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   // 1. Authorization: Only SUPERUSER and VIGILANCIA can access.
   const allowedRoles = [Role.SUPERUSER, Role.VIGILANCIA];
-  if (!session || !allowedRoles.includes(session.user.role)) {
+  if (!session || !allowedRoles.some(role => role === session.user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
