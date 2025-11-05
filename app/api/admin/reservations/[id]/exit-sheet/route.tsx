@@ -178,47 +178,52 @@ export async function GET(request: Request, { params }: { params: { id: string }
       currentY -= 12;
       page.drawText(`Teléfono: ${data.userPhoneNumber}`, { x: margin + 10, y: currentY, font: font, size: 8 });
       currentY -= 12;
-      page.drawText(`Fecha y Hora de Salida: ${new Date(data.startTime).toLocaleString()}`, { x: margin + 10, y: currentY, font: font, size: 8 });
+      page.drawText(`Fecha y Hora de Salida: ${new Date(data.startTime).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}`, { x: margin + 10, y: currentY, font: font, size: 8 });
       currentY -= 12;
-      page.drawText(`Fecha y Hora de Regreso: ${new Date(data.endTime).toLocaleString()}`, { x: margin + 10, y: currentY, font: font, size: 8 });
+      page.drawText(`Fecha y Hora de Regreso: ${new Date(data.endTime).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}`, { x: margin + 10, y: currentY, font: font, size: 8 });
 
+      // Divider line after applicant info
       currentY -= 8;
       page.drawLine({ start: { x: margin, y: currentY }, end: { x: width - margin, y: currentY }, thickness: 0.5, color: rgb(0.7, 0.7, 0.7) });
       currentY -= 15;
 
+      // Equipment Table
       page.drawText('Equipo Solicitado:', { x: margin + 5, y: currentY, font: boldFont, size: 9 });
-      currentY -= 15;
+      currentY -= 15; // Space after title
 
       const tableHeaders = ['Nombre', 'Activo Fijo', 'Número de Serie'];
       const colWidths = [width * 0.3, width * 0.2, width * 0.3];
       let tableX = margin + 5;
 
+      // Draw headers
       tableHeaders.forEach((header, i) => {
-        page.drawText(header, { x: tableX, y: currentY + 1, font: boldFont, size: 8 });
+        page.drawText(header, { x: tableX, y: currentY + 1, font: boldFont, size: 8 }); // Moved up by 1 pixel
         tableX += colWidths[i];
       });
-      currentY -= 1;
+      currentY -= 1; // Adjusted space after headers (moved up by 4)
       page.drawLine({ start: { x: margin, y: currentY }, end: { x: width - margin, y: currentY }, thickness: 0.5 });
-      currentY -= 6;
+      currentY -= 6; // Adjusted space for first equipment item (moved up by 6)
 
+      // Draw equipment rows
       data.equipment.forEach((item: any) => {
-        currentY -= 2;
+        currentY -= 2; // Lower the entire group by 2 pixels
         tableX = margin + 5;
-        page.drawText(item.name, { x: tableX, y: currentY - 3, font: font, size: 8 });
+        page.drawText(item.name, { x: tableX, y: currentY - 3, font: font, size: 8 }); // Lowered by 3 pixels
         tableX += colWidths[0];
-        page.drawText(item.fixedAssetId, { x: tableX, y: currentY - 3, font: font, size: 8 });
+        page.drawText(item.fixedAssetId, { x: tableX, y: currentY - 3, font: font, size: 8 }); // Lowered by 3 pixels
         tableX += colWidths[1];
-        page.drawText(item.serialNumber, { x: tableX, y: currentY - 3, font: font, size: 8 });
-        currentY -= 6;
-        page.drawLine({ start: { x: margin, y: currentY }, end: { x: width - margin, y: currentY }, thickness: 0.5, color: rgb(0.8, 0.8, 0.8) });
-        currentY -= 6;
+        page.drawText(item.serialNumber, { x: tableX, y: currentY - 3, font: font, size: 8 }); // Lowered by 3 pixels
+        currentY -= 6; // Adjusted line height for next item (moved up by 6)
+        page.drawLine({ start: { x: margin, y: currentY }, end: { x: width - margin, y: currentY }, thickness: 0.5, color: rgb(0.8, 0.8, 0.8) }); // Draw line after each item
+        currentY -= 6; // Adjusted space after line (moved up by 6)
       });
 
-      const signatureBlockStartY = currentHalfEndY + 40;
+      // Signatures - Anchored to bottom
+      const signatureBlockStartY = currentHalfEndY + 40; // Position signatures above the bottom border of the current half-sheet
       const signatureY = signatureBlockStartY - 15;
 
       const drawSignatureBlock = (x: number, text1: string, text2?: string, isLast?: boolean) => {
-        const lineLength = isLast ? signatureLineLengthAdjusted - 5 : signatureLineLengthAdjusted;
+        const lineLength = isLast ? signatureLineLengthAdjusted - 5 : signatureLineLengthAdjusted; // Shorten last line
         page.drawLine({ start: { x, y: signatureBlockStartY }, end: { x: x + lineLength, y: signatureBlockStartY }, thickness: 0.5 });
         page.drawText(text1, { x: x + lineLength / 2 - font.widthOfTextAtSize(text1, 7) / 2, y: signatureY, font: font, size: 7 });
         if (text2) {
@@ -226,18 +231,17 @@ export async function GET(request: Request, { params }: { params: { id: string }
         }
       };
 
-      const signatureLineLengthAdjusted = (width - 2 * margin - 20) / 4;
+      const signatureLineLengthAdjusted = (width - 2 * margin - 20) / 4; // Adjusted for padding
 
       drawSignatureBlock(margin + 5, 'Coordinación de Ceproa', 'Germán Medina');
       drawSignatureBlock(margin + 5 + signatureLineLengthAdjusted + 5, 'Encargado Responsable del Equipo');
       
       const checkoutText1 = data.checkedOutAt ? data.checkedOutByUserName : 'Vigilancia (Salida)';
-      const checkoutText2 = data.checkedOutAt ? new Date(data.checkedOutAt).toLocaleString() : undefined;
+      const checkoutText2 = data.checkedOutAt ? new Date(data.checkedOutAt).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : undefined;
       drawSignatureBlock(margin + 5 + 2 * (signatureLineLengthAdjusted + 5), checkoutText1, checkoutText2);
 
       const checkinText1 = data.checkedInAt ? data.checkedInByUserName : 'Vigilancia (Entrada)';
-      const checkinText2 = data.checkedInAt ? new Date(data.checkedInAt).toLocaleString() : undefined;
-      drawSignatureBlock(margin + 5 + 3 * (signatureLineLengthAdjusted + 5), checkinText1, checkinText2, true);
+      const checkinText2 = data.checkedInAt ? new Date(data.checkedInAt).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : undefined;
     };
 
     const page = pdfDoc.addPage([612, 792]);
