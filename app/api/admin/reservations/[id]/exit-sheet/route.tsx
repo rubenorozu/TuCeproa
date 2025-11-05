@@ -242,6 +242,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
       const checkinText1 = data.checkedInAt ? data.checkedInByUserName : 'Vigilancia (Entrada)';
       const checkinText2 = data.checkedInAt ? new Date(data.checkedInAt).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : undefined;
+      drawSignatureBlock(margin + 5 + 3 * (signatureLineLengthAdjusted + 5), checkinText1, checkinText2, true);
     };
 
     const page = pdfDoc.addPage([612, 792]);
