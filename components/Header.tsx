@@ -105,6 +105,9 @@ const Header = () => {
                       {(user.role === 'SUPERUSER' || user.role === 'ADMIN_RESERVATION' || user.role === 'ADMIN_RESOURCE') && (
                         <li><Link href="/admin" className="dropdown-item">Admin Dashboard</Link></li>
                       )}
+                      {(user.role === 'SUPERUSER' || user.role === 'VIGILANCIA') && (
+                        <li><Link href="/vigilancia/dashboard" className="dropdown-item">Dashboard Vigilancia</Link></li>
+                      )}
                       {user.role === 'SUPERUSER' && (
                         <li><hr className="dropdown-divider" /></li>
                       )}

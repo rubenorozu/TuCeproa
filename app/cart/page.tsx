@@ -43,8 +43,7 @@ export default function CartPage() {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-  
-    const cartSubmissionId = crypto.randomUUID();
+
     if (!startTime || !endTime || !justification || !subject || !coordinator || !teacher) {
       setError('Todos los campos del formulario son obligatorios.');
       return;
@@ -54,47 +53,42 @@ export default function CartPage() {
       setError('Debes iniciar sesión para hacer una reserva.');
       return;
     }
+    
+    const payload = {
+      items: cart.map(item => ({ id: item.id, type: item.type })),
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      justification,
+      subject,
+      coordinator,
+      teacher,
+    };
 
-    for (const item of cart) {
-      const formData = new FormData();
-      if (item.type === 'space') {
-        formData.append('spaceId', item.id);
-      } else {
-        formData.append('equipmentId', item.id);
-      }
-      formData.append('startTime', startTime.toISOString());
-      formData.append('endTime', endTime.toISOString());
-      formData.append('justification', justification);
-      formData.append('subject', subject);
-      formData.append('coordinator', coordinator);
-      formData.append('teacher', teacher);
-      formData.append('cartSubmissionId', cartSubmissionId);
-      files.forEach((fileItem, index) => {
-        formData.append(`file_${index}`, fileItem);
+    try {
+      const res = await fetch('/api/user-reservations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
 
-      try {
-        const res = await fetch('/api/reservations', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.message || `Error al reservar ${item.name}`);
-        }
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-        return;
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Error al enviar la solicitud de reserva.');
       }
-    }
 
-    setSuccess('¡Solicitud de reserva enviada con éxito para todos los artículos!');
-    clearCart();
+      setSuccess('¡Solicitud de reserva enviada con éxito para todos los artículos!');
+      clearCart();
+
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+      return;
+    }
   };
 
   if (sessionLoading) {

@@ -22,6 +22,24 @@ export async function middleware(request: NextRequest) {
       // Rol no autorizado, redirigir a home o mostrar error
       return NextResponse.redirect(new URL('/', request.url));
     }
+  } 
+  // Proteger rutas /vigilancia
+  else if (pathname.startsWith('/vigilancia')) {
+    const session = await getServerSession();
+
+    if (!session) {
+      // No hay sesión, redirigir a login
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Verificar roles para rutas /vigilancia
+    const allowedVigilanciaRoles = [Role.SUPERUSER, Role.VIGILANCIA];
+    if (!allowedVigilanciaRoles.some(role => role === session.user.role)) {
+      // Rol no autorizado, redirigir a home
+      return NextResponse.redirect(new URL('/', request.url));
+    }
   }
 
   return NextResponse.next();

@@ -9,6 +9,10 @@ const Navbar = () => {
   const router = useRouter();
   const { user, loading: sessionLoading, logout, notifications, unreadCount, markNotificationAsRead } = useSession(); // Use useSession hook
 
+  useEffect(() => {
+    console.log('User object in Navbar:', user);
+  }, [user]);
+
   const handleLogout = () => {
     logout(); // Use the logout function from useSession
     router.push('/');
@@ -33,6 +37,11 @@ const Navbar = () => {
                 {user.role === 'SUPERUSER' || user.role === 'ADMIN_RESERVATION' || user.role === 'ADMIN_RESOURCE' ? (
                   <li className="nav-item">
                     <Link href="/admin" className="nav-link">Admin</Link>
+                  </li>
+                ) : null}
+                {user.role === 'SUPERUSER' || user.role === 'VIGILANCIA' ? (
+                  <li className="nav-item">
+                    <Link href="/vigilancia/dashboard" className="nav-link">Vigilancia</Link>
                   </li>
                 ) : null}
                 <li className="nav-item dropdown">
