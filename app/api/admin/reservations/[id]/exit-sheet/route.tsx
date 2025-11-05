@@ -9,7 +9,8 @@ import path from 'path';
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession();
 
-  if (!session || (session.user.role !== Role.SUPERUSER && session.user.role !== Role.ADMIN_RESERVATION)) {
+  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESERVATION, Role.ADMIN_RESOURCE];
+  if (!session || !allowedRoles.some(role => role === session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
 
