@@ -30,11 +30,9 @@ export async function GET(request: NextRequest) {
             email: true,
           },
         },
-        equipment: {
-          select: {
-            name: true,
-          },
-        },
+            equipment: {
+              select: { name: true, fixedAssetId: true },
+            },
         checkedOutByUser: {
             select: {
                 firstName: true,
@@ -48,10 +46,9 @@ export async function GET(request: NextRequest) {
             }
         }
       },
-      orderBy: {
-        startTime: 'asc', // Show oldest reservations first
-      },
-    });
+                orderBy: {
+                  createdAt: 'desc', // Show newest requests first
+                },    });
 
     return NextResponse.json(reservations);
 

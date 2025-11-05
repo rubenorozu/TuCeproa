@@ -11,17 +11,23 @@ type ReservationItem = {
   startTime: string;
   endTime: string;
   user: { firstName: string; lastName: string; };
-  equipment: { name: string; };
+  equipment: { name: string; fixedAssetId: string | null; };
   checkedOutAt: string | null;
   checkedInAt: string | null;
 };
 
 // Type for a grouped reservation request
 type ReservationGroup = Omit<ReservationItem, 'equipment' | 'id'> & {
-  items: Array<{ id: string; name: string; }>;
+  items: Array<{ id: string; name: string; fixedAssetId: string | null; }>;
 }
 
 const ITEMS_PER_PAGE = 10;
+
+const getStatusText = (group: ReservationGroup): string => {
+  if (group.checkedInAt) return 'devuelto';
+  if (group.checkedOutAt) return 'retirado';
+  return 'pendiente de retiro';
+};
 
 export default function VigilanciaDashboard() {
   const [reservations, setReservations] = useState<ReservationItem[]>([]);
@@ -93,7 +99,7 @@ export default function VigilanciaDashboard() {
           items: [],
         };
       }
-      acc[key].items.push({ id: res.id, name: res.equipment.name });
+      acc[key].items.push({ id: res.id, name: res.equipment.name, fixedAssetId: res.equipment.fixedAssetId });
       return acc;
     }, {} as Record<string, ReservationGroup>);
     return Object.values(groups);
@@ -103,7 +109,8 @@ export default function VigilanciaDashboard() {
     return groupedReservations.filter(group =>
       group.displayId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       `${group.user.firstName} ${group.user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      group.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      group.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      getStatusText(group).toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [groupedReservations, searchTerm]);
 
@@ -118,15 +125,14 @@ export default function VigilanciaDashboard() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="container mt-4">
-      <h1>Dashboard de Vigilancia</h1>
+    <div className="container mt-5 pt-5">
       <p>Solicitudes de equipo aprobadas pendientes de gestión.</p>
       
       <div className="mb-3">
         <input
           type="text"
           className="form-control"
-          placeholder="Buscar por ID de Solicitud, usuario o equipo..."
+          placeholder="Buscar por ID, usuario, equipo o estado..."
           value={searchTerm}
           onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
         />
@@ -171,18 +177,17 @@ export default function VigilanciaDashboard() {
                               onChange={(e) => handleCheckboxChange(group.displayId, item.id, e.target.checked)}
                               disabled={isCheckedOut} // Disable checkboxes after checkout
                             />
-                            <label htmlFor={`${group.displayId}-${item.id}`}>{item.name}</label>
+                            <label htmlFor={`${group.displayId}-${item.id}`}>
+                              {item.name}
+                              {item.fixedAssetId && <span className="text-muted ms-2">(AF: {item.fixedAssetId})</span>}
+                            </label>
                           </li>
                         ))}
                       </ul>
                     </td>
                     <td>{format(new Date(group.startTime), 'dd/MM/yy HH:mm')} - {format(new Date(group.endTime), 'HH:mm')}</td>
                     <td>
-                      {isCheckedIn
-                        ? `Devuelto`
-                        : isCheckedOut
-                        ? `Retirado`
-                        : 'Pendiente de retiro'}
+                      {getStatusText(group).charAt(0).toUpperCase() + getStatusText(group).slice(1)}
                     </td>
                     <td>
                       <div className="d-flex flex-column">
