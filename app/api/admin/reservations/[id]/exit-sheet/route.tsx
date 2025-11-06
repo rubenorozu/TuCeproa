@@ -266,11 +266,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     const pdfBytes = await pdfDoc.save();
 
-    const asciiName = (`${firstReservation.user.firstName || ''} ${firstReservation.user.lastName || ''}`).trim().replace(/\s/g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const safeAsciiName = (`${firstReservation.user.firstName || ''} ${firstReservation.user.lastName || ''}`).trim().replace(/\s/g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_]/g, '');
+    const safeDisplayId = (firstReservation.displayId || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_]/g, '');
+
     return new NextResponse(Buffer.from(pdfBytes), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="hoja_salida_${asciiName}_${firstReservation.displayId}.pdf"`,
+        'Content-Disposition': `attachment; filename="hoja_salida_${safeAsciiName}_${safeDisplayId}.pdf"`,
       },
     });
 
