@@ -39,15 +39,45 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 
   try {
-    await prisma.user.delete({
-      where: {
-        id: userIdToDelete,
-      },
+    await prisma.$transaction(async (tx) => {
+      // Nullify responsible user fields
+      await tx.space.updateMany({
+        where: { responsibleUserId: userIdToDelete },
+        data: { responsibleUserId: null },
+      });
+      await tx.equipment.updateMany({
+        where: { responsibleUserId: userIdToDelete },
+        data: { responsibleUserId: null },
+      });
+      await tx.workshop.updateMany({
+        where: { responsibleUserId: userIdToDelete },
+        data: { responsibleUserId: null },
+      });
+
+      // Delete dependent records
+      await tx.notification.deleteMany({
+        where: { recipientId: userIdToDelete },
+      });
+      await tx.inscription.deleteMany({
+        where: { userId: userIdToDelete },
+      });
+      await tx.reservation.deleteMany({
+        where: { userId: userIdToDelete },
+      });
+      
+      // Finally, delete the user
+      await tx.user.delete({
+        where: { id: userIdToDelete },
+      });
     });
 
-    return NextResponse.json({ message: 'Usuario eliminado correctamente.' }, { status: 200 });
+    return NextResponse.json({ message: 'Usuario y todos sus registros asociados han sido eliminados correctamente.' }, { status: 200 });
+
   } catch (error) {
-    console.error('Error al eliminar el usuario:', error);
-    return NextResponse.json({ error: 'No se pudo eliminar el usuario. Es posible que tenga registros asociados (como reservas) que deben ser eliminados o reasignados primero.' }, { status: 500 });
+    console.error('Error al eliminar el usuario y sus registros asociados:', error);
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2003') {
+         return NextResponse.json({ error: 'Error de integridad de datos. No se pudieron eliminar todos los registros asociados.' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'No se pudo completar la eliminación del usuario.' }, { status: 500 });
   }
 }

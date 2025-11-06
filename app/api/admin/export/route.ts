@@ -163,8 +163,8 @@ export async function GET(request: Request) {
             `"${responsibleName.replace(/"/g, '""')}",` +
             `"${(workshop.teacher || 'N/A').replace(/"/g, '""')}",` +
             `"${(workshop.description || 'N/A').replace(/"/g, '""')}",` +
-            `"${workshop.startDate ? new Date(workshop.startDate).toLocaleDateString() : 'N/A'}",` +
-            `"${workshop.endDate ? new Date(workshop.endDate).toLocaleDateString() : 'N/A'}",` +
+            `"${workshop.startDate ? new Date(workshop.startDate).toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A'}",` +
+            `"${workshop.endDate ? new Date(workshop.endDate).toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A'}",` +
             `"${sessions.replace(/"/g, '""')}"`
           );
         }
