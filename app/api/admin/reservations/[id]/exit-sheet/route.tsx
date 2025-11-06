@@ -17,7 +17,20 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const cartSubmissionId = params.id;
 
   try {
-    console.log('--- PDF Generation: Start ---');
+    // 1. Fetch ALL reservations for the submission ID to check their statuses
+    const allItemsInCart = await prisma.reservation.findMany({
+        where: { cartSubmissionId: cartSubmissionId },
+        select: { status: true }
+    });
+
+    // 2. Check if any item is still pending
+    const isAnyItemPending = allItemsInCart.some(item => item.status === 'PENDING');
+
+    if (isAnyItemPending) {
+        return NextResponse.json({ error: 'No se puede generar la hoja de salida. Hay artículos en la solicitud que aún están pendientes de aprobación o rechazo.' }, { status: 400 });
+    }
+
+    // 3. If all items are settled, proceed with the original logic to get the APPROVED ones for the PDF
     const reservations = await prisma.reservation.findMany({
       where: {
         cartSubmissionId: cartSubmissionId,
