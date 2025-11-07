@@ -57,6 +57,7 @@ model Space {
   responsibleUserId String?
   responsibleUser   User?         @relation(fields: [responsibleUserId], references: [id])
   reservations Reservation[]
+  equipments   Equipment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -84,6 +85,8 @@ model Equipment {
   fixedAssetId String?
   // imageUrl     String? // REMOVED
   images       Image[] // NEW: One-to-many relationship with Image model
+  spaceId      String?   @map("space_id")
+  space        Space?    @relation(fields: [spaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   responsibleUserId String?
   responsibleUser   User?         @relation(fields: [responsibleUserId], references: [id])
   reservations Reservation[]

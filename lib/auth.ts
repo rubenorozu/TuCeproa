@@ -38,7 +38,7 @@ export async function createSession(userId: string, role: Role) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     expires: expires,
-    sameSite: 'lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/',
   });
 }
@@ -51,7 +51,11 @@ export async function getServerSession(): Promise<{ user: { id: string; role: Ro
   // --- CAMBIO CLAVE AQUÍ ---
   const cookieStore = await cookies(); // Obtener el almacén de cookies de forma explícita y AWAIT
   const token = cookieStore.get('session')?.value;
-  if (!token) return null;
+  console.log('--- GET SERVER SESSION: Token found?', !!token);
+  if (!token) {
+    console.log('--- GET SERVER SESSION: No token found, returning null ---');
+    return null;
+  }
 
   try {
     const { payload } = await jwtVerify(token, key, { algorithms: ['HS256'] });
@@ -61,9 +65,10 @@ export async function getServerSession(): Promise<{ user: { id: string; role: Ro
         role: payload.role as Role,
       },
     };
-    console.log('DEBUG API: getServerSession devuelve:', sessionData);
+    console.log('--- GET SERVER SESSION: JWT verified, session data:', sessionData);
     return sessionData;
   } catch (e) {
+    console.error('--- GET SERVER SESSION: JWT verification failed ---', e);
     return null;
   }
 }

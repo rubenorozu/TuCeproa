@@ -29,6 +29,7 @@ interface Resource {
   inscriptionStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
   _count?: {
     inscriptions: number;
+    equipments?: number;
   };
 }
 
@@ -40,6 +41,7 @@ interface Props {
 }
 
 const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSuccess }: Props) => {
+  console.log('--- ResourceCard: resource prop ---', resource);
   const { addToCart } = useCart();
   const { user } = useSession();
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -140,6 +142,10 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
   const imageUrlToDisplay =
     resource.images && resource.images.length > 0 ? resource.images[0].url : '/placeholder.svg';
 
+  const resourceUrl = (type === 'space' && resource._count?.equipments && resource._count.equipments > 0)
+    ? `/recursos/espacios/${resource.id}`
+    : `/recursos/${resource.id}?type=${type}`;
+
   return (
     <div className="card h-100 shadow-sm">
       <div style={{ position: 'relative', width: '100%', height: '150px' }}>
@@ -159,7 +165,7 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
           <div className="mt-auto w-100">
             {displayMode === 'detailsOnly' && (
               <Link
-                href={`/recursos/${resource.id}?type=${type}`}
+                href={resourceUrl}
                 className="btn btn-primary w-100"
                 style={{ backgroundColor: '#0076A8', borderColor: '#0076A8' }}
               >
@@ -169,14 +175,14 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
             {displayMode === 'full' && (
               <div className="d-grid gap-2 d-md-flex w-100">
                 <Link
-                  href={`/recursos/${resource.id}?type=${type}`}
+                  href={resourceUrl}
                   className={`btn ${styles.customPrimaryButton} flex-fill`}
                 >
                   Ver más
                 </Link>
                 {type === 'workshop' ? (
                   <button
-                    className={`btn btn-warning text-white ${
+                    className={`btn btn-warning text-white ${ 
                       !isAvailable ||
                       isFull ||
                       !areInscriptionsOpen ||

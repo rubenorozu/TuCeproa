@@ -13,8 +13,11 @@ interface Resource {
   id: string;
   name: string;
   description?: string | null;
-  images: Image[];
+  images: Image[]; // Cambiado a array de Image
   type: 'space' | 'equipment';
+  _count?: {
+    equipments?: number;
+  };
 }
 
 export default function ReservationsPage() {
@@ -62,6 +65,7 @@ export default function ReservationsPage() {
       clearTimeout(handler);
     };
   }, [searchTerm]);
+
 
   const filteredResources = allResources.filter(resource => {
     if (filter === 'all') return true;

@@ -77,7 +77,7 @@ export default function AdminEquipmentPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []); // Empty dependency array as it has no external dependencies from component scope
 
   const fetchInitialData = useCallback(async () => {
     setResponsibleUsersLoading(true);
@@ -89,6 +89,8 @@ export default function AdminEquipmentPage() {
         user?.role === 'SUPERUSER' ? fetch('/api/admin/responsible-users', { headers }) : Promise.resolve(null),
         fetch('/api/spaces', { headers })
       ]);
+      console.log('--- fetchInitialData: Users response status ---', usersRes?.status);
+      console.log('--- fetchInitialData: Spaces response status ---', spacesRes.status);
 
       if (usersRes && usersRes.ok) {
         const usersData: ResponsibleUser[] = await usersRes.json();
@@ -109,7 +111,7 @@ export default function AdminEquipmentPage() {
       setResponsibleUsersLoading(false);
       setSpacesLoading(false);
     }
-  }, [user]);
+  }, [user]); // Depends on user object
 
   // Effects to trigger data fetching
   useEffect(() => {
@@ -253,16 +255,16 @@ export default function AdminEquipmentPage() {
             <h2>Gestión de Equipos</h2>
           </Col>
           <Col xs={12} className="text-center mt-3">
-            <Row className="g-0 mb-2">
-              <Col xs={6} className="px-1">
-                <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Equipo</Button>
-              </Col>
-              <Col xs={6} className="px-1">
-                <Button variant="secondary" onClick={() => { /* Download logic here */ }}>
-                  Descargar CSV
-                </Button>
-              </Col>
-            </Row>
+          <Row className="g-0 mb-2">
+            <Col xs={6} className="px-1">
+              <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Equipo</Button>
+            </Col>
+            <Col xs={6} className="px-1">
+              <Button variant="secondary" onClick={() => { /* Download logic here */ }}>
+                Descargar CSV
+              </Button>
+            </Col>
+          </Row>
             <div className="d-flex justify-content-end">
               <Link href="/admin" passHref>
                 <Button variant="outline-secondary">Regresar</Button>
@@ -299,9 +301,10 @@ export default function AdminEquipmentPage() {
         <div className="text-center"><Spinner animation="border" /></div>
       ) : error ? (
         <Alert variant="danger">{error}</Alert>
-      ) : (
-        <>
-          <Table striped bordered hover responsive>
+        {!loading && !error && (
+          <>
+
+            <Table striped bordered hover responsive>
             <thead>
               <tr>
                 <th>ID</th><th>Nombre</th><th>Imágenes</th><th>Responsable</th><th>Acciones</th>
@@ -359,57 +362,18 @@ export default function AdminEquipmentPage() {
                 </Form.Select>
               )}
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Imágenes</Form.Label>
-              {existingImages.length > 0 && (
-                <div className="mb-2 d-flex flex-wrap">
-                  {existingImages.map(img => (
-                    <div key={img.id} className="position-relative me-2 mb-2">
-                      <img src={img.url} alt="Existing Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" />
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="position-absolute top-0 start-100 translate-middle rounded-circle p-0"
-                        style={{ width: '20px', height: '20px', fontSize: '0.7rem', lineHeight: '1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        onClick={() => handleRemoveExistingImage(img.id)}
-                      >
-                        &times;
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <Form.Control type="file" name="files" multiple onChange={handleFileChange} />
-              <Form.Text className="text-muted">Selecciona una o varias imágenes.</Form.Text>
-            </Form.Group>
+            <Form.Group className="mb-3"><Form.Label>Imágenes</Form.Label>{existingImages.length > 0 && <div className="mb-2 d-flex flex-wrap">{existingImages.map(img => (<div key={img.id} className="position-relative me-2 mb-2"><img src={img.url} alt="Existing Image" width={50} height={50} style={{ objectFit: 'cover', margin: '2px' }} className="img-thumbnail" /><Button variant="danger" size="sm" className="position-absolute top-0 start-100 translate-middle rounded-circle p-0" style={{ width: '20px', height: '20px', fontSize: '0.7rem', lineHeight: '1', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleRemoveExistingImage(img.id)}>&times;</Button></div>))}</div>}<Form.Control type="file" name="files" multiple onChange={handleFileChange} /><Form.Text className="text-muted">Selecciona una o varias imágenes.</Form.Text></Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>ID de Usuario Responsable</Form.Label>
               {user?.role === 'ADMIN_RESOURCE' ? (
-                <Form.Control
-                  type="text"
-                  value={currentEquipment ? `${currentEquipment.responsibleUser?.firstName || ''} ${currentEquipment.responsibleUser?.lastName || ''}`.trim() : (`${user.firstName || ''} ${user.lastName || ''}`).trim()}
-                  readOnly
-                  disabled
-                />
+                <Form.Control type="text" value={currentEquipment ? `${currentEquipment.responsibleUser?.firstName || ''} ${currentEquipment.responsibleUser?.lastName || ''}`.trim() : (`${user.firstName || ''} ${user.lastName || ''}`).trim()} readOnly disabled />
               ) : (
-                <>
-                  {responsibleUsersLoading ? <Spinner animation="border" size="sm" /> :
-                    responsibleUsersError ? <Alert variant="danger">Error al cargar responsables</Alert> :
-                      (<Form.Select name="responsibleUserId" value={form.responsibleUserId || ''} onChange={handleChange}>
-                        <option value="">-- Ninguno --</option>
-                        {responsibleUsers.map(rUser => (
-                          <option key={rUser.id} value={rUser.id}>{rUser.firstName} {rUser.lastName} ({rUser.email})</option>
-                        ))}
-                      </Form.Select>)
-                  }
-                </>
+                <>{responsibleUsersLoading ? <Spinner animation="border" size="sm" /> : responsibleUsersError ? <Alert variant="danger">Error al cargar responsables</Alert> : (<Form.Select name="responsibleUserId" value={form.responsibleUserId || ''} onChange={handleChange}><option value="">-- Ninguno --</option>{responsibleUsers.map(rUser => (<option key={rUser.id} value={rUser.id}>{rUser.firstName} {rUser.lastName} ({rUser.email})</option>))}</Form.Select>)}</>
               )}
             </Form.Group>
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
-            <Button variant="primary" type="submit" className="w-100" disabled={isSubmitting}>
-              {isSubmitting ? 'Guardando...' : (currentEquipment ? 'Guardar Cambios' : 'Crear Equipo')}
-            </Button>
+            <Button variant="primary" type="submit" className="w-100" disabled={isSubmitting}>{isSubmitting ? 'Guardando...' : (currentEquipment ? 'Guardar Cambios' : 'Crear Equipo')}</Button>
           </Form>
         </Modal.Body>
       </Modal>

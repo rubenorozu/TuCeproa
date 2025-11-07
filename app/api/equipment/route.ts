@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
 
-    const whereClause: Prisma.EquipmentWhereInput = {};
+    const whereClause: Prisma.EquipmentWhereInput = { spaceId: null };
 
     if (search) {
       whereClause.OR = [

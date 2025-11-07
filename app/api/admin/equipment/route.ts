@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { name, description, serialNumber, fixedAssetId, images, responsibleUserId } = await request.json();
+    const { name, description, serialNumber, fixedAssetId, images, responsibleUserId, spaceId } = await request.json();
 
     if (!name || name.length < 3 || name.length > 100) {
       return NextResponse.json({ error: 'El nombre del equipo es obligatorio y debe tener entre 3 y 100 caracteres.' }, { status: 400 });
@@ -145,6 +145,7 @@ export async function POST(request: Request) {
         serialNumber,
         fixedAssetId,
         responsibleUserId: finalResponsibleUserId || null,
+        spaceId: spaceId || null, // Guardar el spaceId
         images: {
           create: images.map((img: { url: string }) => ({ url: img.url })),
         },

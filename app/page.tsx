@@ -33,8 +33,8 @@ export default function Home() {
   useEffect(() => {
     const fetchResources = async () => {
       const [spacesRes, equipmentRes] = await Promise.all([
-        fetch('/api/spaces'),
-        fetch('/api/equipment'),
+        fetch('/api/spaces', { cache: 'no-store' }),
+        fetch('/api/equipment', { cache: 'no-store' }),
       ]);
 
       let resources: Resource[] = [];
