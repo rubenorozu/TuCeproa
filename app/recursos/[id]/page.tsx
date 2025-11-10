@@ -266,7 +266,17 @@ export default function ResourceDetailPage() {
         ) : (
           (resource.type === 'space' || resource.type === 'equipment') ? (
             <>
-              <Button variant="primary" onClick={() => addToCart({ id: resource.id, name: resource.name, type: resource.type as 'space' | 'equipment' })} className="me-2">
+              <Button variant="primary" onClick={() => addToCart({
+                id: resource.id,
+                name: resource.name,
+                type: resource.type as 'space' | 'equipment',
+                description: resource.description,
+                images: resource.images,
+                reservationLeadTime: resource.reservationLeadTime,
+                isFixedToSpace: resource.isFixedToSpace,
+                requiresSpaceReservationWithEquipment: resource.requiresSpaceReservationWithEquipment,
+                _count: resource._count ? { equipments: resource._count.inscriptions } : undefined // Adjust _count if necessary
+              })} className="me-2">
                 Añadir al Carrito
               </Button>
               <Button variant="outline-danger" onClick={() => setShowReportModal(true)}>
