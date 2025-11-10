@@ -30,6 +30,9 @@ interface ResourceDetail {
   inscriptionsStartDate?: string | null; // For workshop
   capacity?: number; // For workshop
   _count?: { inscriptions: number }; // For workshop capacity
+  reservationLeadTime?: number | null; // Added
+  isFixedToSpace?: boolean; // Added
+  requiresSpaceReservationWithEquipment?: boolean; // Added
 }
 
 interface WorkshopSession {

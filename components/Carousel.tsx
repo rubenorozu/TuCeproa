@@ -15,6 +15,12 @@ interface Resource {
   description?: string | null;
   images: Image[]; // Cambiado a array de Image
   type: 'space' | 'equipment'; // type is now on the resource
+  reservationLeadTime?: number | null; // Added
+  isFixedToSpace?: boolean; // Added
+  requiresSpaceReservationWithEquipment?: boolean; // Added
+  _count?: { // Added
+    equipments?: number;
+  };
 }
 
 interface Props {

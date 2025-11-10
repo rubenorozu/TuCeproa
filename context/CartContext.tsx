@@ -5,9 +5,15 @@ import { createContext, useState, useEffect, ReactNode, useContext } from 'react
 interface Resource {
   id: string;
   name: string;
+  description?: string | null; // Added
+  images: Image[]; // Added
   type: 'space' | 'equipment';
   reservationLeadTime?: number | null;
-  isFixedToSpace?: boolean; // NEW: Add isFixedToSpace to Resource interface
+  isFixedToSpace?: boolean;
+  requiresSpaceReservationWithEquipment?: boolean; // Added
+  _count?: { // Added
+    equipments?: number;
+  };
 }
 
 interface CartContextType {
