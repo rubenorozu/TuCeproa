@@ -19,6 +19,7 @@ interface Resource {
   type: 'space' | 'equipment';
   reservationLeadTime?: number | null; // NEW: Add reservationLeadTime
   isFixedToSpace?: boolean; // NEW: Add isFixedToSpace
+  requiresSpaceReservationWithEquipment?: boolean; // NEW: Add this property
   _count?: { // NEW: Add _count for equipments
     equipments?: number;
   };
