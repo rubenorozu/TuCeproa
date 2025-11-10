@@ -15,12 +15,17 @@ interface Resource {
   name: string;
   description?: string | null;
   images: Image[];
-  type: 'space' | 'equipment';
+  type: 'space' | 'equipment' | 'workshop'; // Added 'workshop'
   reservationLeadTime?: number | null;
   isFixedToSpace?: boolean;
-  requiresSpaceReservationWithEquipment?: boolean; // NEW: Add this field
+  requiresSpaceReservationWithEquipment?: boolean;
+  capacity?: number; // Added for workshop compatibility
+  inscriptionsStartDate?: string | null; // Added for workshop compatibility
+  inscriptionsOpen?: boolean; // Added for workshop compatibility
+  inscriptionStatus?: 'PENDING' | 'APPROVED' | 'REJECTED'; // Added for workshop compatibility
   _count?: {
     equipments?: number;
+    inscriptions?: number; // Added 'inscriptions'
   };
 }
 
