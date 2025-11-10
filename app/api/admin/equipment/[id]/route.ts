@@ -57,7 +57,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: 'Acceso denegado. No eres responsable de este equipo.' }, { status: 403 });
     }
 
-    const { name, description, serialNumber, fixedAssetId, images, responsibleUserId, spaceId } = await request.json();
+    const { name, description, serialNumber, fixedAssetId, images, responsibleUserId, spaceId, reservationLeadTime, isFixedToSpace } = await request.json();
 
     if (!name) {
       return NextResponse.json({ error: 'El nombre del equipo es obligatorio.' }, { status: 400 });
@@ -72,6 +72,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         fixedAssetId,
         responsibleUserId: responsibleUserId || null,
         spaceId: spaceId || null, // Add spaceId here
+        reservationLeadTime: reservationLeadTime || null, // Guardar el tiempo de antelación específico del equipo
+        isFixedToSpace: isFixedToSpace ?? false, // Guardar si el equipo está fijo al espacio
         images: {
           // Eliminar imágenes existentes y crear nuevas
           deleteMany: {},

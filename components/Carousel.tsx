@@ -19,9 +19,10 @@ interface Resource {
 
 interface Props {
   resources: Resource[];
+  onConfigureSpace?: (spaceId: string) => void; // NEW: Callback for configuring a space
 }
 
-const Carousel = ({ resources }: Props) => {
+const Carousel = ({ resources, onConfigureSpace }: Props) => {
   const scrollContainer = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -36,7 +37,7 @@ const Carousel = ({ resources }: Props) => {
       <div className={`${styles.carouselContainer} py-3`} ref={scrollContainer}>
         {resources.map(resource => (
           <div key={resource.id} className={styles.carouselItemContainer}>
-            <ResourceCard resource={resource} type={resource.type} />
+            <ResourceCard resource={resource} type={resource.type} onConfigureSpace={onConfigureSpace} />
           </div>
         ))}
       </div>

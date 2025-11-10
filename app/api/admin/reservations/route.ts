@@ -56,7 +56,7 @@ export async function GET(request: Request) {
         status: true,
         user: { select: { id: true, firstName: true, lastName: true, email: true } },
         space: { select: { id: true, name: true, responsibleUserId: true } },
-        equipment: { select: { id: true, name: true, responsibleUserId: true } },
+        equipment: { select: { id: true, name: true, responsibleUserId: true, space: { select: { id: true, name: true } } } },
       },
       orderBy: {
         createdAt: 'desc',

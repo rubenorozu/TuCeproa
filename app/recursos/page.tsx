@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import ResourceCard from '@/components/ResourceCard';
-import { Spinner, Form } from 'react-bootstrap'; // Importar Spinner y Form
+import { Spinner, Form, Modal, Button, Alert, FormCheck } from 'react-bootstrap';
+import { useCart } from '@/context/CartContext'; // Import useCart
 
 interface Image {
   id: string;
@@ -13,19 +14,28 @@ interface Resource {
   id: string;
   name: string;
   description?: string | null;
-  images: Image[]; // Cambiado a array de Image
+  images: Image[];
   type: 'space' | 'equipment';
+  reservationLeadTime?: number | null;
+  isFixedToSpace?: boolean;
+  requiresSpaceReservationWithEquipment?: boolean; // NEW: Add this field
   _count?: {
     equipments?: number;
   };
 }
 
 export default function ReservationsPage() {
+  const { addToCart } = useCart(); // Destructure addToCart here
   const [allResources, setAllResources] = useState<Resource[]>([]);
   const [filter, setFilter] = useState<'all' | 'space' | 'equipment'>('all');
   const [searchTerm, setSearchTerm] = useState(''); // Nuevo estado para el término de búsqueda
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true); // Estado de carga
+  const [showSpaceConfigModal, setShowSpaceConfigModal] = useState(false);
+  const [configuringSpaceId, setConfiguringSpaceId] = useState<string | null>(null);
+  const [configuringSpaceName, setConfiguringSpaceName] = useState<string | null>(null);
+  const [spaceEquipment, setSpaceEquipment] = useState<Resource[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchResources = async (searchQuery: string = '') => {
@@ -39,15 +49,21 @@ export default function ReservationsPage() {
         let resources: Resource[] = [];
         if (spacesRes.ok) {
           const spaces = await spacesRes.json();
-          resources = [...resources, ...spaces.map((s: any) => ({...s, type: 'space', images: s.images || []}))];
+          console.log('DEBUG: API /api/spaces response:', spaces);
+          resources = [...resources, ...spaces.map((s: any) => ({...s, type: 'space', images: s.images || [], requiresSpaceReservationWithEquipment: s.requiresSpaceReservationWithEquipment}))];
         } else {
-          setError('No se pudieron cargar los espacios.');
+          const errorData = await spacesRes.json();
+          setError(`No se pudieron cargar los espacios: ${errorData.error || spacesRes.statusText}`);
+          console.error('DEBUG: Error al cargar espacios:', errorData);
         }
         if (equipmentRes.ok) {
           const equipment = await equipmentRes.json();
-          resources = [...resources, ...equipment.map((e: any) => ({...e, type: 'equipment', images: e.images || []}))];
+          console.log('DEBUG: API /api/equipment response:', equipment);
+          resources = [...resources, ...equipment.map((e: any) => ({...e, type: 'equipment', images: e.images || [], reservationLeadTime: e.reservationLeadTime, isFixedToSpace: e.isFixedToSpace}))];
         } else {
-          setError(prev => prev + ' No se pudieron cargar los equipos.');
+          const errorData = await equipmentRes.json();
+          setError(prev => prev + ` | No se pudieron cargar los equipos: ${errorData.error || equipmentRes.statusText}`);
+          console.error('DEBUG: Error al cargar equipos:', errorData);
         }
         setAllResources(resources);
       } catch (err) {
@@ -66,6 +82,70 @@ export default function ReservationsPage() {
     };
   }, [searchTerm]);
 
+
+  const handleConfigureSpace = async (spaceId: string) => {
+    const space = allResources.find(r => r.id === spaceId && r.type === 'space');
+    if (!space) return;
+
+    setConfiguringSpaceId(spaceId);
+    setConfiguringSpaceName(space.name);
+    setLoading(true); // Set loading for equipment fetch
+    try {
+      const res = await fetch(`/api/spaces/${spaceId}/equipment`);
+      if (!res.ok) {
+        throw new Error('Error al cargar equipos del espacio.');
+      }
+      const equipmentData: Resource[] = await res.json();
+      setSpaceEquipment(equipmentData);
+      // Pre-select fixed equipment if the space requires reservation with equipment
+      // Otherwise, no equipment is pre-selected by default
+      setSelectedEquipment(equipmentData.filter(eq => space.requiresSpaceReservationWithEquipment && eq.isFixedToSpace).map(eq => eq.id));
+      setShowSpaceConfigModal(true);
+    } catch (err: any) {
+      setError(err.message || 'Error al cargar equipos del espacio.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseSpaceConfigModal = () => {
+    setShowSpaceConfigModal(false);
+    setConfiguringSpaceId(null);
+    setConfiguringSpaceName(null);
+    setSpaceEquipment([]);
+    setSelectedEquipment([]);
+  };
+
+  const handleToggleEquipmentSelection = (equipmentId: string) => {
+    setSelectedEquipment(prev =>
+      prev.includes(equipmentId) ? prev.filter(id => id !== equipmentId) : [...prev, equipmentId]
+    );
+  };
+
+  const handleAddSpaceAndEquipmentToCart = () => {
+    if (!configuringSpaceId) return;
+
+    const space = allResources.find(r => r.id === configuringSpaceId && r.type === 'space');
+    if (!space) return;
+
+    // If the space requires reservation with equipment (e.g., TV Studio)
+    if (space.requiresSpaceReservationWithEquipment) {
+      addToCart(space); // Add the space itself
+      spaceEquipment.forEach(eq => {
+        if (eq.isFixedToSpace || selectedEquipment.includes(eq.id)) { // Add fixed equipment automatically, and non-fixed if selected
+          addToCart(eq);
+        }
+      });
+    } else { // If the space does NOT require reservation with equipment (e.g., Software Room)
+      spaceEquipment.forEach(eq => {
+        if (selectedEquipment.includes(eq.id)) { // Only add explicitly selected equipment
+          addToCart(eq);
+        }
+      });
+    }
+
+    handleCloseSpaceConfigModal();
+  };
 
   const filteredResources = allResources.filter(resource => {
     if (filter === 'all') return true;
@@ -100,14 +180,50 @@ export default function ReservationsPage() {
             </div>
           ) : filteredResources.length > 0 ? (
             filteredResources.map(resource => (
+              console.log('DEBUG: Passing resource to ResourceCard:', resource),
               <div className="col-5-per-row mb-2" key={resource.id}>
-                <ResourceCard resource={resource} type={resource.type} />
+                <ResourceCard resource={resource} type={resource.type} onConfigureSpace={handleConfigureSpace} />
               </div>
             ))
           ) : (
             <p>No hay recursos que coincidan con el filtro.</p>
           )}
     </div>
+      <Modal show={showSpaceConfigModal} onHide={handleCloseSpaceConfigModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Configurar Reserva para: {configuringSpaceName}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {loading ? (
+            <div className="text-center"><Spinner animation="border" /><p>Cargando equipos...</p></div>
+          ) : spaceEquipment.length === 0 ? (
+            <Alert variant="info">No hay equipos asociados a este espacio o todos están en mantenimiento.</Alert>
+          ) : (
+            <>
+              <p>Selecciona los equipos que deseas incluir con este espacio:</p>
+              {spaceEquipment.map(eq => (
+                <Form.Check
+                  key={eq.id}
+                  type="checkbox"
+                  id={`equipment-${eq.id}`}
+                  label={`${eq.name} ${eq.isFixedToSpace ? '(Fijo al espacio)' : ''}`}
+                  checked={selectedEquipment.includes(eq.id)}
+                  onChange={() => handleToggleEquipmentSelection(eq.id)}
+                  // disabled={eq.isFixedToSpace} // Fixed equipment can now be deselected
+                />
+              ))}
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseSpaceConfigModal}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleAddSpaceAndEquipmentToCart} disabled={loading}>
+            Agregar al Carrito
+          </Button>
+        </Modal.Footer>
+      </Modal>
   </div>
   );
 }

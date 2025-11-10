@@ -2,6 +2,11 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import readline from 'readline';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Cargar variables de entorno desde .env.local
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const prisma = new PrismaClient();
 

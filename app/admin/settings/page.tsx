@@ -10,6 +10,7 @@ export default function AdminSettingsPage() {
   const { user, loading: sessionLoading } = useSession();
   const router = useRouter();
   const [limit, setLimit] = useState('');
+  const [reservationLeadTime, setReservationLeadTime] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -30,6 +31,7 @@ export default function AdminSettingsPage() {
         }
         const data = await response.json();
         setLimit(data.extraordinaryInscriptionLimit || '');
+        setReservationLeadTime(data.reservationLeadTime || '');
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -55,7 +57,7 @@ export default function AdminSettingsPage() {
       const response = await fetch('/api/admin/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ extraordinaryInscriptionLimit: limit }),
+        body: JSON.stringify({ extraordinaryInscriptionLimit: limit, reservationLeadTime: reservationLeadTime }),
       });
 
       if (!response.ok) {
@@ -97,11 +99,27 @@ export default function AdminSettingsPage() {
             El número máximo de solicitudes de inscripción extraordinarias que un usuario puede tener.
           </Form.Text>
         </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Tiempo de Antelación Global para Reservas (horas)</Form.Label>
+          <Form.Control
+            type="number"
+            value={reservationLeadTime}
+            onChange={(e) => setReservationLeadTime(e.target.value)}
+            placeholder="Introduce el tiempo en horas"
+          />
+          <Form.Text className="text-muted">
+            El tiempo mínimo de antelación con el que se puede solicitar una reserva. Este valor se usará de forma global a menos que se especifique uno diferente en un recurso o espacio.
+          </Form.Text>
+        </Form.Group>
         {success && <Alert variant="success">{success}</Alert>}
         <div className="d-flex gap-2">
           <Button variant="primary" type="submit">
             Guardar Cambios
           </Button>
+          <Link href="/admin/requirements" passHref>
+            <Button variant="info">Gestionar Requisitos</Button>
+          </Link>
           <Link href="/admin" passHref>
             <Button variant="outline-primary">Regresar</Button>
           </Link>

@@ -29,6 +29,8 @@ export async function GET(request: Request) {
         description: true,
         displayId: true,
         images: true,
+        reservationLeadTime: true, // NEW: Include reservationLeadTime
+        isFixedToSpace: true, // NEW: Include isFixedToSpace
       },
     });
     console.log('DEBUG API: Datos de equipos devueltos:', equipment);

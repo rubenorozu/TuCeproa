@@ -188,3 +188,30 @@ tbody > tr > td:last-child::after {
   white-space: normal; /* Allow text to wrap */
   padding: 4px 6px;
 }
+
+/* Custom styles for Pagination active item */
+.pagination .page-item.active .page-link {
+  background-color: #1577a5 !important;
+  border-color: #1577a5 !important;
+  color: #ffffff !important;
+}
+
+/* Custom styles for Pagination default item */
+.pagination .page-item .page-link {
+  color: #1577a5 !important;
+  border-color: #1577a5 !important;
+}
+
+/* Custom styles for Pagination disabled item */
+.pagination .page-item.disabled .page-link {
+  color: #1577a5 !important; /* Keep blue color even when disabled */
+  border-color: #1577a5 !important;
+  opacity: 0.6; /* Slightly dim the disabled state */
+}
+
+/* Custom styles for Pagination item hover */
+.pagination .page-item .page-link:hover {
+  background-color: #1577a5 !important;
+  border-color: #1577a5 !important;
+  color: #ffffff !important;
+}

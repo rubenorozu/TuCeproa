@@ -24,18 +24,24 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { extraordinaryInscriptionLimit } = body;
-
-  if (extraordinaryInscriptionLimit === undefined) {
-    return NextResponse.json({ error: 'El límite de inscripciones extraordinarias es requerido.' }, { status: 400 });
-  }
+  const { extraordinaryInscriptionLimit, reservationLeadTime } = body;
 
   try {
-    await prisma.systemSettings.upsert({
-      where: { key: 'extraordinaryInscriptionLimit' },
-      update: { value: extraordinaryInscriptionLimit.toString() },
-      create: { key: 'extraordinaryInscriptionLimit', value: extraordinaryInscriptionLimit.toString() },
-    });
+    if (extraordinaryInscriptionLimit !== undefined) {
+      await prisma.systemSettings.upsert({
+        where: { key: 'extraordinaryInscriptionLimit' },
+        update: { value: extraordinaryInscriptionLimit.toString() },
+        create: { key: 'extraordinaryInscriptionLimit', value: extraordinaryInscriptionLimit.toString() },
+      });
+    }
+
+    if (reservationLeadTime !== undefined) {
+      await prisma.systemSettings.upsert({
+        where: { key: 'reservationLeadTime' },
+        update: { value: reservationLeadTime.toString() },
+        create: { key: 'reservationLeadTime', value: reservationLeadTime.toString() },
+      });
+    }
 
     return NextResponse.json({ message: 'Configuración actualizada correctamente.' });
   } catch (error) {

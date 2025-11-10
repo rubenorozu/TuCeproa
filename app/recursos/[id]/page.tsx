@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Container, Row, Col, Spinner, Alert, Carousel, Button } from 'react-bootstrap';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import ReportModal from '@/components/ReportModal';
 
 interface Image {
   id: string;
@@ -47,6 +48,7 @@ export default function ResourceDetailPage() {
   const [resource, setResource] = useState<ResourceDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
   const type = searchParams.get('type');
 
   console.log('Resource Object:', JSON.stringify(resource, null, 2)); // Added for debugging endDate
@@ -238,30 +240,49 @@ export default function ResourceDetailPage() {
       )}
       <div className="d-flex justify-content-end mt-3">
         {resource.type === 'workshop' ? (
-          <Button
-            variant="primary"
-            onClick={handleInscribe}
-            className="me-2"
-            disabled={Boolean(isSubscribing || isFull || !areInscriptionsOpen || inscriptionsNotStarted)}
-            style={{ backgroundColor: '#0076A8', borderColor: '#0076A8' }}
-            title={
-              isFull ? 'Taller lleno'
-              : !areInscriptionsOpen ? 'Inscripciones cerradas'
-              : inscriptionsNotStarted ? `Inscripciones abren el ${resource.inscriptionsStartDate ? new Date(resource.inscriptionsStartDate).toLocaleDateString() : ''}`
-              : 'Inscribirme al taller'
-            }
-          >
-            {isSubscribing ? 'Inscribiendo...' : isFull ? 'Taller Lleno' : !areInscriptionsOpen ? 'Cerrado' : inscriptionsNotStarted ? 'Próximamente' : 'Inscribirme'}
-          </Button>
+          <>
+            <Button
+              variant="primary"
+              onClick={handleInscribe}
+              className="me-2"
+              disabled={Boolean(isSubscribing || isFull || !areInscriptionsOpen || inscriptionsNotStarted)}
+              style={{ backgroundColor: '#0076A8', borderColor: '#0076A8' }}
+              title={
+                isFull ? 'Taller lleno'
+                : !areInscriptionsOpen ? 'Inscripciones cerradas'
+                : inscriptionsNotStarted ? `Inscripciones abren el ${resource.inscriptionsStartDate ? new Date(resource.inscriptionsStartDate).toLocaleDateString() : ''}`
+                : 'Inscribirme al taller'
+              }
+            >
+              {isSubscribing ? 'Inscribiendo...' : isFull ? 'Taller Lleno' : !areInscriptionsOpen ? 'Cerrado' : inscriptionsNotStarted ? 'Próximamente' : 'Inscribirme'}
+            </Button>
+            <Button variant="outline-danger" onClick={() => setShowReportModal(true)}>
+              Reportar un problema
+            </Button>
+          </>
         ) : (
           (resource.type === 'space' || resource.type === 'equipment') ? (
-            <Button variant="primary" onClick={() => addToCart({ id: resource.id, name: resource.name, type: resource.type as 'space' | 'equipment' })} className="me-2">
-              Añadir al Carrito
-            </Button>
+            <>
+              <Button variant="primary" onClick={() => addToCart({ id: resource.id, name: resource.name, type: resource.type as 'space' | 'equipment' })} className="me-2">
+                Añadir al Carrito
+              </Button>
+              <Button variant="outline-danger" onClick={() => setShowReportModal(true)}>
+                Reportar un problema
+              </Button>
+            </>
           ) : null
         )}
 
       </div>
+
+      {resource && (
+        <ReportModal
+          show={showReportModal}
+          handleClose={() => setShowReportModal(false)}
+          resourceId={resource.id}
+          resourceType={resource.type}
+        />
+      )}
     </Container>
   );
 }

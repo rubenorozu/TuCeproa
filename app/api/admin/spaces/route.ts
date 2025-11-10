@@ -61,7 +61,8 @@ export async function GET(request: Request) {
             firstName: true,
             lastName: true,
           }
-        }
+        },
+        requirements: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -74,8 +75,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ spaces, totalSpaces }, { status: 200 });
   } catch (error) {
-    console.error('Error al obtener los espacios:', error);
-    return NextResponse.json({ error: 'No se pudo obtener la lista de espacios.' }, { status: 500 });
+    console.error('Error al obtener los espacios:', JSON.stringify(error, null, 2));
+    return NextResponse.json({ error: 'No se pudo obtener la lista de espacios.', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
 
@@ -88,7 +89,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { name, description, responsibleUserId, images } = await request.json();
+    const { name, description, responsibleUserId, images, requirementIds, reservationLeadTime, requiresSpaceReservationWithEquipment } = await request.json();
 
     if (!name) {
       return NextResponse.json({ error: 'El nombre del espacio es obligatorio.' }, { status: 400 });
@@ -117,12 +118,23 @@ export async function POST(request: Request) {
         displayId,
         name,
         description,
-        responsibleUserId: finalResponsibleUserId || null,
+        ...(finalResponsibleUserId && {
+          responsibleUser: {
+            connect: { id: finalResponsibleUserId }
+          }
+        }),
+        reservationLeadTime: reservationLeadTime || null, // Guardar el tiempo de antelación específico del espacio
+        requiresSpaceReservationWithEquipment: requiresSpaceReservationWithEquipment ?? false, // Guardar si el espacio requiere reserva con equipo
         images: {
           create: images, // Prisma creará las imágenes y las conectará
         },
+        ...(requirementIds && requirementIds.length > 0 && {
+          requirements: {
+            connect: requirementIds.map((id: string) => ({ id }))
+          }
+        })
       },
-      include: { images: true },
+      include: { images: true, requirements: true },
     });
 
     return NextResponse.json(newSpace, { status: 201 });

@@ -27,6 +27,9 @@ interface Resource {
   inscriptionsStartDate?: string | null;
   inscriptionsOpen?: boolean;
   inscriptionStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  reservationLeadTime?: number | null;
+  isFixedToSpace?: boolean; // NEW: Add isFixedToSpace to Resource interface
+  requiresSpaceReservationWithEquipment?: boolean; // NEW: Add this field
   _count?: {
     inscriptions: number;
     equipments?: number;
@@ -38,10 +41,11 @@ interface Props {
   type: 'space' | 'equipment' | 'workshop';
   displayMode?: 'full' | 'detailsOnly' | 'none';
   onInscriptionSuccess?: () => void;
+  onConfigureSpace?: (spaceId: string) => void; // NEW: Callback for configuring a space
 }
 
-const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSuccess }: Props) => {
-  console.log('--- ResourceCard: resource prop ---', resource);
+const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSuccess, onConfigureSpace }: Props) => {
+  console.log('DEBUG: ResourceCard received resource:', resource);
   const { addToCart } = useCart();
   const { user } = useSession();
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -240,11 +244,19 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
                       ? 'Cerrado'
                       : 'Inscribirme'}
                   </button>
+                ) : type === 'space' ? (
+                  <button
+                    className="btn btn-warning text-white"
+                    style={{ backgroundColor: '#F28C00', borderColor: '#F28C00' }}
+                    onClick={() => onConfigureSpace && onConfigureSpace(resource.id)}
+                  >
+                    Agregar
+                  </button>
                 ) : (
                   <button
                     className="btn btn-warning text-white"
                     style={{ backgroundColor: '#F28C00', borderColor: '#F28C00' }}
-                    onClick={() => addToCart({ ...resource, type })}
+                    onClick={() => addToCart({ ...resource, type, reservationLeadTime: resource.reservationLeadTime, isFixedToSpace: resource.isFixedToSpace })}
                   >
                     Agregar
                   </button>

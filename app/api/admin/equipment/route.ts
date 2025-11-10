@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { name, description, serialNumber, fixedAssetId, images, responsibleUserId, spaceId } = await request.json();
+    const { name, description, serialNumber, fixedAssetId, images, responsibleUserId, spaceId, reservationLeadTime, isFixedToSpace } = await request.json();
 
     if (!name || name.length < 3 || name.length > 100) {
       return NextResponse.json({ error: 'El nombre del equipo es obligatorio y debe tener entre 3 y 100 caracteres.' }, { status: 400 });
@@ -146,6 +146,8 @@ export async function POST(request: Request) {
         fixedAssetId,
         responsibleUserId: finalResponsibleUserId || null,
         spaceId: spaceId || null, // Guardar el spaceId
+        reservationLeadTime: reservationLeadTime || null, // Guardar el tiempo de antelación específico del equipo
+        isFixedToSpace: isFixedToSpace ?? false, // Guardar si el equipo está fijo al espacio
         images: {
           create: images.map((img: { url: string }) => ({ url: img.url })),
         },
@@ -159,3 +161,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'No se pudo crear el equipo.' }, { status: 500 });
   }
 }
+

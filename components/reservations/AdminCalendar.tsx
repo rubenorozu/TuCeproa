@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer, Event as BigCalendarEvent } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, startOfMonth, endOfMonth, startOfDay, endOfDay, endOfWeek } from 'date-fns';
+import { format, parse, startOfWeek, getDay, startOfMonth, endOfMonth, startOfDay, endOfDay, endOfWeek, addDays } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import { Reservation, ReservationStatus, Role } from '@prisma/client';
 import { useSession } from '@/context/SessionContext';
+import RecurringBlockModal from '@/components/admin/RecurringBlockModal'; // Import RecurringBlockModal
+import DeleteRecurringBlockModal from '@/components/admin/DeleteRecurringBlockModal'; // NEW: Import DeleteRecurringBlockModal
+import { Modal } from 'react-bootstrap'; // Import Modal for the existing selectedEvent modal
 
 // --- Modal Styles --- //
 const modalOverlayStyle: React.CSSProperties = {
@@ -47,6 +50,10 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
   const [date, setDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showRecurringBlockModal, setShowRecurringBlockModal] = useState(false); // State for new modal
+  const [selectedSlotInfo, setSelectedSlotInfo] = useState<{ start: Date; end: Date } | null>(null); // State for selected slot info
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false); // NEW: State for delete confirmation modal
+  const [eventToDelete, setEventToDelete] = useState<CalendarEvent | null>(null); // NEW: Stores the event to be deleted
 
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), [setDate]);
   const onView = useCallback((newView: string) => setView(newView), [setView]);
@@ -74,10 +81,18 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     }
 
     try {
-      const response = await fetch(`/api/reservations?${apiQuery}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`);
-      if (response.ok) {
-        const reservations = await response.json();
-        const formattedEvents: CalendarEvent[] = reservations
+      const [reservationsRes, recurringBlocksRes] = await Promise.all([
+        fetch(`/api/reservations?${apiQuery}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`),
+        fetch(`/api/admin/recurring-blocks?${apiQuery}`),
+      ]);
+
+      let allEvents: CalendarEvent[] = [];
+      let recurringBlocks: any[] = [];
+      let exceptions: any[] = [];
+
+      if (reservationsRes.ok) {
+        const reservations = await reservationsRes.json();
+        const formattedReservations: CalendarEvent[] = reservations
           .filter((res: any) => res.status !== 'REJECTED')
           .map((res: any) => ({
             id: res.id,
@@ -88,10 +103,70 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
             isBlock: res.subject === 'Bloqueo Administrativo',
             fullReservation: res,
           }));
-        setEvents(formattedEvents);
+        allEvents = allEvents.concat(formattedReservations);
       }
+
+      if (recurringBlocksRes.ok) {
+        recurringBlocks = await recurringBlocksRes.json();
+        // Fetch exceptions for the fetched recurring blocks
+        const recurringBlockIds = recurringBlocks.map(block => block.id);
+        if (recurringBlockIds.length > 0) {
+          const exceptionsRes = await fetch(`/api/admin/recurring-blocks/exceptions?recurringBlockIds=${recurringBlockIds.join(',')}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`);
+          if (exceptionsRes.ok) {
+            exceptions = await exceptionsRes.json();
+          }
+        }
+
+        const recurringEvents = recurringBlocks.flatMap((block: any) => {
+          const events: CalendarEvent[] = [];
+          let current = new Date(viewStart);
+
+          while (current <= viewEnd) {
+            // Check if the current day of the week is included in the block's dayOfWeek array
+            if (block.dayOfWeek.includes(current.getDay())) {
+              const [startHour, startMinute] = block.startTime.split(':');
+              const [endHour, endMinute] = block.endTime.split(':');
+              const instanceStartDate = new Date(current.getFullYear(), current.getMonth(), current.getDate(), parseInt(startHour), parseInt(startMinute));
+              const instanceEndDate = new Date(current.getFullYear(), current.getMonth(), current.getDate(), parseInt(endHour), parseInt(endMinute));
+
+              // Ensure the event falls within the recurring block's overall start and end dates
+              if (instanceStartDate >= new Date(block.startDate) && instanceEndDate <= new Date(block.endDate)) {
+                // Check if this specific instance is an exception
+                const isExcepted = exceptions.some(
+                  (ex: any) =>
+                    ex.recurringBlockId === block.id &&
+                    format(new Date(ex.exceptionDate), 'yyyy-MM-dd') === format(instanceStartDate, 'yyyy-MM-dd') &&
+                    ex.exceptionStartTime === format(instanceStartDate, 'HH:mm') &&
+                    ex.exceptionEndTime === format(instanceEndDate, 'HH:mm')
+                );
+
+                if (!isExcepted) {
+                  events.push({
+                    id: `recurring-${block.id}-${instanceStartDate.toISOString()}`,
+                    title: block.title,
+                    start: instanceStartDate,
+                    end: instanceEndDate,
+                    isBlock: true,
+                    fullReservation: {
+                      ...block,
+                      user: { firstName: 'Bloqueo', lastName: 'Recurrente' },
+                      // Flatten equipment names for display if needed
+                      equipmentNames: block.equipment.map((eq: any) => eq.name).join(', '),
+                    },
+                  });
+                }
+              }
+            }
+            current = addDays(current, 1); // Increment by one day
+          }
+          return events;
+        });
+        allEvents = allEvents.concat(recurringEvents);
+      }
+
+      setEvents(allEvents);
     } catch (error) {
-      console.error("Failed to fetch reservations:", error);
+      console.error("Failed to fetch events:", error);
     } finally {
       setIsLoading(false);
     }
@@ -102,29 +177,11 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
   }, [fetchEvents]);
 
   const handleSelectSlot = useCallback(
-    async ({ start, end }: { start: Date, end: Date }) => {
-      const title = window.prompt('Motivo del bloqueo:');
-      if (title) {
-        setIsLoading(true);
-        const body: any = { start, end, title };
-        if (spaceId) body.spaceId = spaceId;
-        else if (equipmentId) body.equipmentId = equipmentId;
-
-        const response = await fetch('/api/reservations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        setIsLoading(false);
-        if (response.ok) {
-          alert('¡Horario bloqueado exitosamente!');
-          fetchEvents();
-        } else {
-          alert('Error al crear el bloqueo.');
-        }
-      }
+    ({ start, end }: { start: Date, end: Date }) => {
+      setSelectedSlotInfo({ start, end });
+      setShowRecurringBlockModal(true);
     },
-    [spaceId, equipmentId, fetchEvents]
+    []
   );
 
   const handleEventAction = async (action: 'APPROVE' | 'REJECT' | 'DELETE') => {
@@ -133,6 +190,14 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     const eventId = selectedEvent.id;
     let url = '';
     let method = 'POST';
+    let body: any = undefined; // Moved declaration to the top
+
+    // Check if it's a recurring block event
+    const isRecurringBlockEvent = eventId.startsWith('recurring-');
+    let recurringBlockId: string | null = null;
+    if (isRecurringBlockEvent) {
+      recurringBlockId = eventId.split('-')[1]; // Extract the actual recurringBlockId
+    }
 
     if (action === 'APPROVE') {
       url = `/api/admin/reservations/${eventId}/approve`;
@@ -142,11 +207,18 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
       }
       url = `/api/admin/reservations/${eventId}/reject`;
     } else if (action === 'DELETE') {
-      if (!window.confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
-        return;
+      if (isRecurringBlockEvent && recurringBlockId && selectedEvent.start && selectedEvent.end) {
+        // Instead of window.confirm, open the custom modal
+        setEventToDelete(selectedEvent);
+        setShowDeleteConfirmModal(true);
+        return; // Exit to prevent immediate deletion
+      } else { // Regular reservation deletion
+        if (!window.confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
+          return;
+        }
+        url = `/api/reservations/${eventId}`;
+        method = 'DELETE';
       }
-      url = `/api/reservations/${eventId}`;
-      method = 'DELETE';
     }
 
     if (!url) return;
@@ -154,7 +226,7 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     setIsLoading(true);
 
     try {
-      const response = await fetch(url, { method });
+      const response = await fetch(url, { method, headers: body ? { 'Content-Type': 'application/json' } : undefined, body });
       const responseData = await response.json().catch(() => null); // Catch cases where response is not JSON
 
       if (response.ok) {
@@ -199,33 +271,119 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     canApproveReject = currentUser.role === Role.SUPERUSER || isResponsible;
   }
 
+  const handleCloseRecurringBlockModal = useCallback(() => {
+    setShowRecurringBlockModal(false);
+    setSelectedSlotInfo(null);
+  }, []);
+
+  const handleSaveRecurringBlock = useCallback(() => {
+    fetchEvents(); // Refetch events after a recurring block is saved
+    handleCloseRecurringBlockModal();
+  }, [fetchEvents, handleCloseRecurringBlockModal]);
+
+  const handleConfirmDelete = useCallback(async (actionType: 'instance' | 'all') => {
+    if (!eventToDelete) return;
+
+    const eventId = eventToDelete.id;
+    // const isRecurringBlockEvent = eventId.startsWith('recurring-'); // Already checked in handleEventAction
+    const recurringBlockId = eventId.split('-')[1];
+
+    let url = '';
+    let method = ''; // Method should be dynamic based on actionType
+    let body: any = undefined;
+
+    if (actionType === 'instance') {
+      const exceptionDate = eventToDelete.start;
+      const exceptionStartTime = format(eventToDelete.start!, 'HH:mm');
+      const exceptionEndTime = format(eventToDelete.end!, 'HH:mm');
+
+      url = `/api/admin/recurring-blocks/exceptions`;
+      method = 'POST';
+      body = JSON.stringify({
+        recurringBlockId,
+        exceptionDate,
+        exceptionStartTime,
+        exceptionEndTime,
+      });
+    } else if (actionType === 'all') {
+      if (!window.confirm('¿Estás SEGURO de que quieres eliminar TODO el bloqueo recurrente? Esta acción es irreversible y eliminará todas las instancias pasadas y futuras.')) {
+        setIsLoading(false);
+        setEventToDelete(null);
+        setShowDeleteConfirmModal(false);
+        return;
+      }
+      url = `/api/admin/recurring-blocks/${recurringBlockId}`;
+      method = 'DELETE';
+    } else {
+        alert('Acción de eliminación no válida.');
+        setIsLoading(false);
+        setEventToDelete(null);
+        setShowDeleteConfirmModal(false);
+        return;
+    }
+
+    setIsLoading(true);
+    setShowDeleteConfirmModal(false); // Close the modal immediately after action is chosen
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: body ? { 'Content-Type': 'application/json' } : undefined,
+        body
+      });
+      const responseData = await response.json().catch(() => null);
+
+      if (response.ok) {
+        alert(`¡Acción completada con éxito!`);
+        setSelectedEvent(null);
+        fetchEvents(); // Re-fetch events to update calendar
+      } else {
+        const errorMessage = responseData?.error || 'Ocurrió un error al procesar la solicitud.';
+        alert(`Error: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error('Error processing event action:', error);
+      alert('Ocurrió un error de red o del servidor.');
+    } finally {
+      setIsLoading(false);
+      setEventToDelete(null); // Clear the event to delete
+    }
+  }, [eventToDelete, fetchEvents]);
+
+  const handleCloseDeleteConfirmModal = useCallback(() => {
+    console.log('Closing delete confirm modal'); // Debug log
+    setShowDeleteConfirmModal(false);
+    setEventToDelete(null);
+  }, []);
+
   return (
     <>
+      {/* Existing selectedEvent modal for reservation details */}
       {selectedEvent && (
-        <div style={modalOverlayStyle} onClick={() => setSelectedEvent(null)}>
-          <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-            <div style={modalHeaderStyle}>{selectedEvent.title}</div>
-            <div style={modalBodyStyle}>
-              <p><strong>Solicitante:</strong> {selectedEvent.fullReservation.user.firstName} {selectedEvent.fullReservation.user.lastName}</p>
-              <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
-              <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
-              <p><strong>Estado:</strong> {selectedEvent.status}</p>
-              <p><strong>Justificación:</strong> {selectedEvent.fullReservation.justification}</p>
-            </div>
-            <div style={modalFooterStyle}>
-              {selectedEvent.status === 'PENDING' && canApproveReject && (
-                <>
-                  <button style={{...buttonStyle, backgroundColor: '#5cb85c'}} onClick={() => handleEventAction('APPROVE')}>Aprobar</button>
-                  <button style={{...buttonStyle, backgroundColor: '#f0ad4e'}} onClick={() => handleEventAction('REJECT')}>Rechazar</button>
-                </>
-              )}
-              {canApproveReject && (
-                 <button style={{...buttonStyle, backgroundColor: '#d9534f'}} onClick={() => handleEventAction('DELETE')}>Eliminar</button>
-              )}
-              <button style={{...buttonStyle, backgroundColor: '#6c757d'}} onClick={() => setSelectedEvent(null)}>Cerrar</button>
-            </div>
-          </div>
-        </div>
+        <Modal show={!!selectedEvent} onHide={() => setSelectedEvent(null)}>
+          <Modal.Header closeButton>
+            <Modal.Title>{selectedEvent.title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p><strong>Solicitante:</strong> {selectedEvent.fullReservation.user.firstName} {selectedEvent.fullReservation.user.lastName}</p>
+            <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
+            <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
+            <p><strong>Estado:</strong> {selectedEvent.status}</p>
+            <p><strong>Justificación:</strong> {selectedEvent.fullReservation.justification}</p>
+          </Modal.Body>
+          <Modal.Footer>
+            {selectedEvent.status === 'PENDING' && canApproveReject && (
+              <>
+                <button style={{...buttonStyle, backgroundColor: '#5cb85c'}} onClick={() => handleEventAction('APPROVE')}>Aprobar</button>
+                <button style={{...buttonStyle, backgroundColor: '#f0ad4e'}} onClick={() => handleEventAction('REJECT')}>Rechazar</button>
+              </>
+            )}
+            {canApproveReject && (
+               <button style={{...buttonStyle, backgroundColor: '#d9534f'}} onClick={() => handleEventAction('DELETE')}>Eliminar</button>
+            )}
+            <button style={{...buttonStyle, backgroundColor: '#6c757d'}} onClick={() => setSelectedEvent(null)}>Cerrar</button>
+          </Modal.Footer>
+        </Modal>
       )}
 
       <Calendar
@@ -246,6 +404,24 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
         eventPropGetter={eventStyleGetter}
         min={new Date(0, 0, 0, 7, 0, 0)}
         max={new Date(0, 0, 0, 22, 0, 0)}
+      />
+
+      {/* New RecurringBlockModal */}
+      <RecurringBlockModal
+        show={showRecurringBlockModal}
+        handleClose={handleCloseRecurringBlockModal}
+        onSave={handleSaveRecurringBlock}
+        selectedSlot={selectedSlotInfo}
+        calendarSpaceId={spaceId} // Pass spaceId
+        calendarEquipmentId={equipmentId} // Pass equipmentId
+      />
+
+      {/* NEW: DeleteRecurringBlockModal */}
+      <DeleteRecurringBlockModal
+        show={showDeleteConfirmModal}
+        handleClose={handleCloseDeleteConfirmModal}
+        event={eventToDelete}
+        onConfirmDelete={handleConfirmDelete}
       />
     </>
   );

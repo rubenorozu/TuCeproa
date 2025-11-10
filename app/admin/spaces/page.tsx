@@ -18,11 +18,15 @@ interface Space {
   name: string;
   description: string | null;
   images: Image[];
+  status: string;
+  requirements: { id: string; name: string }[];
   responsibleUserId: string | null;
   responsibleUser: {
     firstName: string;
     lastName: string;
   } | null;
+  reservationLeadTime: number | null; // NEW: Add reservationLeadTime to Space interface
+  requiresSpaceReservationWithEquipment: boolean; // NEW: Add this field
   createdAt: string;
   updatedAt: string;
 }
@@ -45,22 +49,45 @@ export default function AdminSpacesPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [currentSpace, setCurrentSpace] = useState<Space | null>(null);
+  const [isDuplicating, setIsDuplicating] = useState(false);
+  const [duplicateWithEquipment, setDuplicateWithEquipment] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: '',
     description: '',
     responsibleUserId: '',
+    reservationLeadTime: '',
+    requiresSpaceReservationWithEquipment: false, // NEW: Initialize this field
   });
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [existingImages, setExistingImages] = useState<Image[]>([]);
+  const [selectedRequirements, setSelectedRequirements] = useState<string[]>([]);
 
   const [responsibleUsers, setResponsibleUsers] = useState<ResponsibleUser[]>([]);
   const [responsibleUsersLoading, setResponsibleUsersLoading] = useState(true);
   const [responsibleUsersError, setResponsibleUsersError] = useState<string | null>(null);
+  const [requirements, setRequirements] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchRequirements = async () => {
+      try {
+        const response = await fetch('/api/admin/requirements');
+        if (response.ok) {
+          const data = await response.json();
+          setRequirements(data);
+        }
+      } catch (error) {
+        console.error('Error al cargar los requisitos:', error);
+      }
+    };
+
+    fetchRequirements();
+  }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10; // Define page size
+  const [selectedSpaceIds, setSelectedSpaceIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!sessionLoading && (!user || (user.role !== 'SUPERUSER' && user.role !== 'ADMIN_RESOURCE'))) {
@@ -79,12 +106,15 @@ export default function AdminSpacesPage() {
         throw new Error(errorData.error || 'Error al cargar los espacios.');
       }
       const result = await response.json();
+      console.log('DEBUG: API /api/admin/spaces response result:', result);
       setSpaces(result.spaces);
       setTotalPages(Math.ceil(result.totalSpaces / pageSize));
+      setSelectedSpaceIds([]); // Clear selection on new fetch
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
-      } else {
+      }
+      else {
         setError('An unknown error occurred');
       }
     } finally {
@@ -141,11 +171,15 @@ export default function AdminSpacesPage() {
 
   const handleShowModal = (space?: Space) => {
     setCurrentSpace(space || null);
+    setIsDuplicating(false);
     setForm({
       name: space?.name || '',
       description: space?.description || '',
       responsibleUserId: (user && user.role === 'ADMIN_RESOURCE' && !space) ? user.id : space?.responsibleUserId || '',
+      reservationLeadTime: space?.reservationLeadTime?.toString() || '',
+      requiresSpaceReservationWithEquipment: space?.requiresSpaceReservationWithEquipment || false, // NEW: Initialize this field
     });
+    setSelectedRequirements(space?.requirements.map(req => req.id) || []);
     setExistingImages(space?.images || []);
     setSelectedFiles(null);
     setError(null);   // Resetear errores
@@ -153,13 +187,35 @@ export default function AdminSpacesPage() {
     setShowModal(true);
   };
 
+  const handleDuplicate = (space: Space) => {
+    setCurrentSpace(null); // Ensure it's treated as a new creation
+    setIsDuplicating(true);
+    setDuplicateWithEquipment(false);
+    setForm({
+      name: `${space.name} (Copia)`,
+      description: space.description || '',
+      responsibleUserId: space.responsibleUserId || '',
+      reservationLeadTime: space.reservationLeadTime?.toString() || '',
+      requiresSpaceReservationWithEquipment: space.requiresSpaceReservationWithEquipment || false,
+    });
+    setSelectedRequirements(space.requirements.map(req => req.id) || []);
+    setExistingImages(space.images || []);
+    setSelectedFiles(null);
+    setError(null);
+    setSuccess(null);
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentSpace(null);
+    setIsDuplicating(false);
     setForm({
       name: '',
       description: '',
       responsibleUserId: '',
+      reservationLeadTime: '',
+      requiresSpaceReservationWithEquipment: false, // NEW: Reset this field
     });
     setExistingImages([]);
     setSelectedFiles(null);
@@ -167,8 +223,11 @@ export default function AdminSpacesPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value === '' ? null : value }));
+    const { name, value, type, checked } = e.target as HTMLInputElement; // Cast to HTMLInputElement to access 'checked'
+    setForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : (name === 'reservationLeadTime' ? (value === '' ? null : parseInt(value, 10)) : (value === '' ? null : value))
+    }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,6 +236,52 @@ export default function AdminSpacesPage() {
 
   const handleRemoveExistingImage = (imageId: string) => {
     setExistingImages(prevImages => prevImages.filter(img => img.id !== imageId));
+  };
+
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedSpaceIds(spaces.map(item => item.id));
+    } else {
+      setSelectedSpaceIds([]);
+    }
+  };
+
+  const handleSelectSpace = (spaceId: string, isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedSpaceIds(prev => [...prev, spaceId]);
+    } else {
+      setSelectedSpaceIds(prev => prev.filter(id => id !== spaceId));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedSpaceIds.length === 0) return;
+
+    if (!window.confirm(`¿Estás seguro de que quieres eliminar ${selectedSpaceIds.length} espacio(s) seleccionado(s)? Esta acción es irreversible.`)) {
+      return;
+    }
+
+    setError(null);
+
+    try {
+      const response = await fetch('/api/admin/spaces/bulk', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedSpaceIds }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al eliminar los espacios seleccionados.');
+      }
+
+      alert('Espacio(s) eliminado(s) correctamente.');
+      setSelectedSpaceIds([]); // Clear selection after successful deletion
+      fetchSpaces(); // Refresh the list of spaces
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      alert(`Error al eliminar: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -228,6 +333,9 @@ export default function AdminSpacesPage() {
         body: JSON.stringify({
           ...form,
           images: uploadedImageUrls, // Enviar las URLs de las imágenes
+          requirementIds: selectedRequirements,
+          reservationLeadTime: form.reservationLeadTime ? parseInt(form.reservationLeadTime, 10) : null, // Enviar el tiempo de antelación
+          requiresSpaceReservationWithEquipment: form.requiresSpaceReservationWithEquipment, // NEW: Send this field
         }),
       });
 
@@ -276,6 +384,35 @@ export default function AdminSpacesPage() {
     }
   };
 
+  const handleToggleStatus = async (spaceId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'AVAILABLE' ? 'IN_MAINTENANCE' : 'AVAILABLE';
+    if (!window.confirm(`¿Estás seguro de que quieres cambiar el estado a ${newStatus === 'AVAILABLE' ? 'Disponible' : 'En Mantenimiento'}?`)) return;
+
+    try {
+      const response = await fetch(`/api/admin/spaces/${spaceId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'No se pudo actualizar el estado del espacio.');
+      }
+
+      alert('Estado actualizado correctamente.');
+      fetchSpaces();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        alert(`Error al actualizar el estado: ${err.message}`);
+      } else {
+        setError('An unknown error occurred');
+        alert('An unknown error occurred');
+      }
+    }
+  };
+
   if (sessionLoading || !user) {
     return <Container className="mt-5 text-center"><Spinner animation="border" /><p>Cargando sesión...</p></Container>;
   }
@@ -296,6 +433,16 @@ export default function AdminSpacesPage() {
           <Row className="g-0 mb-2">
             <Col xs={6} className="px-1">
               <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Espacio</Button>
+            </Col>
+            <Col xs={6} className="px-1">
+              <Button
+                variant="danger"
+                onClick={handleBulkDelete}
+                className="w-100 text-nowrap overflow-hidden text-truncate"
+                disabled={selectedSpaceIds.length === 0}
+              >
+                Eliminar Seleccionados ({selectedSpaceIds.length})
+              </Button>
             </Col>
             <Col xs={6} className="px-1">
               <Button variant="secondary" onClick={() => {
@@ -345,6 +492,13 @@ export default function AdminSpacesPage() {
               className="me-2" // Add margin to the right of the search field
             />
             <Button variant="primary" onClick={() => handleShowModal()} style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Espacio</Button>
+            <Button
+              variant="danger"
+              onClick={handleBulkDelete}
+              disabled={selectedSpaceIds.length === 0}
+            >
+              Eliminar Seleccionados ({selectedSpaceIds.length})
+            </Button>
             <Button variant="secondary" onClick={() => {
               const link = document.createElement('a');
               link.href = '/api/admin/export?model=spaces';
@@ -377,12 +531,28 @@ export default function AdminSpacesPage() {
                 <Table striped bordered hover responsive>
                   <thead>
                     <tr>
-                      <th>ID</th><th>Nombre</th><th>Imágenes</th><th>Responsable</th><th>Acciones</th>
+                      <th>
+                        <Form.Check
+                          type="checkbox"
+                          onChange={(e) => handleSelectAll(e.target.checked)}
+                          checked={selectedSpaceIds.length === spaces.length && spaces.length > 0}
+                          disabled={spaces.length === 0}
+                        />
+                      </th>
+                      <th>ID</th><th>Nombre</th><th>Imágenes</th><th>Responsable</th><th>Estado</th><th>Requisitos</th>                      <th>Tiempo Antelación Reserva</th><th>Reserva con Equipo</th><th>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
                     {spaces.map(space => (
+                      console.log('DEBUG: Rendering space in table:', space),
                       <tr key={space.id}>
+                        <td>
+                          <Form.Check
+                            type="checkbox"
+                            checked={selectedSpaceIds.includes(space.id)}
+                            onChange={(e) => handleSelectSpace(space.id, e.target.checked)}
+                          />
+                        </td>
                         <td>{space.displayId || space.id}</td>
                         <td>{space.name}</td>
                         <td>
@@ -402,12 +572,25 @@ export default function AdminSpacesPage() {
                             : 'N/A'}
                         </td>
                         <td>
+                          <Button
+                            variant={space.status === 'AVAILABLE' ? 'success' : 'danger'}
+                            size="sm"
+                            onClick={() => handleToggleStatus(space.id, space.status)}
+                          >
+                            {space.status === 'AVAILABLE' ? 'Disponible' : 'En Mantenimiento'}
+                          </Button>
+                        </td>
+                        <td>{space.requirements.map(req => req.name).join(', ')}</td>
+                        <td>{space.reservationLeadTime !== null ? `${space.reservationLeadTime} horas` : 'Global'}</td>
+                        <td>{space.requiresSpaceReservationWithEquipment ? 'Sí' : 'No'}</td>
+                        <td>
                           <Button variant="warning" size="sm" className="me-2" onClick={() => handleShowModal(space)}>
                             Editar
                           </Button>
-                          <Button variant="danger" size="sm" onClick={() => handleDelete(space.id)}>
+                          <Button variant="danger" size="sm" className="me-2" onClick={() => handleDelete(space.id)}>
                             Eliminar
                           </Button>
+                          <Button variant="secondary" size="sm" onClick={() => handleDuplicate(space)}>Duplicar</Button>
                         </td>
                       </tr>
                     ))}
@@ -442,11 +625,22 @@ export default function AdminSpacesPage() {
           </div>              </>
             )}
       
-            <Modal show={showModal} onHide={handleCloseModal}>        <Modal.Header closeButton>
-          <Modal.Title>{currentSpace ? 'Editar Espacio' : 'Añadir Nuevo Espacio'}</Modal.Title>
+            <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>{isDuplicating ? 'Duplicar Espacio' : (currentSpace ? 'Editar Espacio' : 'Añadir Nuevo Espacio')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
+            {isDuplicating && (
+              <Form.Group className="mb-3">
+                <Form.Check
+                  type="checkbox"
+                  label="Duplicar también los equipos asociados"
+                  checked={duplicateWithEquipment}
+                  onChange={(e) => setDuplicateWithEquipment(e.target.checked)}
+                />
+              </Form.Group>
+            )}
             <Form.Group className="mb-3">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
@@ -497,6 +691,31 @@ export default function AdminSpacesPage() {
               </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
+              <Form.Label>Requisitos</Form.Label>
+              <div className="d-flex flex-wrap gap-2 mb-2">
+                {requirements.map(requirement => (
+                  <Button
+                    key={requirement.id}
+                    variant={selectedRequirements.includes(requirement.id) ? 'primary' : 'outline-secondary'}
+                    onClick={() => {
+                      setSelectedRequirements(prev =>
+                        prev.includes(requirement.id)
+                          ? prev.filter(id => id !== requirement.id)
+                          : [...prev, requirement.id]
+                      );
+                    }}
+                    size="sm"
+                  >
+                    {requirement.name}
+                  </Button>
+                ))}
+              </div>
+              <Form.Text className="text-muted">
+                Selecciona los requisitos que aplican a este espacio.
+              </Form.Text>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
               <Form.Label>ID de Usuario Responsable</Form.Label>
               {user?.role === 'ADMIN_RESOURCE' ? (
                 <Form.Control
@@ -527,6 +746,33 @@ export default function AdminSpacesPage() {
                   )}
                 </>
               )}
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Tiempo de Antelación de Reserva (horas)</Form.Label>
+              <Form.Control
+                type="number"
+                name="reservationLeadTime"
+                value={form.reservationLeadTime || ''}
+                onChange={handleChange}
+                min="0"
+                placeholder="Ej: 24 (dejar vacío para usar el valor global)"
+              />
+              <Form.Text className="text-muted">
+                Número de horas mínimo antes de la reserva. Si se deja vacío, se usará el valor global.
+              </Form.Text>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                id="requiresSpaceReservationWithEquipment"
+                name="requiresSpaceReservationWithEquipment"
+                label="Requiere reserva del espacio junto con el equipo"
+                checked={form.requiresSpaceReservationWithEquipment}
+                onChange={handleChange}
+              />
+              <Form.Text className="text-muted">
+                Marcar si el espacio debe ser reservado automáticamente cuando se reserva cualquiera de sus equipos.
+              </Form.Text>
             </Form.Group>
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>} {/* Mostrar mensaje de éxito */}

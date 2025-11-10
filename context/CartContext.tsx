@@ -6,6 +6,8 @@ interface Resource {
   id: string;
   name: string;
   type: 'space' | 'equipment';
+  reservationLeadTime?: number | null;
+  isFixedToSpace?: boolean; // NEW: Add isFixedToSpace to Resource interface
 }
 
 interface CartContextType {

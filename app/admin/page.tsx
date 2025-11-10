@@ -99,6 +99,8 @@ export default function AdminDashboardPage() {
     calendars: '/images/admin-cards/Calendarios.jpg', // New unified calendar card
     reservations: '/placeholder.svg',
     settings: '/images/admin-cards/Config.png',
+    reports: '/images/admin-cards/Reportes.jpg', // NEW: Reports image
+    recurringBlocks: '/images/admin-cards/RecurringBlocks.png', // NEW: Recurring Blocks image
   };
 
   if (sessionLoading || !user) {
@@ -235,6 +237,23 @@ export default function AdminDashboardPage() {
             </Card>
           </Col>
         )}
+        {(isSuperUser || isAdminResource) && ( // NEW: Reports card
+          <Col>
+            <Card className="h-100">
+              <div style={{ position: 'relative', width: '100%', height: '150px', backgroundColor: 'white' }}>
+                <Image src={cardImages.reports} alt="Reportes" fill style={{ objectFit: 'contain' }} />
+              </div>
+              <Card.Body className="d-flex flex-column text-center">
+                <Card.Title>Reportes</Card.Title>
+                <Card.Text className="flex-grow-1">Gestionar reportes de usuarios.</Card.Text>
+                <Link href="/admin/reports" className="btn btn-primary mt-auto" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>
+                  Ir a Reportes
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        )}
+
       </Row>
     );
   };

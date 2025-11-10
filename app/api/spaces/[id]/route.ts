@@ -12,6 +12,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         name: true,
         description: true,
         images: true,
+        reservationLeadTime: true, // NEW: Include reservationLeadTime
+        requiresSpaceReservationWithEquipment: true, // NEW: Include this field
         responsibleUser: {
           select: {
             firstName: true,

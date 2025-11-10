@@ -82,6 +82,7 @@ export default function AdminWorkshopsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10; // Define page size
+  const [selectedWorkshopIds, setSelectedWorkshopIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!sessionLoading && (!user || (user.role !== 'SUPERUSER' && user.role !== 'ADMIN_RESOURCE'))) {
@@ -112,6 +113,7 @@ export default function AdminWorkshopsPage() {
       }));
       setWorkshops(updatedWorkshops);
       setTotalPages(Math.ceil(result.totalWorkshops / pageSize));
+      setSelectedWorkshopIds([]); // Clear selection on new fetch
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -195,6 +197,31 @@ export default function AdminWorkshopsPage() {
     setShowModal(true);
   };
 
+  const handleDuplicate = (item: Workshop) => {
+    setCurrentWorkshop(null);
+    setForm({
+      name: `${item.name} (Copia)`,
+      description: item.description || '',
+      responsibleUserId: item.responsibleUserId || '',
+      capacity: item.capacity || 0,
+      availableFrom: item.availableFrom ? new Date(item.availableFrom).toISOString().slice(0, 16) : '',
+      teacher: item.teacher || '',
+      startDate: item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : '',
+      endDate: item.endDate ? new Date(item.endDate).toISOString().split('T')[0] : '',
+      inscriptionsStartDate: item.inscriptionsStartDate ? new Date(item.inscriptionsStartDate).toISOString().slice(0, 16) : '',
+    });
+    setModalWorkshopSessions(item.sessions && item.sessions.length > 0 ? item.sessions.map(s => ({
+      id: s.id,
+      dayOfWeek: s.dayOfWeek,
+      timeStart: s.timeStart,
+      timeEnd: s.timeEnd,
+      room: s.room || '',
+    })) : [{ id: '', dayOfWeek: 1, timeStart: '09:00', timeEnd: '10:00', room: '' }]);
+    setExistingImages(item.images || []);
+    setSelectedFiles(null);
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentWorkshop(null);
@@ -247,6 +274,56 @@ export default function AdminWorkshopsPage() {
   };
 
 
+
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedWorkshopIds(workshops.map(item => item.id));
+    } else {
+      setSelectedWorkshopIds([]);
+    }
+  };
+
+  const handleSelectWorkshop = (workshopId: string, isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedWorkshopIds(prev => [...prev, workshopId]);
+    } else {
+      setSelectedWorkshopIds(prev => prev.filter(id => id !== workshopId));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedWorkshopIds.length === 0) return;
+
+    if (!window.confirm(`¿Estás seguro de que quieres eliminar ${selectedWorkshopIds.length} taller(es) seleccionado(s)? Esta acción es irreversible.`)) {
+      return;
+    }
+
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/workshops/bulk', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ids: selectedWorkshopIds }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al eliminar los talleres seleccionados.');
+      }
+
+      alert('Taller(es) eliminado(s) correctamente.');
+      setSelectedWorkshopIds([]); // Clear selection after successful deletion
+      fetchWorkshops(); // Refresh the list of workshops
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      alert(`Error al eliminar: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -395,6 +472,16 @@ export default function AdminWorkshopsPage() {
               <Button variant="primary" onClick={() => handleShowModal()} className="w-100 text-nowrap overflow-hidden text-truncate" style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Taller</Button>
             </Col>
             <Col xs={6} className="px-1">
+              <Button
+                variant="danger"
+                onClick={handleBulkDelete}
+                className="w-100 text-nowrap overflow-hidden text-truncate"
+                disabled={selectedWorkshopIds.length === 0}
+              >
+                Eliminar Seleccionados ({selectedWorkshopIds.length})
+              </Button>
+            </Col>
+            <Col xs={6} className="px-1">
               <Button variant="secondary" onClick={() => {
                 const link = document.createElement('a');
                 link.href = '/api/admin/export?model=workshops';
@@ -442,6 +529,13 @@ export default function AdminWorkshopsPage() {
               className="me-2" // Add margin to the right of the search field
             />
             <Button variant="primary" onClick={() => handleShowModal()} style={{ backgroundColor: '#1577a5', borderColor: '#1577a5' }}>Añadir Nuevo Taller</Button>
+            <Button
+              variant="danger"
+              onClick={handleBulkDelete}
+              disabled={selectedWorkshopIds.length === 0}
+            >
+              Eliminar Seleccionados ({selectedWorkshopIds.length})
+            </Button>
             <Button variant="secondary" onClick={() => {
               const link = document.createElement('a');
               link.href = '/api/admin/export?model=workshops';
@@ -474,12 +568,27 @@ export default function AdminWorkshopsPage() {
           <Table striped bordered hover responsive>
             <thead>
               <tr>
+                <th>
+                  <Form.Check
+                    type="checkbox"
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    checked={selectedWorkshopIds.length === workshops.length && workshops.length > 0}
+                    disabled={workshops.length === 0}
+                  />
+                </th>
                 <th>ID</th><th>Nombre</th><th>Responsable</th><th>Imágenes</th><th>Sesiones</th><th>Inscripciones</th><th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {workshops.map(item => (
                 <tr key={item.id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={selectedWorkshopIds.includes(item.id)}
+                      onChange={(e) => handleSelectWorkshop(item.id, e.target.checked)}
+                    />
+                  </td>
                   <td>{item.displayId || item.id}</td>
                   <td>{item.name}</td>
                   <td>
@@ -540,8 +649,11 @@ export default function AdminWorkshopsPage() {
                     <a href={`/api/admin/workshops/${item.id}/inscriptions/pdf`} className="btn btn-success btn-sm me-2" target="_blank">
                       Descargar PDF
                     </a>
-                    <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>
+                    <Button variant="danger" size="sm" className="me-2" onClick={() => handleDelete(item.id)}>
                       Eliminar
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => handleDuplicate(item)}>
+                      Duplicar
                     </Button>
                   </td>
                 </tr>

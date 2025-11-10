@@ -26,6 +26,62 @@ export default function CartPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [reservationLeadTime, setReservationLeadTime] = useState<number>(24); // Default to 24 hours
+  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
+  const [selectedProject, setSelectedProject] = useState<string>('');
+  const [recurringBlocks, setRecurringBlocks] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchRecurringBlocks = async () => {
+      try {
+        const response = await fetch('/api/admin/recurring-blocks');
+        if (response.ok) {
+          const data = await response.json();
+          setRecurringBlocks(data);
+        }
+      } catch (error) {
+        console.error('Error al cargar los bloqueos recurrentes:', error);
+      }
+    };
+
+    fetchRecurringBlocks();
+  }, []);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (user) {
+        try {
+          const response = await fetch(`/api/user-projects?userId=${user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setProjects(data);
+          }
+        } catch (error) {
+          console.error('Error al cargar los proyectos:', error);
+        }
+      }
+    };
+
+    fetchProjects();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/settings');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.reservationLeadTime) {
+            setReservationLeadTime(parseInt(data.reservationLeadTime, 10));
+          }
+        }
+      } catch (error) {
+        console.error('Error al cargar la configuración:', error);
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     if (!sessionLoading && !user) {
@@ -49,6 +105,41 @@ export default function CartPage() {
       return;
     }
 
+    const now = new Date();
+
+    for (const item of cart) {
+      const itemLeadTime = item.reservationLeadTime !== undefined && item.reservationLeadTime !== null
+        ? item.reservationLeadTime
+        : reservationLeadTime; // Fallback to global if item-specific is not set
+
+      const leadTimeInMs = itemLeadTime * 60 * 60 * 1000;
+      const minimumStartTime = new Date(now.getTime() + leadTimeInMs);
+
+      if (startTime < minimumStartTime) {
+        setError(`La reserva para "${item.name}" debe hacerse con al menos ${itemLeadTime} horas de antelación.`);
+        return;
+      }
+    }
+
+    // Check for conflicts with recurring blocks
+    const requestedDay = startTime.getDay();
+    const requestedStartTime = `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`;
+    const requestedEndTime = `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`;
+
+    for (const block of recurringBlocks) {
+      const item = cart.find(item => item.id === block.spaceId || item.id === block.equipmentId);
+      if (item) {
+        if (requestedDay === block.dayOfWeek) {
+          if (startTime >= new Date(block.startDate) && startTime <= new Date(block.endDate)) {
+            if (requestedStartTime < block.endTime && requestedEndTime > block.startTime) {
+              setError(`El recurso no está disponible en este horario debido a un bloqueo recurrente: ${block.title}`);
+              return;
+            }
+          }
+        }
+      }
+    }
+
     if (!user) {
       setError('Debes iniciar sesión para hacer una reserva.');
       return;
@@ -62,6 +153,7 @@ export default function CartPage() {
       subject,
       coordinator,
       teacher,
+      projectId: selectedProject || null,
     };
 
     try {
@@ -183,6 +275,15 @@ export default function CartPage() {
                   <Form.Group className="mb-3" controlId="justification">
                     <Form.Label>Justificación del Proyecto</Form.Label>
                     <Form.Control as="textarea" rows={4} value={justification} onChange={(e) => setJustification(e.target.value)} />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="project">
+                    <Form.Label>Proyecto</Form.Label>
+                    <Form.Control as="select" value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)}>
+                      <option value="">Selecciona un proyecto (opcional)</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>{project.name}</option>
+                      ))}
+                    </Form.Control>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="file">
                     <Form.Label>Adjuntar Guión o Formato</Form.Label>

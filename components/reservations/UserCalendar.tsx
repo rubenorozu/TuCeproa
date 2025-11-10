@@ -30,6 +30,7 @@ const localizer = dateFnsLocalizer({ format, parse, startOfWeek: () => startOfWe
 interface CalendarEvent extends BigCalendarEvent {
   id: string;
   status?: ReservationStatus;
+  isBlock?: boolean;
   fullReservation: any;
 }
 
@@ -58,23 +59,63 @@ export default function UserCalendar() {
     }
 
     try {
-      const response = await fetch(`/api/user-reservations?start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`);
-      if (response.ok) {
-        const reservations = await response.json();
-        const formattedEvents: CalendarEvent[] = reservations
-          .filter((res: any) => res.status !== 'REJECTED')
+      const [reservationsRes, recurringBlocksRes] = await Promise.all([
+        fetch(`/api/user-reservations?start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`),
+        fetch(`/api/admin/recurring-blocks`)
+      ]);
+
+      let allEvents: CalendarEvent[] = [];
+
+      if (reservationsRes.ok) {
+        const reservations = await reservationsRes.json();
+        const formattedReservations: CalendarEvent[] = reservations
           .map((res: any) => ({
             id: res.id,
             title: res.justification,
             start: new Date(res.startTime),
             end: new Date(res.endTime),
             status: res.status,
+            isBlock: false,
             fullReservation: res,
           }));
-        setEvents(formattedEvents);
+        allEvents = allEvents.concat(formattedReservations);
       }
+
+      if (recurringBlocksRes.ok) {
+        const recurringBlocks = await recurringBlocksRes.json();
+        const recurringEvents = recurringBlocks.flatMap((block: any) => {
+          const events: CalendarEvent[] = [];
+          let current = new Date(viewStart);
+
+          while (current <= viewEnd) {
+            if (current.getDay() === block.dayOfWeek) {
+              const [startHour, startMinute] = block.startTime.split(':');
+              const [endHour, endMinute] = block.endTime.split(':');
+              const startDate = new Date(current.getFullYear(), current.getMonth(), current.getDate(), startHour, startMinute);
+              const endDate = new Date(current.getFullYear(), current.getMonth(), current.getDate(), endHour, endMinute);
+
+              if (startDate >= new Date(block.startDate) && endDate <= new Date(block.endDate)) {
+                events.push({
+                  id: `recurring-${block.id}-${current.toISOString()}`,
+                  title: block.title,
+                  start: startDate,
+                  end: endDate,
+                  status: 'APPROVED', // Treat recurring blocks as approved reservations
+                  isBlock: true,
+                  fullReservation: { ...block, user: { firstName: 'Bloqueo', lastName: 'Recurrente' } },
+                });
+              }
+            }
+            current.setDate(current.getDate() + 1);
+          }
+          return events;
+        });
+        allEvents = allEvents.concat(recurringEvents);
+      }
+
+      setEvents(allEvents);
     } catch (error) {
-      console.error("Failed to fetch reservations:", error);
+      console.error("Failed to fetch events:", error);
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +127,12 @@ export default function UserCalendar() {
 
   const eventStyleGetter = (event: CalendarEvent) => {
     let backgroundColor = '#3174ad'; // Blue for approved
-    if (event.status === 'PENDING') {
+    if (event.isBlock) {
+      backgroundColor = '#d9534f'; // Red for blocks
+    } else if (event.status === 'PENDING') {
       backgroundColor = '#f0ad4e'; // Orange for pending
+    } else if (event.status === 'REJECTED') {
+      backgroundColor = '#d9534f'; // Red for rejected
     }
     return { style: { backgroundColor, opacity: isLoading ? 0.5 : 1 } };
   };
@@ -109,6 +154,7 @@ export default function UserCalendar() {
               <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
               <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
               <p><strong>Estado:</strong> {selectedEvent.status}</p>
+              {selectedEvent.fullReservation.rejectionReason && <p><strong>Motivo del Rechazo:</strong> {selectedEvent.fullReservation.rejectionReason}</p>}
               <p><strong>Justificación:</strong> {selectedEvent.fullReservation.justification}</p>
             </div>
             <div style={modalFooterStyle}>

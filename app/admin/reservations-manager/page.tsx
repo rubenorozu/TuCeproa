@@ -16,6 +16,9 @@ export default function ReservationsManagerPage() {
   const [loadingReservations, setLoadingReservations] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all' | 'partially_approved'>('pending');
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionReservationId, setRejectionReservationId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionLoading && (!user || (user.role !== 'SUPERUSER' && user.role !== 'ADMIN_RESERVATION'))) {
@@ -52,20 +55,60 @@ export default function ReservationsManagerPage() {
   }, [sessionLoading, user, filter]);
 
   const handleApproveReject = useCallback(async (reservationId: string, action: 'approve' | 'reject') => {
-    if (action === 'reject' && !window.confirm('¿Estás seguro de que quieres rechazar esta reservación?')) {
-      return;
+    if (action === 'reject') {
+      setRejectionReservationId(reservationId);
+      setShowRejectionModal(true);
+    } else {
+      try {
+        const response = await fetch(`/api/admin/reservations/${reservationId}/${action}`, {
+          method: 'POST',
+        });
+
+        if (!response.ok) {
+          try {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Error al ${action === 'approve' ? 'aprobar' : 'rechazar'} la reservación.`);
+          } catch (jsonError) {
+            throw new Error(response.statusText);
+          }
+        }
+
+        fetchReservations(filter); // Recargar la lista con el filtro actual
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+          alert(`Error: ${err.message}`);
+        } else {
+          setError('An unknown error occurred');
+          alert('An unknown error occurred');
+        }
+      }
     }
+  }, [filter]);
+
+  const handleRejectSubmit = async () => {
+    if (!rejectionReservationId) return;
 
     try {
-      const response = await fetch(`/api/admin/reservations/${reservationId}/${action}`, {
+      const response = await fetch(`/api/admin/reservations/${rejectionReservationId}/reject`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rejectionReason }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Error al ${action === 'approve' ? 'aprobar' : 'rechazar'} la reservación.`);
+        try {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Error al rechazar la reservación.');
+        } catch (jsonError) {
+          throw new Error(response.statusText);
+        }
       }
 
+      setShowRejectionModal(false);
+      setRejectionReason('');
       fetchReservations(filter); // Recargar la lista con el filtro actual
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -76,7 +119,7 @@ export default function ReservationsManagerPage() {
         alert('An unknown error occurred');
       }
     }
-  }, [filter]);
+  };
 
   if (sessionLoading || !user) {
     return <Container className="mt-5 text-center"><Spinner animation="border" /><p>Cargando sesión...</p></Container>;
@@ -124,6 +167,33 @@ export default function ReservationsManagerPage() {
           )}
         </Col>
       </Row>
+
+      <Modal show={showRejectionModal} onHide={() => setShowRejectionModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Rechazar Reservación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Motivo del Rechazo</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowRejectionModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={handleRejectSubmit}>
+            Rechazar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

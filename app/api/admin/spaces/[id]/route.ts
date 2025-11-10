@@ -17,6 +17,33 @@ export async function GET(request: Request, { params }: { params: { id: string }
   try {
     const space = await prisma.space.findUnique({
       where: { id: spaceId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        images: true,
+        responsibleUserId: true,
+        reservationLeadTime: true,
+        requiresSpaceReservationWithEquipment: true, // NEW: Include this field
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+        displayId: true,
+        responsibleUser: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        requirements: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      }
     });
 
     if (!space) {
@@ -57,7 +84,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Acceso denegado. No eres responsable de este espacio.' }, { status: 403 });
     }
 
-    const { name, description, images, responsibleUserId } = await request.json(); // Añadir 'images'
+    const { name, description, images, responsibleUserId, requirementIds, reservationLeadTime, requiresSpaceReservationWithEquipment } = await request.json(); // Añadir 'images', 'reservationLeadTime' y 'requiresSpaceReservationWithEquipment'
 
     if (!name) {
       return NextResponse.json({ error: 'El nombre del espacio es obligatorio.' }, { status: 400 });
@@ -68,14 +95,24 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       data: {
         name,
         description,
-        responsibleUserId: responsibleUserId || null,
+        ...(responsibleUserId
+          ? { responsibleUser: { connect: { id: responsibleUserId } } }
+          : { responsibleUser: { disconnect: true } }
+        ),
+        reservationLeadTime: reservationLeadTime || null, // Guardar el tiempo de antelación específico del espacio
+        requiresSpaceReservationWithEquipment: requiresSpaceReservationWithEquipment ?? false, // Guardar si el espacio requiere reserva con equipo
         images: {
           // Eliminar imágenes existentes y crear nuevas
           deleteMany: {},
           create: images.map((img: { url: string }) => ({ url: img.url })),
         },
+        ...(requirementIds && {
+          requirements: {
+            set: requirementIds.map((id: string) => ({ id }))
+          }
+        })
       },
-      include: { images: true }, // Incluir las imágenes en la respuesta
+      include: { images: true, requirements: true }, // Incluir las imágenes en la respuesta
     });
 
     return NextResponse.json(updatedSpace, { status: 200 });

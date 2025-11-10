@@ -12,6 +12,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   }
 
   const reservationId = params.id;
+  const { rejectionReason } = await request.json();
 
   try {
     // Fetch the reservation to check responsibility if the user is ADMIN_RESERVATION
@@ -43,6 +44,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       where: { id: reservationId },
       data: {
         status: ReservationStatus.REJECTED,
+        rejectionReason: rejectionReason, // Guardar el motivo del rechazo
         approvedByUserId: session.user.id, // Registrar quién rechazó
       },
       include: {
@@ -53,11 +55,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const resourceName = updatedReservation.space?.name || updatedReservation.equipment?.name || 'recurso';
 
+    const notificationMessage = rejectionReason
+      ? `Tu reservación para ${resourceName} ha sido rechazada. Motivo: ${rejectionReason}`
+      : `Tu reservación para ${resourceName} ha sido rechazada.`;
+
     // Create notification for the user
     await prisma.notification.create({
       data: {
         recipientId: updatedReservation.userId,
-        message: `Tu reservación para ${resourceName} ha sido rechazada.`,
+        message: notificationMessage,
       },
     });
 

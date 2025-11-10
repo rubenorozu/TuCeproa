@@ -24,10 +24,16 @@ export async function GET(request: Request) {
 
     const spaces = await prisma.space.findMany({
       where: whereClause,
-      include: { 
-        images: true, 
-        _count: { select: { equipments: true } } 
-      }, // Incluir imágenes y contador de equipos
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        displayId: true,
+        images: true, // This is a relation, so it's fine here
+        reservationLeadTime: true, // Now correctly selected as a scalar field
+        requiresSpaceReservationWithEquipment: true, // NEW: Include this field
+        _count: { select: { equipments: true } }, // This is also fine here
+      },
     });
     console.log('--- API SPACES: Fetched spaces ---', spaces.length);
     return NextResponse.json(spaces);
