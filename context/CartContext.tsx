@@ -2,12 +2,17 @@
 
 import { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 
+interface Image {
+  id: string;
+  url: string;
+}
+
 interface Resource {
   id: string;
   name: string;
   description?: string | null; // Added
   images: Image[]; // Added
-  type: 'space' | 'equipment';
+  type: 'space' | 'equipment' | 'workshop';
   reservationLeadTime?: number | null;
   isFixedToSpace?: boolean;
   requiresSpaceReservationWithEquipment?: boolean; // Added
