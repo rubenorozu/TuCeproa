@@ -226,7 +226,7 @@ export default function RecurringBlockModal({ show, handleClose, onSave, initial
             </Row>
             <Form.Group className="mb-3">
               <Form.Label>Espacio</Form.Label>
-              <Form.Select value={form.spaceId} onChange={(e) => setForm({ ...form, spaceId: e.target.value, equipmentId: '' })} disabled={isSubmitting}>
+              <Form.Select value={form.spaceId} onChange={(e) => setForm({ ...form, spaceId: e.target.value, equipmentIds: [] })} disabled={isSubmitting}>
                 <option value="">Selecciona un espacio (opcional)</option>
                 {spaces.map(space => (
                   <option key={space.id} value={space.id}>{space.name}</option>
