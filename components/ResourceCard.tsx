@@ -31,7 +31,7 @@ interface Resource {
   isFixedToSpace?: boolean; // NEW: Add isFixedToSpace to Resource interface
   requiresSpaceReservationWithEquipment?: boolean; // NEW: Add this field
   _count?: {
-    inscriptions: number;
+    inscriptions?: number;
     equipments?: number;
   };
 }
@@ -138,6 +138,7 @@ const ResourceCard = ({ resource, type, displayMode = 'full', onInscriptionSucce
     resource.type === 'workshop' &&
     resource.capacity != null &&
     resource._count != null &&
+    resource._count.inscriptions != null &&
     resource.capacity > 0 &&
     resource._count.inscriptions >= resource.capacity;
 
