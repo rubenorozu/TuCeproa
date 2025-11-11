@@ -30,6 +30,7 @@ interface RecurringBlockModalProps {
 interface ResourceOption {
   id: string;
   name: string;
+  spaceId?: string;
 }
 
 export default function RecurringBlockModal({ show, handleClose, onSave, initialData, selectedSlot, calendarSpaceId, calendarEquipmentId }: RecurringBlockModalProps) {
