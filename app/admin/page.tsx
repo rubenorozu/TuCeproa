@@ -120,7 +120,7 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESERVATION, Role.ADMIN_RESOURCE, Role.CALENDAR_VIEWER];
+  const allowedRoles: Role[] = [Role.SUPERUSER, Role.ADMIN_RESERVATION, Role.ADMIN_RESOURCE, Role.CALENDAR_VIEWER];
   if (!allowedRoles.includes(user.role)) {
     return (
       <Alert variant="danger" className="mt-5">
