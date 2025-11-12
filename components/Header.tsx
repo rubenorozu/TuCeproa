@@ -108,6 +108,9 @@ const Header = () => {
                       {(user.role === 'SUPERUSER' || user.role === 'VIGILANCIA') && (
                         <li><Link href="/vigilancia/dashboard" className="dropdown-item">Dashboard Vigilancia</Link></li>
                       )}
+                      {user.role === 'CALENDAR_VIEWER' && (
+                        <li><Link href="/admin/calendars" className="dropdown-item">Ver Calendario</Link></li>
+                      )}
                       {user.role === 'SUPERUSER' && (
                         <li><hr className="dropdown-divider" /></li>
                       )}
