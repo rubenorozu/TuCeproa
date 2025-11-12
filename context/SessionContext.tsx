@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { createContext } from 'react';
+import { Role } from '@prisma/client';
 
 interface UserSession {
   id: string;
-  role: string;
+  role: Role;
   firstName: string | null;
   lastName: string | null;
   email: string;
