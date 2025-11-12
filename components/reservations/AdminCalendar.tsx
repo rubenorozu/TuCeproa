@@ -44,6 +44,14 @@ interface CalendarEvent extends BigCalendarEvent {
   fullReservation: any;
 }
 
+const customFormats = {
+  timeGutterFormat: 'HH:mm',
+  eventTimeRangeFormat: ({ start, end }: { start: Date, end: Date }, culture: string | undefined, localizer: any) =>
+    localizer.format(start, 'HH:mm', culture) + ' - ' + localizer.format(end, 'HH:mm', culture),
+  selectRangeFormat: ({ start, end }: { start: Date, end: Date }, culture: string | undefined, localizer: any) =>
+    localizer.format(start, 'HH:mm', culture) + ' - ' + localizer.format(end, 'HH:mm', culture),
+};
+
 export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalendarProps) {
   const { user: currentUser } = useSession();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -253,7 +261,8 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
     } catch (error) {
       console.error('Error processing event action:', error);
       alert('Ocurrió un error de red o del servidor.');
-    } finally {
+    }
+    finally {
       setIsLoading(false);
     }
   };
@@ -356,7 +365,8 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
     } catch (error) {
       console.error('Error processing event action:', error);
       alert('Ocurrió un error de red o del servidor.');
-    } finally {
+    }
+    finally {
       setIsLoading(false);
       setEventToDelete(null); // Clear the event to delete
     }
@@ -414,8 +424,7 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
         view={view as any}
         date={date}
         eventPropGetter={eventStyleGetter}
-        min={new Date(0, 0, 0, 7, 0, 0)}
-        max={new Date(0, 0, 0, 22, 0, 0)}
+        formats={customFormats}
       />
 
       {/* New RecurringBlockModal */}
