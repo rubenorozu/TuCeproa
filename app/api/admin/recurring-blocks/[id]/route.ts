@@ -6,7 +6,7 @@ import { Role } from '@prisma/client';
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession();
 
-  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
+  const allowedRoles: Role[] = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
   if (!session || !allowedRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
