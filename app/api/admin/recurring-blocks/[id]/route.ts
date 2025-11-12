@@ -6,13 +6,14 @@ import { Role } from '@prisma/client';
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession();
 
-  if (!session || session.user.role !== Role.SUPERUSER) {
+  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
+  if (!session || !allowedRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
 
   const { id } = params;
   const body = await request.json();
-  const { title, description, startDate, endDate, dayOfWeek, startTime, endTime, spaceId, equipmentIds } = body;
+  const { title, description, startDate, endDate, dayOfWeek, startTime, endTime, spaceId, equipmentIds, isVisibleToViewer } = body;
 
   if (!title || !startDate || !endDate || !Array.isArray(dayOfWeek) || dayOfWeek.length === 0 || !startTime || !endTime) {
     return NextResponse.json({ error: 'Faltan campos requeridos o formato incorrecto para días de la semana.' }, { status: 400 });
@@ -34,7 +35,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         dayOfWeek: dayOfWeek,
         startTime,
         endTime,
-        spaceId: spaceId || null,
+        space: spaceId ? { connect: { id: spaceId } } : { disconnect: true },
+        isVisibleToViewer: isVisibleToViewer,
         equipment: equipmentIds && equipmentIds.length > 0
           ? { create: equipmentIds.map((eqId: string) => ({ equipmentId: eqId })) }
           : undefined,
@@ -50,7 +52,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession();
 
-  if (!session || session.user.role !== Role.SUPERUSER) {
+  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
+  if (!session || !allowedRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
 

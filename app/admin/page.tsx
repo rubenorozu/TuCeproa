@@ -8,9 +8,11 @@ import { useSession } from '@/context/SessionContext';
 import { Role } from '@prisma/client';
 import { GroupedReservation } from '@/components/admin/reservations/types';
 import ReservationCard from '@/components/admin/reservations/ReservationCard';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboardPage() {
   const { user, loading: sessionLoading } = useSession();
+  const router = useRouter();
 
 
   const [groupedReservations, setGroupedReservations] = useState<GroupedReservation[]>([]);
@@ -47,6 +49,12 @@ export default function AdminDashboardPage() {
       setLoadingReservations(false);
     }
   };
+
+  useEffect(() => {
+    if (!sessionLoading && user?.role === Role.CALENDAR_VIEWER) {
+      router.push('/admin/calendars');
+    }
+  }, [sessionLoading, user, router]);
 
   useEffect(() => {
     if (!sessionLoading && user && (user.role === Role.SUPERUSER || user.role === Role.ADMIN_RESERVATION || user.role === Role.ADMIN_RESOURCE)) {
@@ -103,19 +111,20 @@ export default function AdminDashboardPage() {
     recurringBlocks: '/images/admin-cards/RecurringBlocks.png', // NEW: Recurring Blocks image
   };
 
-  if (sessionLoading || !user) {
+  if (sessionLoading || !user || user.role === Role.CALENDAR_VIEWER) {
     return (
       <Container className="mt-5 text-center">
         <Spinner animation="border" />
-        <p>Cargando sesión...</p>
+        <p>Cargando...</p>
       </Container>
     );
   }
 
-  if (user.role !== Role.SUPERUSER && user.role !== Role.ADMIN_RESERVATION && user.role !== Role.ADMIN_RESOURCE) {
+  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESERVATION, Role.ADMIN_RESOURCE, Role.CALENDAR_VIEWER];
+  if (!allowedRoles.includes(user.role)) {
     return (
       <Alert variant="danger" className="mt-5">
-        Acceso denegado. No tienes permisos de Superusuario o Administrador de Reservas.
+        Acceso denegado. No tienes permisos para ver esta página.
       </Alert>
     );
   }

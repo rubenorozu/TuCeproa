@@ -34,6 +34,7 @@ const localizer = dateFnsLocalizer({ format, parse, startOfWeek: () => startOfWe
 interface AdminCalendarProps {
   spaceId?: string;
   equipmentId?: string;
+  role?: Role;
 }
 
 interface CalendarEvent extends BigCalendarEvent {
@@ -43,7 +44,7 @@ interface CalendarEvent extends BigCalendarEvent {
   fullReservation: any;
 }
 
-export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarProps) {
+export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalendarProps) {
   const { user: currentUser } = useSession();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [view, setView] = useState('week');
@@ -54,6 +55,8 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
   const [selectedSlotInfo, setSelectedSlotInfo] = useState<{ start: Date; end: Date } | null>(null); // State for selected slot info
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false); // NEW: State for delete confirmation modal
   const [eventToDelete, setEventToDelete] = useState<CalendarEvent | null>(null); // NEW: Stores the event to be deleted
+
+  const isViewer = role === Role.CALENDAR_VIEWER;
 
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), [setDate]);
   const onView = useCallback((newView: string) => setView(newView), [setView]);
@@ -81,16 +84,24 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     }
 
     try {
-      const [reservationsRes, recurringBlocksRes] = await Promise.all([
-        fetch(`/api/reservations?${apiQuery}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`),
-        fetch(`/api/admin/recurring-blocks?${apiQuery}`),
-      ]);
+      const recurringBlocksQuery = isViewer ? `${apiQuery}&isVisibleToViewer=true` : apiQuery;
+      const fetchPromises = [
+        fetch(`/api/admin/recurring-blocks?${recurringBlocksQuery}`),
+      ];
+
+      // Only fetch reservations if the user is not a viewer
+      if (!isViewer) {
+        fetchPromises.unshift(fetch(`/api/reservations?${apiQuery}&start=${viewStart.toISOString()}&end=${viewEnd.toISOString()}`));
+      }
+
+      const [reservationsRes, recurringBlocksRes] = await Promise.all(isViewer ? [null, ...fetchPromises] : fetchPromises);
+
 
       let allEvents: CalendarEvent[] = [];
       let recurringBlocks: any[] = [];
       let exceptions: any[] = [];
 
-      if (reservationsRes.ok) {
+      if (reservationsRes && reservationsRes.ok) {
         const reservations = await reservationsRes.json();
         const formattedReservations: CalendarEvent[] = reservations
           .filter((res: any) => res.status !== 'REJECTED')
@@ -106,7 +117,7 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
         allEvents = allEvents.concat(formattedReservations);
       }
 
-      if (recurringBlocksRes.ok) {
+      if (recurringBlocksRes && recurringBlocksRes.ok) {
         recurringBlocks = await recurringBlocksRes.json();
         // Fetch exceptions for the fetched recurring blocks
         const recurringBlockIds = recurringBlocks.map(block => block.id);
@@ -170,7 +181,7 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
     } finally {
       setIsLoading(false);
     }
-  }, [spaceId, equipmentId, date, view]);
+  }, [spaceId, equipmentId, date, view, isViewer]);
 
   useEffect(() => {
     fetchEvents();
@@ -178,14 +189,15 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
 
   const handleSelectSlot = useCallback(
     ({ start, end }: { start: Date, end: Date }) => {
+      if (isViewer) return;
       setSelectedSlotInfo({ start, end });
       setShowRecurringBlockModal(true);
     },
-    []
+    [isViewer]
   );
 
   const handleEventAction = async (action: 'APPROVE' | 'REJECT' | 'DELETE') => {
-    if (!selectedEvent) return;
+    if (!selectedEvent || isViewer) return;
 
     const eventId = selectedEvent.id;
     let url = '';
@@ -263,7 +275,7 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
   }), []);
 
   let canApproveReject = false;
-  if (selectedEvent && currentUser) {
+  if (selectedEvent && currentUser && !isViewer) {
     const reservation = selectedEvent.fullReservation;
     const isResponsible = (currentUser.role === Role.ADMIN_RESERVATION || currentUser.role === Role.ADMIN_RESOURCE) &&
       (reservation.space?.responsibleUserId === currentUser.id ||
@@ -359,7 +371,7 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
   return (
     <>
       {/* Existing selectedEvent modal for reservation details */}
-      {selectedEvent && (
+      {selectedEvent && !isViewer && (
         <Modal show={!!selectedEvent} onHide={() => setSelectedEvent(null)}>
           <Modal.Header closeButton>
             <Modal.Title>{selectedEvent.title}</Modal.Title>
@@ -394,9 +406,9 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
         style={{ height: '100%', opacity: isLoading ? 0.5 : 1 }}
         culture="es"
         messages={messages}
-        selectable
-        onSelectEvent={(event) => setSelectedEvent(event as CalendarEvent)}
-        onSelectSlot={handleSelectSlot}
+        selectable={!isViewer}
+        onSelectEvent={isViewer ? undefined : (event) => setSelectedEvent(event as CalendarEvent)}
+        onSelectSlot={isViewer ? undefined : handleSelectSlot}
         onNavigate={onNavigate}
         onView={onView}
         view={view as any}
@@ -407,22 +419,26 @@ export default function AdminCalendar({ spaceId, equipmentId }: AdminCalendarPro
       />
 
       {/* New RecurringBlockModal */}
-      <RecurringBlockModal
-        show={showRecurringBlockModal}
-        handleClose={handleCloseRecurringBlockModal}
-        onSave={handleSaveRecurringBlock}
-        selectedSlot={selectedSlotInfo}
-        calendarSpaceId={spaceId} // Pass spaceId
-        calendarEquipmentId={equipmentId} // Pass equipmentId
-      />
+      {!isViewer && (
+        <RecurringBlockModal
+          show={showRecurringBlockModal}
+          handleClose={handleCloseRecurringBlockModal}
+          onSave={handleSaveRecurringBlock}
+          selectedSlot={selectedSlotInfo}
+          calendarSpaceId={spaceId} // Pass spaceId
+          calendarEquipmentId={equipmentId} // Pass equipmentId
+        />
+      )}
 
       {/* NEW: DeleteRecurringBlockModal */}
-      <DeleteRecurringBlockModal
-        show={showDeleteConfirmModal}
-        handleClose={handleCloseDeleteConfirmModal}
-        event={eventToDelete}
-        onConfirmDelete={handleConfirmDelete}
-      />
+      {!isViewer && (
+        <DeleteRecurringBlockModal
+          show={showDeleteConfirmModal}
+          handleClose={handleCloseDeleteConfirmModal}
+          event={eventToDelete}
+          onConfirmDelete={handleConfirmDelete}
+        />
+      )}
     </>
   );
 }

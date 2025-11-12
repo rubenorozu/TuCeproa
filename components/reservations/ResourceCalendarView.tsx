@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import AdminCalendar from '@/components/reservations/AdminCalendar';
 import Link from 'next/link';
 import { Button } from 'react-bootstrap';
+import { Role } from '@prisma/client';
 
 interface Resource {
   id: string;
@@ -13,12 +14,14 @@ interface Resource {
 interface ResourceCalendarViewProps {
   resources: Resource[];
   resourceType: 'space' | 'equipment';
+  role?: Role;
 }
 
-export default function ResourceCalendarView({ resources, resourceType }: ResourceCalendarViewProps) {
+export default function ResourceCalendarView({ resources, resourceType, role }: ResourceCalendarViewProps) {
   const [selectedResourceId, setSelectedResourceId] = useState<string>(resources[0]?.id || '');
 
   const label = resourceType === 'space' ? 'Seleccionar Espacio' : 'Seleccionar Equipo';
+  const isViewer = role === Role.CALENDAR_VIEWER;
 
   return (
     <div>
@@ -42,16 +45,20 @@ export default function ResourceCalendarView({ resources, resourceType }: Resour
             ))}
           </select>
         </div>
-        <Link href="/admin" passHref legacyBehavior>
-          <Button variant="outline-secondary">
-            &larr; Regresar
-          </Button>
-        </Link>
+        {!isViewer && (
+          <Link href="/admin" passHref legacyBehavior>
+            <Button variant="outline-secondary">
+              &larr; Regresar
+            </Button>
+          </Link>
+        )}
       </div>
 
-      <p className="text-sm text-gray-600 mb-4">
-        Haz clic y arrastra en un horario vacío para crear un bloqueo. Haz clic en un evento para gestionarlo.
-      </p>
+      {!isViewer && (
+        <p className="text-sm text-gray-600 mb-4">
+          Haz clic y arrastra en un horario vacío para crear un bloqueo. Haz clic en un evento para gestionarlo.
+        </p>
+      )}
       
       <div style={{ height: '70vh' }}>
         {selectedResourceId ? (
@@ -59,6 +66,7 @@ export default function ResourceCalendarView({ resources, resourceType }: Resour
             key={selectedResourceId} // Add key to force re-render on resource change
             spaceId={resourceType === 'space' ? selectedResourceId : undefined}
             equipmentId={resourceType === 'equipment' ? selectedResourceId : undefined}
+            role={role}
           />
         ) : (
           <p>Por favor selecciona un recurso.</p>

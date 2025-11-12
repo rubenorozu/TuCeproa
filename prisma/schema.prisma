@@ -291,20 +291,21 @@ model Project {
 }
 
 model RecurringBlock {
-  id          String    @id @default(cuid())
-  title       String
-  description String?
-  startDate   DateTime
-  endDate     DateTime
-  dayOfWeek   Int[] // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  startTime   String // e.g., "09:00"
-  endTime     String // e.g., "11:00"
-  space       Space?    @relation(fields: [spaceId], references: [id])
-  spaceId     String?
-  equipment   RecurringBlockOnEquipment[] // Many-to-many relation
-  exceptions  RecurringBlockException[] // Opposite relation for RecurringBlockException
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                  String                      @id @default(cuid())
+  title               String
+  description         String?
+  startDate           DateTime
+  endDate             DateTime
+  dayOfWeek           Int[] // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime           String // e.g., "09:00"
+  endTime             String // e.g., "11:00"
+  space               Space?                      @relation(fields: [spaceId], references: [id])
+  spaceId             String?
+  equipment           RecurringBlockOnEquipment[] // Many-to-many relation
+  exceptions          RecurringBlockException[] // Opposite relation for RecurringBlockException
+  isVisibleToViewer   Boolean                     @default(true)
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
 }
 
 model RecurringBlockOnEquipment {

@@ -5,15 +5,34 @@ import { getServerSession } from '@/lib/auth';
 import { Role } from '@prisma/client';
 import { addDays, isWithinInterval, setHours, setMinutes, startOfDay, endOfDay } from 'date-fns';
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await getServerSession();
 
-  if (!session || session.user.role !== Role.SUPERUSER) {
+  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION, Role.CALENDAR_VIEWER];
+  if (!session || !allowedRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const spaceId = searchParams.get('spaceId');
+  const equipmentId = searchParams.get('equipmentId');
+  const isVisibleToViewer = searchParams.get('isVisibleToViewer');
+
+  const whereClause: any = {};
+
+  if (spaceId) {
+    whereClause.spaceId = spaceId;
+  } else if (equipmentId) {
+    whereClause.equipment = { some: { equipmentId } };
+  }
+
+  if (isVisibleToViewer === 'true') {
+    whereClause.isVisibleToViewer = true;
   }
 
   try {
     const recurringBlocks = await prisma.recurringBlock.findMany({
+      where: whereClause,
       include: {
         space: { select: { name: true } },
         equipment: {
@@ -43,12 +62,14 @@ export async function GET() {
 export async function POST(request: Request) {
   const session = await getServerSession();
 
-  if (!session || session.user.role !== Role.SUPERUSER) {
+  // Only higher-level admins can create blocks
+  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
+  if (!session || !allowedRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
 
   const body = await request.json();
-  const { title, description, startDate, endDate, dayOfWeek, startTime, endTime, spaceId, equipmentIds } = body;
+  const { title, description, startDate, endDate, dayOfWeek, startTime, endTime, spaceId, equipmentIds, isVisibleToViewer } = body;
 
   if (!title || !startDate || !endDate || !Array.isArray(dayOfWeek) || dayOfWeek.length === 0 || !startTime || !endTime) {
     return NextResponse.json({ error: 'Faltan campos requeridos o formato incorrecto para días de la semana.' }, { status: 400 });
@@ -120,7 +141,8 @@ export async function POST(request: Request) {
         dayOfWeek: dayOfWeek,
         startTime,
         endTime,
-        spaceId: spaceId || null,
+        space: spaceId ? { connect: { id: spaceId } } : undefined,
+        isVisibleToViewer: isVisibleToViewer,
         equipment: {
           create: equipmentIds && equipmentIds.length > 0
             ? equipmentIds.map((eqId: string) => ({ equipmentId: eqId }))

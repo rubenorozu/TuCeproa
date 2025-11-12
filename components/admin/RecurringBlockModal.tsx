@@ -18,6 +18,7 @@ interface RecurringBlockModalProps {
     endTime?: string;
     spaceId?: string;
     equipmentId?: string;
+    isVisibleToViewer?: boolean;
   };
   selectedSlot?: {
     start: Date;
@@ -44,6 +45,7 @@ export default function RecurringBlockModal({ show, handleClose, onSave, initial
     endTime: '',
     spaceId: '',
     equipmentIds: [] as string[], // Changed to array of strings for multiple equipment
+    isVisibleToViewer: true,
   });
   const [spaces, setSpaces] = useState<ResourceOption[]>([]);
   const [allEquipment, setAllEquipment] = useState<ResourceOption[]>([]); // Store all equipment
@@ -107,12 +109,14 @@ export default function RecurringBlockModal({ show, handleClose, onSave, initial
         endTime: initialData.endTime || '',
         spaceId: initialData.spaceId || '',
         equipmentIds: initialData.equipmentId ? (Array.isArray(initialData.equipmentId) ? initialData.equipmentId : [initialData.equipmentId]) : [], // Handle as array
+        isVisibleToViewer: initialData.isVisibleToViewer ?? true,
       });
     } else if (selectedSlot) {
       const start = selectedSlot.start;
       const end = selectedSlot.end;
-      setForm(prev => ({
-        ...prev,
+      setForm({
+        title: '',
+        description: '',
         startDate: start.toISOString().split('T')[0],
         endDate: end.toISOString().split('T')[0],
         startTime: start.toTimeString().slice(0, 5),
@@ -120,11 +124,13 @@ export default function RecurringBlockModal({ show, handleClose, onSave, initial
         dayOfWeek: [start.getDay()],
         spaceId: calendarSpaceId || '', // Pre-select from calendar props
         equipmentIds: calendarEquipmentId ? [calendarEquipmentId] : [], // Pre-select from calendar props as array
-      }));
+        isVisibleToViewer: true,
+      });
     } else {
       setForm({
         title: '', description: '', startDate: '', endDate: '', dayOfWeek: [],
-        startTime: '', endTime: '', spaceId: calendarSpaceId || '', equipmentIds: calendarEquipmentId ? [calendarEquipmentId] : []
+        startTime: '', endTime: '', spaceId: calendarSpaceId || '', equipmentIds: calendarEquipmentId ? [calendarEquipmentId] : [],
+        isVisibleToViewer: true
       });
     }
   }, [initialData, selectedSlot, calendarSpaceId, calendarEquipmentId]);
@@ -279,6 +285,16 @@ export default function RecurringBlockModal({ show, handleClose, onSave, initial
               ) : (
                 <p className="text-muted">No hay equipos disponibles para este espacio.</p>
               )}
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="switch"
+                id="isVisibleToViewer"
+                label="Visible para el visor de calendarios"
+                checked={form.isVisibleToViewer}
+                onChange={(e) => setForm({ ...form, isVisibleToViewer: e.target.checked })}
+                disabled={isSubmitting}
+              />
             </Form.Group>
             <Button variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Guardando...' : 'Guardar Bloqueo'}

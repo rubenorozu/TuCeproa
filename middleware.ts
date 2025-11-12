@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
         }
   
         // Verificar roles para rutas /admin
-        const allowedAdminRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
+        const allowedAdminRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION, Role.CALENDAR_VIEWER];
         console.log('--- MIDDLEWARE: User role for /admin ---', session.user.role);
         console.log('--- MIDDLEWARE: Allowed roles for /admin ---', allowedAdminRoles);
         if (!allowedAdminRoles.some(role => role === session.user.role)) {
