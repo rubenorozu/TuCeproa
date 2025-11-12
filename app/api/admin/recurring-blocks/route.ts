@@ -8,7 +8,7 @@ import { addDays, isWithinInterval, setHours, setMinutes, startOfDay, endOfDay }
 export async function GET(request: Request) {
   const session = await getServerSession();
 
-  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION, Role.CALENDAR_VIEWER];
+  const allowedRoles: Role[] = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION, Role.CALENDAR_VIEWER];
   if (!session || !allowedRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
   const session = await getServerSession();
 
   // Only higher-level admins can create blocks
-  const allowedRoles = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
+  const allowedRoles: Role[] = [Role.SUPERUSER, Role.ADMIN_RESOURCE, Role.ADMIN_RESERVATION];
   if (!session || !allowedRoles.includes(session.user.role)) {
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 });
   }
