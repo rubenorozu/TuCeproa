@@ -27,8 +27,6 @@ export default function CartPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [reservationLeadTime, setReservationLeadTime] = useState<number>(24); // Default to 24 hours
-  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
-  const [selectedProject, setSelectedProject] = useState<string>('');
   const [recurringBlocks, setRecurringBlocks] = useState<any[]>([]);
 
   useEffect(() => {
@@ -46,24 +44,6 @@ export default function CartPage() {
 
     fetchRecurringBlocks();
   }, []);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      if (user) {
-        try {
-          const response = await fetch(`/api/user-projects?userId=${user.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setProjects(data);
-          }
-        } catch (error) {
-          console.error('Error al cargar los proyectos:', error);
-        }
-      }
-    };
-
-    fetchProjects();
-  }, [user]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -153,7 +133,6 @@ export default function CartPage() {
       subject,
       coordinator,
       teacher,
-      projectId: selectedProject || null,
     };
 
     try {
@@ -275,15 +254,6 @@ export default function CartPage() {
                   <Form.Group className="mb-3" controlId="justification">
                     <Form.Label>Justificación del Proyecto</Form.Label>
                     <Form.Control as="textarea" rows={4} value={justification} onChange={(e) => setJustification(e.target.value)} />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="project">
-                    <Form.Label>Proyecto</Form.Label>
-                    <Form.Control as="select" value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)}>
-                      <option value="">Selecciona un proyecto (opcional)</option>
-                      {projects.map(project => (
-                        <option key={project.id} value={project.id}>{project.name}</option>
-                      ))}
-                    </Form.Control>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="file">
                     <Form.Label>Adjuntar Guión o Formato</Form.Label>
