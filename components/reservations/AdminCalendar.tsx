@@ -35,6 +35,7 @@ interface AdminCalendarProps {
   spaceId?: string;
   equipmentId?: string;
   role?: Role;
+  responsibleUserId?: string | null;
 }
 
 interface CalendarEvent extends BigCalendarEvent {
@@ -52,7 +53,7 @@ const customFormats = {
     localizer.format(start, 'HH:mm', culture) + ' - ' + localizer.format(end, 'HH:mm', culture),
 };
 
-export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalendarProps) {
+export default function AdminCalendar({ spaceId, equipmentId, role, responsibleUserId }: AdminCalendarProps) {
   const { user: currentUser } = useSession();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [view, setView] = useState('week');
@@ -65,6 +66,8 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
   const [eventToDelete, setEventToDelete] = useState<CalendarEvent | null>(null); // NEW: Stores the event to be deleted
 
   const isViewer = role === Role.CALENDAR_VIEWER;
+  const isEditable = !isViewer && (currentUser?.role === Role.SUPERUSER || currentUser?.id === responsibleUserId);
+
 
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), [setDate]);
   const onView = useCallback((newView: string) => setView(newView), [setView]);
@@ -197,15 +200,15 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
 
   const handleSelectSlot = useCallback(
     ({ start, end }: { start: Date, end: Date }) => {
-      if (isViewer) return;
+      // This is already controlled by the 'selectable' prop on the calendar
       setSelectedSlotInfo({ start, end });
       setShowRecurringBlockModal(true);
     },
-    [isViewer]
+    []
   );
 
   const handleEventAction = async (action: 'APPROVE' | 'REJECT' | 'DELETE') => {
-    if (!selectedEvent || isViewer) return;
+    if (!selectedEvent || !isEditable) return;
 
     const eventId = selectedEvent.id;
     let url = '';
@@ -380,30 +383,76 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
 
   return (
     <>
-      {/* Existing selectedEvent modal for reservation details */}
-      {selectedEvent && !isViewer && (
+      {/* Modal Unificado para todos los roles */}
+      {selectedEvent && currentUser && (
         <Modal show={!!selectedEvent} onHide={() => setSelectedEvent(null)}>
           <Modal.Header closeButton>
             <Modal.Title>{selectedEvent.title}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p><strong>Solicitante:</strong> {selectedEvent.fullReservation.user.firstName} {selectedEvent.fullReservation.user.lastName}</p>
-            <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
-            <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
-            <p><strong>Estado:</strong> {selectedEvent.status}</p>
-            <p><strong>Justificación:</strong> {selectedEvent.fullReservation.justification}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            {selectedEvent.status === 'PENDING' && canApproveReject && (
+            {/* --- Contenido Condicional para Visor vs. Admin --- */}
+            {isViewer ? (
+              // --- VISTA PARA CALENDAR_VIEWER ---
               <>
-                <button style={{...buttonStyle, backgroundColor: '#5cb85c'}} onClick={() => handleEventAction('APPROVE')}>Aprobar</button>
-                <button style={{...buttonStyle, backgroundColor: '#f0ad4e'}} onClick={() => handleEventAction('REJECT')}>Rechazar</button>
+                {Array.isArray(selectedEvent.fullReservation.dayOfWeek) && selectedEvent.fullReservation.dayOfWeek.length > 0 ? (
+                  <>
+                    <p><strong>Tipo:</strong> Bloqueo Recurrente</p>
+                    <p><strong>Días:</strong> {selectedEvent.fullReservation.dayOfWeek.map((dayNum: number) => 
+                        ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][dayNum]
+                      ).join(', ')}
+                    </p>
+                  </>
+                ) : (
+                  <p><strong>Solicitante:</strong> {selectedEvent.fullReservation.user.firstName} {selectedEvent.fullReservation.user.lastName}</p>
+                )}
+                <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
+                <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
+              </>
+            ) : (
+              // --- VISTA CORREGIDA Y ROBUSTA PARA ADMINS ---
+              <>
+                {Array.isArray(selectedEvent.fullReservation.dayOfWeek) && selectedEvent.fullReservation.dayOfWeek.length > 0 ? (
+                  // Info específica si es Bloqueo Recurrente para Admins
+                  <>
+                    <p><strong>Tipo:</strong> Bloqueo Recurrente</p>
+                    <p><strong>Días:</strong> {selectedEvent.fullReservation.dayOfWeek.map((dayNum: number) => 
+                        ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][dayNum]
+                      ).join(', ')}
+                    </p>
+                  </>
+                ) : (
+                  // Info específica si es Reserva Normal para Admins
+                  <>
+                    <p><strong>Solicitante:</strong> {selectedEvent.fullReservation.user.firstName} {selectedEvent.fullReservation.user.lastName}</p>
+                    <p><strong>Estado:</strong> {selectedEvent.status}</p>
+                  </>
+                )}
+                {/* Información común para todos los eventos (Admins) */}
+                <p><strong>Inicio:</strong> {format(selectedEvent.start!, 'Pp', { locale: es })}</p>
+                <p><strong>Fin:</strong> {format(selectedEvent.end!, 'Pp', { locale: es })}</p>
+                <p><strong>Justificación/Descripción:</strong> {selectedEvent.fullReservation.justification || selectedEvent.title}</p>
               </>
             )}
-            {canApproveReject && (
-               <button style={{...buttonStyle, backgroundColor: '#d9534f'}} onClick={() => handleEventAction('DELETE')}>Eliminar</button>
+          </Modal.Body>
+          <Modal.Footer>
+            {isViewer ? (
+              // Botón para Visor
+              <button style={{...buttonStyle, backgroundColor: '#6c757d'}} onClick={() => setSelectedEvent(null)}>Cerrar</button>
+            ) : (
+              // Botones para Admins
+              <>
+                {selectedEvent.status === 'PENDING' && canApproveReject && (
+                  <>
+                    <button style={{...buttonStyle, backgroundColor: '#5cb85c'}} onClick={() => handleEventAction('APPROVE')}>Aprobar</button>
+                    <button style={{...buttonStyle, backgroundColor: '#f0ad4e'}} onClick={() => handleEventAction('REJECT')}>Rechazar</button>
+                  </>
+                )}
+                {canApproveReject && (
+                  <button style={{...buttonStyle, backgroundColor: '#d9534f'}} onClick={() => handleEventAction('DELETE')}>Eliminar</button>
+                )}
+                <button style={{...buttonStyle, backgroundColor: '#6c757d'}} onClick={() => setSelectedEvent(null)}>Cerrar</button>
+              </>
             )}
-            <button style={{...buttonStyle, backgroundColor: '#6c757d'}} onClick={() => setSelectedEvent(null)}>Cerrar</button>
           </Modal.Footer>
         </Modal>
       )}
@@ -416,9 +465,9 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
         style={{ height: '100%', opacity: isLoading ? 0.5 : 1 }}
         culture="es"
         messages={messages}
-        selectable={!isViewer}
-        onSelectEvent={isViewer ? undefined : (event) => setSelectedEvent(event as CalendarEvent)}
-        onSelectSlot={isViewer ? undefined : handleSelectSlot}
+        selectable={isEditable}
+        onSelectEvent={(event) => setSelectedEvent(event as CalendarEvent)}
+        onSelectSlot={isEditable ? handleSelectSlot : undefined}
         onNavigate={onNavigate}
         onView={onView}
         view={view as any}
@@ -428,7 +477,7 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
       />
 
       {/* New RecurringBlockModal */}
-      {!isViewer && (
+      {isEditable && (
         <RecurringBlockModal
           show={showRecurringBlockModal}
           handleClose={handleCloseRecurringBlockModal}
@@ -440,7 +489,7 @@ export default function AdminCalendar({ spaceId, equipmentId, role }: AdminCalen
       )}
 
       {/* NEW: DeleteRecurringBlockModal */}
-      {!isViewer && (
+      {isEditable && (
         <DeleteRecurringBlockModal
           show={showDeleteConfirmModal}
           handleClose={handleCloseDeleteConfirmModal}

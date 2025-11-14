@@ -9,6 +9,7 @@ import { Role } from '@prisma/client';
 interface Resource {
   id: string;
   name: string;
+  responsibleUserId: string | null;
 }
 
 interface ResourceCalendarViewProps {
@@ -22,6 +23,8 @@ export default function ResourceCalendarView({ resources, resourceType, role }: 
 
   const label = resourceType === 'space' ? 'Seleccionar Espacio' : 'Seleccionar Equipo';
   const isViewer = role === Role.CALENDAR_VIEWER;
+
+  const selectedResource = resources.find(r => r.id === selectedResourceId);
 
   return (
     <div>
@@ -67,6 +70,7 @@ export default function ResourceCalendarView({ resources, resourceType, role }: 
             spaceId={resourceType === 'space' ? selectedResourceId : undefined}
             equipmentId={resourceType === 'equipment' ? selectedResourceId : undefined}
             role={role}
+            responsibleUserId={selectedResource?.responsibleUserId || null}
           />
         ) : (
           <p>Por favor selecciona un recurso.</p>
